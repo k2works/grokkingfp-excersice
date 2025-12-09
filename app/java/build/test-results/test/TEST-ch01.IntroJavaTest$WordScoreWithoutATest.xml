@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="'a' を除外したスコア計算" tests="3" skipped="0" failures="0" errors="0" timestamp="2025-12-09T10:53:06.671Z" hostname="PC202411-1" time="0.003">
-  <properties/>
-  <testcase name="'a' を除外してスコアを計算" classname="ch01.IntroJavaTest$WordScoreWithoutATest" time="0.001"/>
-  <testcase name="'a' がない文字列はそのままの長さ" classname="ch01.IntroJavaTest$WordScoreWithoutATest" time="0.0"/>
-  <testcase name="命令型と関数型で同じ結果を返す" classname="ch01.IntroJavaTest$WordScoreWithoutATest" time="0.0"/>
-  <system-out><![CDATA[]]></system-out>
-  <system-err><![CDATA[]]></system-err>
-</testsuite>

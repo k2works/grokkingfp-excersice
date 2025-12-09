@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="参照透過性" tests="2" skipped="0" failures="0" errors="0" timestamp="2025-12-09T10:53:06.608Z" hostname="PC202411-1" time="0.044">
-  <properties/>
-  <testcase name="式をその結果で置き換えても動作が変わらない" classname="ch01.IntroJavaTest$ReferentialTransparencyTest" time="0.042"/>
-  <testcase name="同じ入力に対して常に同じ出力を返す" classname="ch01.IntroJavaTest$ReferentialTransparencyTest" time="0.001"/>
-  <system-out><![CDATA[]]></system-out>
-  <system-err><![CDATA[]]></system-err>
-</testsuite>

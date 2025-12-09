@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="関数型実装との比較" tests="1" skipped="0" failures="0" errors="0" timestamp="2025-12-09T10:53:06.756Z" hostname="PC202411-1" time="0.001">
-  <properties/>
-  <testcase name="両方の実装が同じ結果を返す" classname="ch02.TipCalculatorTest$FunctionalImplementationTest" time="0.001"/>
-  <system-out><![CDATA[]]></system-out>
-  <system-err><![CDATA[]]></system-err>
-</testsuite>
