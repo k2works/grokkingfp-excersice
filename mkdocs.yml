@@ -1,9 +1,9 @@
-site_name: Site Name
-site_description: Site Description
+site_name: Grokking Functional Programming
+site_description: Scala と Java で学ぶ関数型プログラミング
 site_author: Project Team
-repo_url: https://github.com/k2works/claude-code-booster
-repo_name: claude-code-booster
-docs_dir: docs/article/scala
+repo_url: https://github.com/k2works/grokkingfp-excersice
+repo_name: grokkingfp-excersice
+docs_dir: docs/article
 
 theme:
   name: material
@@ -58,11 +58,19 @@ plugins:
 
 nav:
   - Home: index.md
-  - Grokking FP:
-      - 概要: index.md
-      - Part I - 基礎: part-1.md
-      - Part II - 関数型スタイル: part-2.md
-      - Part III - エラーハンドリング: part-3.md
-      - Part IV - IO と副作用: part-4.md
-      - Part V - 並行処理: part-5.md
-      - Part VI - 実践: part-6.md
+  - Scala:
+      - 概要: scala/index.md
+      - Part I - 基礎: scala/part-1.md
+      - Part II - 関数型スタイル: scala/part-2.md
+      - Part III - エラーハンドリング: scala/part-3.md
+      - Part IV - IO と副作用: scala/part-4.md
+      - Part V - 並行処理: scala/part-5.md
+      - Part VI - 実践: scala/part-6.md
+  - Java:
+      - 概要: java/index.md
+      - Part I - 基礎: java/part-1.md
+      - Part II - 関数型スタイル: java/part-2.md
+      - Part III - エラーハンドリング: java/part-3.md
+      - Part IV - IO と副作用: java/part-4.md
+      - Part V - 並行処理: java/part-5.md
+      - Part VI - 実践: java/part-6.md
