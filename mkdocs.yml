@@ -3,6 +3,7 @@ site_description: Site Description
 site_author: Project Team
 repo_url: https://github.com/k2works/claude-code-booster
 repo_name: claude-code-booster
+docs_dir: docs/article/scala
 
 theme:
   name: material
@@ -57,3 +58,11 @@ plugins:
 
 nav:
   - Home: index.md
+  - Grokking FP:
+      - 概要: index.md
+      - Part I - 基礎: part-1.md
+      - Part II - 関数型スタイル: part-2.md
+      - Part III - エラーハンドリング: part-3.md
+      - Part IV - IO と副作用: part-4.md
+      - Part V - 並行処理: part-5.md
+      - Part VI - 実践: part-6.md
