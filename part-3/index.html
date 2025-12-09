@@ -1,0 +1,1873 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Site Description">
+      
+      
+        <meta name="author" content="Project Team">
+      
+      
+      
+        <link rel="prev" href="../part-2/">
+      
+      
+        <link rel="next" href="../part-4/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.0">
+    
+    
+      
+        <title>Part III - エラーハンドリング - Site Name</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.618322db.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../docs/mkdocs/assets/css/extra.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#part-iii-optioneither" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="Site Name" class="md-header__button md-logo" aria-label="Site Name" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Site Name
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Part III - エラーハンドリング
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/k2works/claude-code-booster" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    claude-code-booster
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href=".." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href=".." class="md-tabs__link">
+          
+  
+  
+  Grokking FP
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+  
+
+<nav class="md-nav md-nav--primary md-nav--lifted md-nav--integrated" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="Site Name" class="md-nav__button md-logo" aria-label="Site Name" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Site Name
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/k2works/claude-code-booster" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    claude-code-booster
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Grokking FP
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Grokking FP
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../part-1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Part I - 基礎
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../part-2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Part II - 関数型スタイル
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Part III - エラーハンドリング
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Part III - エラーハンドリング
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#6-option" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第6章: Option 型による安全なエラーハンドリング
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="第6章: Option 型による安全なエラーハンドリング">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#61-option" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.1 なぜ Option が必要か
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#62-option" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.2 Option の基本
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#63-tv" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.3 TV番組のパース例
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6.3 TV番組のパース例">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        例外を使う方法（問題あり）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#option" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Option を使う方法
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#64" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.4 小さな関数から組み立てる
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#65-orelse" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.5 orElse によるフォールバック
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6.5 orElse によるフォールバック">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        単年の番組に対応する
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#66-option" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.6 Option の主要メソッド
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#67" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.7 エラーハンドリング戦略
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6.7 エラーハンドリング戦略">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#best-effort" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Best-effort 戦略
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#all-or-nothing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        All-or-nothing 戦略
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-either" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第7章: Either 型と複合的なエラー処理
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="第7章: Either 型と複合的なエラー処理">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#71-option" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.1 Option の限界
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#72-either" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.2 Either の基本
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#73-either" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.3 Either を使ったパース
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#74-option-either" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.4 Option から Either への変換
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#75-either" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.5 Either による完全なパーサー
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#76-either" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.6 Either の主要メソッド
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#77" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.7 音楽アーティスト検索の例
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="7.7 音楽アーティスト検索の例">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        基本的なモデル（問題あり）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#option_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Option を使った改善
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#78-adt" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.8 代数的データ型（ADT）
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="7.8 代数的データ型（ADT）">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#product-type" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        直積型（Product Type）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sum-type" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        直和型（Sum Type）
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#79" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.9 パターンマッチング
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#710" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.10 検索条件のモデリング
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#711-forall-exists" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.11 forall と exists
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        まとめ
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="まとめ">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#part-iii" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part III で学んだこと
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#option-vs-either" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Option vs Either の使い分け
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        キーポイント
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        次のステップ
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        演習問題
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="演習問題">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-option" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        問題 1: Option の基本
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-option" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        問題 2: Option の合成
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-either" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        問題 3: Either によるバリデーション
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        問題 4: パターンマッチング
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-forall-exists" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        問題 5: forall と exists
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../part-4/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Part IV - IO と副作用
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../part-5/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Part V - 並行処理
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../part-6/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Part VI - 実践
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="part-iii-optioneither">Part III: エラーハンドリングと Option/Either<a class="headerlink" href="#part-iii-optioneither" title="Permanent link">&para;</a></h1>
+<p>本章では、関数型プログラミングにおける安全なエラーハンドリングを学びます。<code>null</code> や例外に頼らず、<code>Option</code> と <code>Either</code> を使って型安全にエラーを扱う方法を習得します。</p>
+<hr />
+<h2 id="6-option">第6章: Option 型による安全なエラーハンドリング<a class="headerlink" href="#6-option" title="Permanent link">&para;</a></h2>
+<h3 id="61-option">6.1 なぜ Option が必要か<a class="headerlink" href="#61-option" title="Permanent link">&para;</a></h3>
+<p>従来のエラーハンドリングには問題があります。</p>
+<p><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiBjb250ZW50U3R5bGVUeXBlPSJ0ZXh0L2NzcyIgZGF0YS1kaWFncmFtLXR5cGU9IkRFU0NSSVBUSU9OIiBoZWlnaHQ9IjQxOXB4IiBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSJub25lIiBzdHlsZT0id2lkdGg6MTA0NnB4O2hlaWdodDo0MTlweDtiYWNrZ3JvdW5kOiNGRkZGRkY7IiB2ZXJzaW9uPSIxLjEiIHZpZXdCb3g9IjAgMCAxMDQ2IDQxOSIgd2lkdGg9IjEwNDZweCIgem9vbUFuZFBhbj0ibWFnbmlmeSI+PGRlZnMvPjxnPjwhLS1jbHVzdGVyID8/Pz8/Pz8/Pz8/Py0tPjxnIGNsYXNzPSJjbHVzdGVyIiBkYXRhLWVudGl0eT0iLi4uLi4uLi4uLi4uIiBkYXRhLXNvdXJjZS1saW5lPSIzIiBkYXRhLXVpZD0iZW50MDAwMiIgaWQ9ImNsdXN0ZXJfLi4uLi4uLi4uLi4uIj48cmVjdCBmaWxsPSIjRkZGRkZGIiBoZWlnaHQ9IjE3Mi4zIiByeD0iMi41IiByeT0iMi41IiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE7IiB3aWR0aD0iMTAyOCIgeD0iMTIiIHk9IjEyIi8+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9IlZlcmRhbmEiIGZvbnQtc2l6ZT0iMTQiIGZvbnQtd2VpZ2h0PSJib2xkIiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjE2Ny45OTkzIiB4PSI0NDIuMDAwNCIgeT0iMjYuOTk1MSI+JiMyNDQ2NzsmIzI2NDY5OyYjMTIzOTg7JiMxMjQ1NjsmIzEyNTIxOyYjMTI1NDA7JiMxMjQ5NTsmIzEyNTMxOyYjMTI0ODk7JiMxMjUyMjsmIzEyNTMxOyYjMTI0NjQ7PC90ZXh0PjwvZz48IS0tY2x1c3RlciBudWxsX3JldC0tPjxnIGNsYXNzPSJjbHVzdGVyIiBkYXRhLWVudGl0eT0ibnVsbF9yZXQiIGRhdGEtc291cmNlLWxpbmU9IjQiIGRhdGEtdWlkPSJlbnQwMDAzIiBpZD0iY2x1c3Rlcl9udWxsX3JldCI+PHJlY3QgZmlsbD0iI0ZGRkZGRiIgaGVpZ2h0PSI4OS4zIiByeD0iMi41IiByeT0iMi41IiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE7IiB3aWR0aD0iNTE2IiB4PSI0NCIgeT0iNjMiLz48dGV4dCBmaWxsPSIjMDAwMDAwIiBmb250LWZhbWlseT0iVmVyZGFuYSIgZm9udC1zaXplPSIxNCIgZm9udC13ZWlnaHQ9ImJvbGQiIGxlbmd0aEFkanVzdD0ic3BhY2luZyIgdGV4dExlbmd0aD0iNzYuNDA1MSIgeD0iMjYzLjc5NzUiIHk9Ijc3Ljk5NTEiPm51bGwgJiMxMjQzNDsmIzM2ODIwOyYjMTIzNzc7PC90ZXh0PjwvZz48IS0tY2x1c3RlciBleGNlcHRpb24tLT48ZyBjbGFzcz0iY2x1c3RlciIgZGF0YS1lbnRpdHk9ImV4Y2VwdGlvbiIgZGF0YS1zb3VyY2UtbGluZT0iOSIgZGF0YS11aWQ9ImVudDAwMDYiIGlkPSJjbHVzdGVyX2V4Y2VwdGlvbiI+PHJlY3QgZmlsbD0iI0ZGRkZGRiIgaGVpZ2h0PSI4OS4zIiByeD0iMi41IiByeT0iMi41IiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE7IiB3aWR0aD0iNDA4IiB4PSI2MDAiIHk9IjYzIi8+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9IlZlcmRhbmEiIGZvbnQtc2l6ZT0iMTQiIGZvbnQtd2VpZ2h0PSJib2xkIiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjExMS45OTk1IiB4PSI3NDguMDAwMiIgeT0iNzcuOTk1MSI+JiMyMDM2MzsmIzIyODA2OyYjMTI0MzQ7JiMxMjQ3MzsmIzEyNTI1OyYjMTI1NDA7JiMxMjM3NzsmIzEyNDI3OzwvdGV4dD48L2c+PCEtLWNsdXN0ZXIgb3B0aW9uLS0+PGcgY2xhc3M9ImNsdXN0ZXIiIGRhdGEtZW50aXR5PSJvcHRpb24iIGRhdGEtc291cmNlLWxpbmU9IjE1IiBkYXRhLXVpZD0iZW50MDAwOSIgaWQ9ImNsdXN0ZXJfb3B0aW9uIj48cmVjdCBmaWxsPSIjRkZGRkZGIiBoZWlnaHQ9IjE3Mi41OSIgcng9IjIuNSIgcnk9IjIuNSIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxOyIgd2lkdGg9IjUzNCIgeD0iMjk0IiB5PSIyNDEuMyIvPjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJWZXJkYW5hIiBmb250LXNpemU9IjE0IiBmb250LXdlaWdodD0iYm9sZCIgbGVuZ3RoQWRqdXN0PSJzcGFjaW5nIiB0ZXh0TGVuZ3RoPSIxMjcuODcyNyIgeD0iNDk3LjA2MzYiIHk9IjI1Ni4yOTUxIj5PcHRpb24gJiMxMjM5NTsmIzEyNDI0OyYjMTI0Mjc7JiMzNTI5OTsmIzI3NzcwOzwvdGV4dD48L2c+PCEtLWVudGl0eSBOdWxsUG9pbnRlckV4Y2VwdGlvbiA/Pz8tLT48ZyBjbGFzcz0iZW50aXR5IiBkYXRhLWVudGl0eT0iTnVsbFBvaW50ZXJFeGNlcHRpb24gLi4uIiBkYXRhLXNvdXJjZS1saW5lPSI1IiBkYXRhLXVpZD0iZW50MDAwNCIgaWQ9ImVudGl0eV9OdWxsUG9pbnRlckV4Y2VwdGlvbiAuLi4iPjxyZWN0IGZpbGw9IiNGRkZGRkYiIGhlaWdodD0iMjIuMjk2OSIgcng9IjIuNSIgcnk9IjIuNSIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxOyIgd2lkdGg9IjIxMi4zNDk0IiB4PSI2Ny44MyIgeT0iMTA2Ii8+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9IlZlcmRhbmEiIGZvbnQtc2l6ZT0iMTQiIGxlbmd0aEFkanVzdD0ic3BhY2luZyIgdGV4dExlbmd0aD0iMTkyLjM0OTQiIHg9Ijc3LjgzIiB5PSIxMjEuOTk1MSI+TnVsbFBvaW50ZXJFeGNlcHRpb24gJiMxMjM5ODsmIzIxMzYxOyYjMzg1MjI7PC90ZXh0PjwvZz48IS0tZW50aXR5ID8/Pz8/Pz8/Pz8/Pz8tLT48ZyBjbGFzcz0iZW50aXR5IiBkYXRhLWVudGl0eT0iLi4uLi4uLi4uLi4uLiIgZGF0YS1zb3VyY2UtbGluZT0iNiIgZGF0YS11aWQ9ImVudDAwMDUiIGlkPSJlbnRpdHlfLi4uLi4uLi4uLi4uLiI+PHJlY3QgZmlsbD0iI0ZGRkZGRiIgaGVpZ2h0PSIyMi4yOTY5IiByeD0iMi41IiByeT0iMi41IiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE7IiB3aWR0aD0iMjAxLjk5OTIiIHg9IjMxNSIgeT0iMTA2Ii8+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9IlZlcmRhbmEiIGZvbnQtc2l6ZT0iMTQiIGxlbmd0aEFkanVzdD0ic3BhY2luZyIgdGV4dExlbmd0aD0iMTgxLjk5OTIiIHg9IjMyNSIgeT0iMTIxLjk5NTEiPiYjMTI0Njc7JiMxMjUzMTsmIzEyNDk3OyYjMTI0NTI7JiMxMjUyMzsmIzI2MTc4OyYjMTIzOTU7JiMyNjkwODsmIzIwOTg2OyYjMTIzOTE7JiMxMjM2NTsmIzEyMzk0OyYjMTIzNTY7PC90ZXh0PjwvZz48IS0tZW50aXR5ID8/Pz8/Pz8/Py0tPjxnIGNsYXNzPSJlbnRpdHkiIGRhdGEtZW50aXR5PSIuLi4uLi4uLi4iIGRhdGEtc291cmNlLWxpbmU9IjEwIiBkYXRhLXVpZD0iZW50MDAwNyIgaWQ9ImVudGl0eV8uLi4uLi4uLi4iPjxyZWN0IGZpbGw9IiNGRkZGRkYiIGhlaWdodD0iMjIuMjk2OSIgcng9IjIuNSIgcnk9IjIuNSIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxOyIgd2lkdGg9IjE0NS45OTk1IiB4PSI2MjQiIHk9IjEwNiIvPjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJWZXJkYW5hIiBmb250LXNpemU9IjE0IiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjEyNS45OTk1IiB4PSI2MzQiIHk9IjEyMS45OTUxIj4mIzIxMDQ2OyYjMjQ0ODE7JiMxMjUwMTsmIzEyNTI1OyYjMTI1NDA7JiMxMjM2NDsmIzM1MDc5OyYjMzg2MDk7JiMyMTI3MDs8L3RleHQ+PC9nPjwhLS1lbnRpdHkgPz8/Pz8/Pz8/Py0tPjxnIGNsYXNzPSJlbnRpdHkiIGRhdGEtZW50aXR5PSIuLi4uLi4uLi4uIiBkYXRhLXNvdXJjZS1saW5lPSIxMSIgZGF0YS11aWQ9ImVudDAwMDgiIGlkPSJlbnRpdHlfLi4uLi4uLi4uLiI+PHJlY3QgZmlsbD0iI0ZGRkZGRiIgaGVpZ2h0PSIyMi4yOTY5IiByeD0iMi41IiByeT0iMi41IiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE7IiB3aWR0aD0iMTU5Ljk5OTQiIHg9IjgwNSIgeT0iMTA2Ii8+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9IlZlcmRhbmEiIGZvbnQtc2l6ZT0iMTQiIGxlbmd0aEFkanVzdD0ic3BhY2luZyIgdGV4dExlbmd0aD0iMTM5Ljk5OTQiIHg9IjgxNSIgeT0iMTIxLjk5NTEiPiYjMzIwMjA7JiMzMTg4MzsmIzM4MzA2OyYjMjU5Njg7JiMxMjM5MTsmIzEyMzk5OyYjMTIzOTQ7JiMxMjM2NzsmIzEyMzk0OyYjMTI0Mjc7PC90ZXh0PjwvZz48IS0tZW50aXR5ID8/Pz8/Pz8/Pz8/Pz8/Pz8/LS0+PGcgY2xhc3M9ImVudGl0eSIgZGF0YS1lbnRpdHk9Ii4uLi4uLi4uLi4uLi4uLi4uIiBkYXRhLXNvdXJjZS1saW5lPSIxNiIgZGF0YS11aWQ9ImVudDAwMTAiIGlkPSJlbnRpdHlfLi4uLi4uLi4uLi4uLi4uLi4iPjxyZWN0IGZpbGw9IiNGRkZGRkYiIGhlaWdodD0iMjIuMjk2OSIgcng9IjIuNSIgcnk9IjIuNSIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxOyIgd2lkdGg9IjI1Ny45OTkiIHg9IjMxOCIgeT0iMjg0LjMiLz48dGV4dCBmaWxsPSIjMDAwMDAwIiBmb250LWZhbWlseT0iVmVyZGFuYSIgZm9udC1zaXplPSIxNCIgbGVuZ3RoQWRqdXN0PSJzcGFjaW5nIiB0ZXh0TGVuZ3RoPSIyMzcuOTk5IiB4PSIzMjgiIHk9IjMwMC4yOTUxIj4mIzIyNDExOyYjMTIzOTE7JiMxMjMwMDsmIzIwNTE2OyYjMTIzNjQ7JiMxMjM5NDsmIzEyMzU2OyYjMTIzNjM7JiMxMjQxODsmIzEyMzc1OyYjMTI0Mjg7JiMxMjM5NDsmIzEyMzU2OyYjMTIzMDE7JiMxMjQzNDsmIzM0OTIwOyYjMjk2OTQ7PC90ZXh0PjwvZz48IS0tZW50aXR5ID8/Pz8/Pz8/Pz8/LS0+PGcgY2xhc3M9ImVudGl0eSIgZGF0YS1lbnRpdHk9Ii4uLi4uLi4uLi4uIiBkYXRhLXNvdXJjZS1saW5lPSIxNyIgZGF0YS11aWQ9ImVudDAwMTEiIGlkPSJlbnRpdHlfLi4uLi4uLi4uLi4iPjxyZWN0IGZpbGw9IiNGRkZGRkYiIGhlaWdodD0iMjIuMjk2OSIgcng9IjIuNSIgcnk9IjIuNSIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxOyIgd2lkdGg9IjE3My45OTkzIiB4PSI2MTEiIHk9IjI4NC4zIi8+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9IlZlcmRhbmEiIGZvbnQtc2l6ZT0iMTQiIGxlbmd0aEFkanVzdD0ic3BhY2luZyIgdGV4dExlbmd0aD0iMTUzLjk5OTMiIHg9IjYyMSIgeT0iMzAwLjI5NTEiPiYjMTI0Njc7JiMxMjUzMTsmIzEyNDk3OyYjMTI0NTI7JiMxMjUyMzsmIzI2MTc4OyYjMTIzOTU7JiMxMjQ4MTsmIzEyNDU1OyYjMTI0ODM7JiMxMjQ2Mzs8L3RleHQ+PC9nPjwhLS1lbnRpdHkgPz8/Pz8/Py0tPjxnIGNsYXNzPSJlbnRpdHkiIGRhdGEtZW50aXR5PSIuLi4uLi4uIiBkYXRhLXNvdXJjZS1saW5lPSIxOCIgZGF0YS11aWQ9ImVudDAwMTIiIGlkPSJlbnRpdHlfLi4uLi4uLiI+PHJlY3QgZmlsbD0iI0ZGRkZGRiIgaGVpZ2h0PSIyMi4yOTY5IiByeD0iMi41IiByeT0iMi41IiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE7IiB3aWR0aD0iMTE3Ljk5OTYiIHg9IjM4OCIgeT0iMzY3LjU5Ii8+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9IlZlcmRhbmEiIGZvbnQtc2l6ZT0iMTQiIGxlbmd0aEFkanVzdD0ic3BhY2luZyIgdGV4dExlbmd0aD0iOTcuOTk5NiIgeD0iMzk4IiB5PSIzODMuNTg1MSI+JiMzMjAyMDsmIzMxODgzOyYjMzgzMDY7JiMyNTk2ODsmIzEyMzk4OyYjMTI0MTQ7JiMxMjQxNDs8L3RleHQ+PC9nPjwhLS1saW5rIG51bGxfcmV0IHRvIG9wdGlvbi0tPjxnIGNsYXNzPSJsaW5rIiBkYXRhLWVudGl0eS0xPSJudWxsX3JldCIgZGF0YS1lbnRpdHktMj0ib3B0aW9uIiBkYXRhLXNvdXJjZS1saW5lPSIyMSIgZGF0YS11aWQ9ImxuazEzIiBpZD0ibGlua19udWxsX3JldF9vcHRpb24iPjxwYXRoIGQ9Ik01NjAuMTEyNCwxMzUuMzczNSBDNTYwLjE2NjksMTM1LjQ3NzIgNTYwLjIyMTgsMTM1LjU4MTMgNTYwLjI3NjksMTM1LjY4NTcgQzU2MC4zODcsMTM1Ljg5NDQgNTYwLjQ5ODIsMTM2LjEwNDMgNTYwLjYxMDUsMTM2LjMxNTUgQzU2MC44MzUxLDEzNi43Mzc4IDU2MS4wNjM4LDEzNy4xNjQ4IDU2MS4yOTY4LDEzNy41OTY0IEM1NjMuMTYwNCwxNDEuMDQ4OCA1NjUuMjkyMiwxNDQuNzg4NCA1NjcuNjgxMywxNDguNjY2MyBDNTc3LjIzNzUsMTY0LjE3NzUgNTkwLjkxLDE4MS45IDYwOCwxOTIuMyBDNjgyLjM0LDIzNy41MyA3MzYuNSwxNjYuODggODAxLDIyNS4zIEM4MDMuODYsMjI3Ljg5IDgwNi4zMDU5LDIzMC44NjY3IDgwOC4zOTYyLDIzNC4wOTg1IEM4MDkuNDQxMywyMzUuNzE0NCA4MTAuMzk3NCwyMzcuMzk0MSA4MTEuMjcyLDIzOS4xMjExIEM4MTEuNDkwNiwyMzkuNTUyOCA4MTEuNzA0MSwyMzkuOTg3NSA4MTEuOTEyNywyNDAuNDI0OSBDODEyLjAxNywyNDAuNjQzNiA4MDkuNjAwNiwyMzUuNDE3NSA4MDkuNzAyNCwyMzUuNjM3NiIgZmlsbD0ibm9uZSIgaWQ9Im51bGxfcmV0LXRvLW9wdGlvbiIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxOyIvPjxwb2x5Z29uIGZpbGw9IiMwMDAwMDAiIHBvaW50cz0iODEyLjIyMTgsMjQxLjA4Myw4MTIuMDczMSwyMzEuMjM1Myw4MTAuMTIyMywyMzYuNTQ1MSw4MDQuODEyNSwyMzQuNTk0NCw4MTIuMjIxOCwyNDEuMDgzIiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE7Ii8+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9IlZlcmRhbmEiIGZvbnQtc2l6ZT0iMTMiIGxlbmd0aEFkanVzdD0ic3BhY2luZyIgdGV4dExlbmd0aD0iNTIuMDAwMSIgeD0iNzkwLjUiIHk9IjIxMy4zNjY5Ij4mIzMyNjIyOyYjMTIzNjU7JiMyNTU2MzsmIzEyMzYwOzwvdGV4dD48L2c+PCEtLWxpbmsgZXhjZXB0aW9uIHRvIG9wdGlvbi0tPjxnIGNsYXNzPSJsaW5rIiBkYXRhLWVudGl0eS0xPSJleGNlcHRpb24iIGRhdGEtZW50aXR5LTI9Im9wdGlvbiIgZGF0YS1zb3VyY2UtbGluZT0iMjIiIGRhdGEtdWlkPSJsbmsxNCIgaWQ9ImxpbmtfZXhjZXB0aW9uX29wdGlvbiI+PHBhdGggZD0iTTk5Ni43MTQ3LDE1Mi4zNzE3IEM5OTYuNjkxLDE1Mi40OTI3IDk5Ni42NjczLDE1Mi42MTM5IDk5Ni42NDMzLDE1Mi43MzUxIEM5OTYuNTk1NCwxNTIuOTc3NiA5OTYuNTQ2OCwxNTMuMjIwNiA5OTYuNDk3NiwxNTMuNDY0IEM5OTYuMzk5LDE1My45NTA4IDk5Ni4yOTc4LDE1NC40Mzk0IDk5Ni4xOTM3LDE1NC45Mjk1IEM5OTUuOTg1NCwxNTUuOTA5OCA5OTUuNzY1OSwxNTYuODk2MyA5OTUuNTM0NSwxNTcuODg3MSBDOTk0LjYwODcsMTYxLjg1MDYgOTkzLjQ5MjMsMTY1Ljg4NDEgOTkyLjE0NjEsMTY5Ljg3MTEgQzk4OS40NTM3LDE3Ny44NDUgOTg1Ljg0MjUsMTg1LjYzMjUgOTgxLDE5Mi4zIEM5NTYuNDksMjI2LjA0NSA5MTcuMTA1LDI1MS4zMTc1IDg4My40MjUsMjY4LjI4MjUgQzg2Ni41ODUsMjc2Ljc2NSA4NTEuMTcxMywyODMuMTcwNiA4MzkuNzU2MiwyODcuNTIgQzgzNi45MDI1LDI4OC42MDczIDgzNC4yOTg3LDI4OS41NjYyIDgzMS45ODUsMjkwLjM5NjggQzgzMC44MjgxLDI5MC44MTIxIDgyOS43NDM4LDI5MS4xOTU0IDgyOC43MzcsMjkxLjU0NjcgQzgyOC42MTEyLDI5MS41OTA2IDgzNC4xNTM4LDI4OS42NjM2IDgzNC4wMzA0LDI4OS43MDY1IiBmaWxsPSJub25lIiBpZD0iZXhjZXB0aW9uLXRvLW9wdGlvbiIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxOyIvPjxwb2x5Z29uIGZpbGw9IiMwMDAwMDAiIHBvaW50cz0iODI4LjM2MzEsMjkxLjY3NjksODM4LjE3NzYsMjkyLjQ5OTUsODMzLjA4NTgsMjkwLjAzNDksODM1LjU1MDQsMjg0Ljk0MzIsODI4LjM2MzEsMjkxLjY3NjkiIHN0eWxlPSJzdHJva2U6IzAwMDAwMDtzdHJva2Utd2lkdGg6MTsiLz48dGV4dCBmaWxsPSIjMDAwMDAwIiBmb250LWZhbWlseT0iVmVyZGFuYSIgZm9udC1zaXplPSIxMyIgbGVuZ3RoQWRqdXN0PSJzcGFjaW5nIiB0ZXh0TGVuZ3RoPSI1Mi4wMDAxIiB4PSI5NzUuNzQiIHk9IjIxMy4zNjY5Ij4mIzMyNjIyOyYjMTIzNjU7JiMyNTU2MzsmIzEyMzYwOzwvdGV4dD48L2c+PCEtLVNSQz1bVlA3VElpQ202OFJGVW5NbnZ4aTEzcHBwTEJxM0FSRmVlN1FaTFgxNE0xOVhhd3dLd1BvS2dKMmpSNnd1N29VMkctbDVsQlJUeGlBcXNrYjRYSDMybnZpeXBfVGJtVG5JanJMSXE5SVNCYWM2Y1pLTFZMREpZSHB1OS03NTNNV0ZoMHItMl91Q3hlMkZtOF8wRV82MTNNSW9fX3NBbGdqZjFFbnV5YmUzVE1NWXg5MnVqNndlZldYYzVNRTNvMmtZaTlSRndRUGdCRXpick9BUG8tajRLMDl4RTdON3ljU0FSOUlXZ2MwVVUzVHE2TVd0ekN3M3FYWXExTWczVGEwRlBVYldwbGREam1BbEJXcDBkaTNsT2NWZ1diYzlZWmgzZkl2MS1KN21jLTJkUVJPb3lLaEpIWk1lcjVFSHdBNE10TGxKLWJMdUVhWjhfT0ppbkJqdUxfM2QzTFJKWGhmV1BQNk9qQXgzdUpaWHZ0XzBCd3R1bU04YkE3ZzJfRDRHZzBLY1VacTNJb2o1RXZ2ZWlucXZfaF9KMFFUV0JOMEVybF9UbFdWZ1l2S0NSVk9sY1NuSVFoUDhlWFVIaUtFZDBMZ01sa1JyUC1PVF0tLT48L2c+PC9zdmc+" class="uml" alt="uml diagram" title="" /></p>
+<h3 id="62-option">6.2 Option の基本<a class="headerlink" href="#62-option" title="Permanent link">&para;</a></h3>
+<p><code>Option[A]</code> は「<code>A</code> 型の値があるか、ないか」を表す型です。</p>
+<p><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiBjb250ZW50U3R5bGVUeXBlPSJ0ZXh0L2NzcyIgZGF0YS1kaWFncmFtLXR5cGU9IkRFU0NSSVBUSU9OIiBoZWlnaHQ9IjE1OHB4IiBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSJub25lIiBzdHlsZT0id2lkdGg6Njc2cHg7aGVpZ2h0OjE1OHB4O2JhY2tncm91bmQ6I0ZGRkZGRjsiIHZlcnNpb249IjEuMSIgdmlld0JveD0iMCAwIDY3NiAxNTgiIHdpZHRoPSI2NzZweCIgem9vbUFuZFBhbj0ibWFnbmlmeSI+PGRlZnMvPjxnPjwhLS1jbHVzdGVyIG9wdGlvbi0tPjxnIGNsYXNzPSJjbHVzdGVyIiBkYXRhLWVudGl0eT0ib3B0aW9uIiBkYXRhLXNvdXJjZS1saW5lPSIzIiBkYXRhLXVpZD0iZW50MDAwMiIgaWQ9ImNsdXN0ZXJfb3B0aW9uIj48cmVjdCBmaWxsPSIjRkZGRkZGIiBoZWlnaHQ9IjE0MC4zIiByeD0iMi41IiByeT0iMi41IiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE7IiB3aWR0aD0iNjU4IiB4PSIxMiIgeT0iMTIiLz48dGV4dCBmaWxsPSIjMDAwMDAwIiBmb250LWZhbWlseT0iVmVyZGFuYSIgZm9udC1zaXplPSIxNCIgZm9udC13ZWlnaHQ9ImJvbGQiIGxlbmd0aEFkanVzdD0ic3BhY2luZyIgdGV4dExlbmd0aD0iNzYuNjMwOSIgeD0iMzAyLjY4NDYiIHk9IjI2Ljk5NTEiPk9wdGlvbltBXTwvdGV4dD48L2c+PCEtLWNsdXN0ZXIgc29tZS0tPjxnIGNsYXNzPSJjbHVzdGVyIiBkYXRhLWVudGl0eT0ic29tZSIgZGF0YS1zb3VyY2UtbGluZT0iNCIgZGF0YS11aWQ9ImVudDAwMDMiIGlkPSJjbHVzdGVyX3NvbWUiPjxyZWN0IGZpbGw9IiNGRkZGRkYiIGhlaWdodD0iNzMuMyIgcng9IjIuNSIgcnk9IjIuNSIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxOyIgd2lkdGg9IjI5NSIgeD0iMzYiIHk9IjU1Ii8+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9IlZlcmRhbmEiIGZvbnQtc2l6ZT0iMTQiIGZvbnQtd2VpZ2h0PSJib2xkIiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9Ijk5LjQxNSIgeD0iMTMzLjc5MjUiIHk9IjY5Ljk5NTEiPlNvbWUodmFsdWUpPC90ZXh0PjwvZz48IS0tY2x1c3RlciBub25lLS0+PGcgY2xhc3M9ImNsdXN0ZXIiIGRhdGEtZW50aXR5PSJub25lIiBkYXRhLXNvdXJjZS1saW5lPSI5IiBkYXRhLXVpZD0iZW50MDAwNiIgaWQ9ImNsdXN0ZXJfbm9uZSI+PHJlY3QgZmlsbD0iI0ZGRkZGRiIgaGVpZ2h0PSI3My4zIiByeD0iMi41IiByeT0iMi41IiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE7IiB3aWR0aD0iMjkxIiB4PSIzNTUiIHk9IjU1Ii8+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9IlZlcmRhbmEiIGZvbnQtc2l6ZT0iMTQiIGZvbnQtd2VpZ2h0PSJib2xkIiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjQwLjc5NjkiIHg9IjQ4MC4xMDE2IiB5PSI2OS45OTUxIj5Ob25lPC90ZXh0PjwvZz48IS0tZW50aXR5ID8/Pz8/Py0tPjxnIGNsYXNzPSJlbnRpdHkiIGRhdGEtZW50aXR5PSIuLi4uLi4iIGRhdGEtc291cmNlLWxpbmU9IjUiIGRhdGEtdWlkPSJlbnQwMDA0IiBpZD0iZW50aXR5Xy4uLi4uLiI+PHJlY3QgZmlsbD0iI0ZGRkZGRiIgaGVpZ2h0PSIyMi4yOTY5IiByeD0iMi41IiByeT0iMi41IiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE7IiB3aWR0aD0iMTAzLjk5OTYiIHg9IjUyIiB5PSI5MCIvPjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJWZXJkYW5hIiBmb250LXNpemU9IjE0IiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjgzLjk5OTYiIHg9IjYyIiB5PSIxMDUuOTk1MSI+JiMyMDUxNjsmIzEyMzY0OyYjMjMzODQ7JiMyMjMxMjsmIzEyMzc3OyYjMTI0Mjc7PC90ZXh0PjwvZz48IS0tZW50aXR5IHZhbHVlOiBBID8/Py0tPjxnIGNsYXNzPSJlbnRpdHkiIGRhdGEtZW50aXR5PSJ2YWx1ZS4gQSAuLi4iIGRhdGEtc291cmNlLWxpbmU9IjYiIGRhdGEtdWlkPSJlbnQwMDA1IiBpZD0iZW50aXR5X3ZhbHVlLiBBIC4uLiI+PHJlY3QgZmlsbD0iI0ZGRkZGRiIgaGVpZ2h0PSIyMi4yOTY5IiByeD0iMi41IiByeT0iMi41IiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE7IiB3aWR0aD0iMTIzLjQzNDQiIHg9IjE5MS4yOCIgeT0iOTAiLz48dGV4dCBmaWxsPSIjMDAwMDAwIiBmb250LWZhbWlseT0iVmVyZGFuYSIgZm9udC1zaXplPSIxNCIgbGVuZ3RoQWRqdXN0PSJzcGFjaW5nIiB0ZXh0TGVuZ3RoPSIxMDMuNDM0NCIgeD0iMjAxLjI4IiB5PSIxMDUuOTk1MSI+dmFsdWU6IEEgJiMxMjQzNDsmIzIwNDQ1OyYjMjUzNDU7PC90ZXh0PjwvZz48IS0tZW50aXR5ID8/Pz8/Pz8tLT48ZyBjbGFzcz0iZW50aXR5IiBkYXRhLWVudGl0eT0iLi4uLi4uLiIgZGF0YS1zb3VyY2UtbGluZT0iMTAiIGRhdGEtdWlkPSJlbnQwMDA3IiBpZD0iZW50aXR5Xy4uLi4uLi4iPjxyZWN0IGZpbGw9IiNGRkZGRkYiIGhlaWdodD0iMjIuMjk2OSIgcng9IjIuNSIgcnk9IjIuNSIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxOyIgd2lkdGg9IjExNy45OTk2IiB4PSIzNzEiIHk9IjkwIi8+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9IlZlcmRhbmEiIGZvbnQtc2l6ZT0iMTQiIGxlbmd0aEFkanVzdD0ic3BhY2luZyIgdGV4dExlbmd0aD0iOTcuOTk5NiIgeD0iMzgxIiB5PSIxMDUuOTk1MSI+JiMyMDUxNjsmIzEyMzY0OyYjMjMzODQ7JiMyMjMxMjsmIzEyMzc1OyYjMTIzOTQ7JiMxMjM1Njs8L3RleHQ+PC9nPjwhLS1lbnRpdHkgbnVsbCA/Pz8/LS0+PGcgY2xhc3M9ImVudGl0eSIgZGF0YS1lbnRpdHk9Im51bGwgLi4uLiIgZGF0YS1zb3VyY2UtbGluZT0iMTEiIGRhdGEtdWlkPSJlbnQwMDA4IiBpZD0iZW50aXR5X251bGwgLi4uLiI+PHJlY3QgZmlsbD0iI0ZGRkZGRiIgaGVpZ2h0PSIyMi4yOTY5IiByeD0iMi41IiByeT0iMi41IiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE7IiB3aWR0aD0iMTA1Ljk3NTMiIHg9IjUyNC4wMSIgeT0iOTAiLz48dGV4dCBmaWxsPSIjMDAwMDAwIiBmb250LWZhbWlseT0iVmVyZGFuYSIgZm9udC1zaXplPSIxNCIgbGVuZ3RoQWRqdXN0PSJzcGFjaW5nIiB0ZXh0TGVuZ3RoPSI4NS45NzUzIiB4PSI1MzQuMDEiIHk9IjEwNS45OTUxIj5udWxsICYjMTIzOTg7JiMyMDE5NTsmIzEyNDMxOyYjMTI0MjY7PC90ZXh0PjwvZz48IS0tU1JDPVtLb3A5SUNyRExJWjhJU3BDdS04Z0lhcWtJU25CcHFiTEtGOGxBQ2RDcHVqc1o1TElJMm5NbzBWcDVBZ0hMR0pkdndQZ2IyTmNiQVBnV2pLSzBfYjA1U2M5SElhQUlheVJiWm5reDdjd1RpUkpFSWlVRHl2eXRESWoxOUsxd3gxSVM1SHV0M0pmb1Z3dnB0ZVFiUlhnS1Fwc295ekIxUGtPMXNKV0M3N3d1eVBMWm5qUk84UmNiVVJhQTNua05GVGF6LUI3SlZzRmN4ZjBQak8yMDAwMF0tLT48L2c+PC9zdmc+" class="uml" alt="uml diagram" title="" /></p>
+<p><strong>ソースファイル</strong>: <code>app/scala/src/main/scala/ch06_TvShows.scala</code></p>
+<h3 id="63-tv">6.3 TV番組のパース例<a class="headerlink" href="#63-tv" title="Permanent link">&para;</a></h3>
+<p>TV番組の文字列をパースする例で Option の使い方を学びます。</p>
+<div class="highlight"><pre><span></span><code><span class="k">case</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="nc">TvShow</span><span class="p">(</span><span class="n">title</span><span class="p">:</span><span class="w"> </span><span class="nc">String</span><span class="p">,</span><span class="w"> </span><span class="n">start</span><span class="p">:</span><span class="w"> </span><span class="nc">Int</span><span class="p">,</span><span class="w"> </span><span class="n">end</span><span class="p">:</span><span class="w"> </span><span class="nc">Int</span><span class="p">)</span>
+
+<span class="c1">// 入力例: &quot;Breaking Bad (2008-2013)&quot;</span>
+<span class="c1">// 期待する出力: TvShow(&quot;Breaking Bad&quot;, 2008, 2013)</span>
+</code></pre></div>
+<h4 id="_1">例外を使う方法（問題あり）<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">parseShow</span><span class="p">(</span><span class="n">rawShow</span><span class="p">:</span><span class="w"> </span><span class="nc">String</span><span class="p">):</span><span class="w"> </span><span class="nc">TvShow</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">val</span><span class="w"> </span><span class="n">bracketOpen</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="n">rawShow</span><span class="p">.</span><span class="n">indexOf</span><span class="p">(</span><span class="sc">&#39;(&#39;</span><span class="p">)</span>
+<span class="w">  </span><span class="kd">val</span><span class="w"> </span><span class="n">bracketClose</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rawShow</span><span class="p">.</span><span class="n">indexOf</span><span class="p">(</span><span class="sc">&#39;)&#39;</span><span class="p">)</span>
+<span class="w">  </span><span class="kd">val</span><span class="w"> </span><span class="n">dash</span><span class="w">         </span><span class="o">=</span><span class="w"> </span><span class="n">rawShow</span><span class="p">.</span><span class="n">indexOf</span><span class="p">(</span><span class="sc">&#39;-&#39;</span><span class="p">)</span>
+
+<span class="w">  </span><span class="kd">val</span><span class="w"> </span><span class="n">name</span><span class="w">      </span><span class="o">=</span><span class="w"> </span><span class="n">rawShow</span><span class="p">.</span><span class="n">substring</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">bracketOpen</span><span class="p">).</span><span class="n">trim</span>
+<span class="w">  </span><span class="kd">val</span><span class="w"> </span><span class="n">yearStart</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rawShow</span><span class="p">.</span><span class="n">substring</span><span class="p">(</span><span class="n">bracketOpen</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">dash</span><span class="p">).</span><span class="n">toInt</span>
+<span class="w">  </span><span class="kd">val</span><span class="w"> </span><span class="n">yearEnd</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="n">rawShow</span><span class="p">.</span><span class="n">substring</span><span class="p">(</span><span class="n">dash</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">bracketClose</span><span class="p">).</span><span class="n">toInt</span>
+
+<span class="w">  </span><span class="nc">TvShow</span><span class="p">(</span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="n">yearStart</span><span class="p">,</span><span class="w"> </span><span class="n">yearEnd</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="c1">// 正常ケース</span>
+<span class="n">parseShow</span><span class="p">(</span><span class="s">&quot;Breaking Bad (2008-2013)&quot;</span><span class="p">)</span><span class="w">  </span><span class="c1">// TvShow(&quot;Breaking Bad&quot;, 2008, 2013)</span>
+
+<span class="c1">// 異常ケース → 例外がスローされる!</span>
+<span class="n">parseShow</span><span class="p">(</span><span class="s">&quot;Chernobyl (2019)&quot;</span><span class="p">)</span><span class="w">           </span><span class="c1">// StringIndexOutOfBoundsException</span>
+<span class="n">parseShow</span><span class="p">(</span><span class="s">&quot;The Wire 2002-2008&quot;</span><span class="p">)</span><span class="w">         </span><span class="c1">// StringIndexOutOfBoundsException</span>
+</code></pre></div>
+<h4 id="option">Option を使う方法<a class="headerlink" href="#option" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">parseShow</span><span class="p">(</span><span class="n">rawShow</span><span class="p">:</span><span class="w"> </span><span class="nc">String</span><span class="p">):</span><span class="w"> </span><span class="nc">Option</span><span class="p">[</span><span class="nc">TvShow</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">for</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">name</span><span class="w">      </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">extractName</span><span class="p">(</span><span class="n">rawShow</span><span class="p">)</span>
+<span class="w">    </span><span class="n">yearStart</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">extractYearStart</span><span class="p">(</span><span class="n">rawShow</span><span class="p">)</span>
+<span class="w">    </span><span class="n">yearEnd</span><span class="w">   </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">extractYearEnd</span><span class="p">(</span><span class="n">rawShow</span><span class="p">)</span>
+<span class="w">  </span><span class="p">}</span><span class="w"> </span><span class="k">yield</span><span class="w"> </span><span class="nc">TvShow</span><span class="p">(</span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="n">yearStart</span><span class="p">,</span><span class="w"> </span><span class="n">yearEnd</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="c1">// 正常ケース</span>
+<span class="n">parseShow</span><span class="p">(</span><span class="s">&quot;Breaking Bad (2008-2013)&quot;</span><span class="p">)</span><span class="w">  </span><span class="c1">// Some(TvShow(&quot;Breaking Bad&quot;, 2008, 2013))</span>
+
+<span class="c1">// 異常ケース → None が返される（例外なし）</span>
+<span class="n">parseShow</span><span class="p">(</span><span class="s">&quot;The Wire 2002-2008&quot;</span><span class="p">)</span><span class="w">         </span><span class="c1">// None</span>
+</code></pre></div>
+<h3 id="64">6.4 小さな関数から組み立てる<a class="headerlink" href="#64" title="Permanent link">&para;</a></h3>
+<p>複雑なパース処理を小さな関数に分解します。</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// 名前を抽出</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">extractName</span><span class="p">(</span><span class="n">rawShow</span><span class="p">:</span><span class="w"> </span><span class="nc">String</span><span class="p">):</span><span class="w"> </span><span class="nc">Option</span><span class="p">[</span><span class="nc">String</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">val</span><span class="w"> </span><span class="n">bracketOpen</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rawShow</span><span class="p">.</span><span class="n">indexOf</span><span class="p">(</span><span class="sc">&#39;(&#39;</span><span class="p">)</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">bracketOpen</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="nc">Some</span><span class="p">(</span><span class="n">rawShow</span><span class="p">.</span><span class="n">substring</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">bracketOpen</span><span class="p">).</span><span class="n">trim</span><span class="p">)</span>
+<span class="w">  </span><span class="k">else</span><span class="w"> </span><span class="nc">None</span>
+<span class="p">}</span>
+
+<span class="c1">// 開始年を抽出</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">extractYearStart</span><span class="p">(</span><span class="n">rawShow</span><span class="p">:</span><span class="w"> </span><span class="nc">String</span><span class="p">):</span><span class="w"> </span><span class="nc">Option</span><span class="p">[</span><span class="nc">Int</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">val</span><span class="w"> </span><span class="n">bracketOpen</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rawShow</span><span class="p">.</span><span class="n">indexOf</span><span class="p">(</span><span class="sc">&#39;(&#39;</span><span class="p">)</span>
+<span class="w">  </span><span class="kd">val</span><span class="w"> </span><span class="n">dash</span><span class="w">        </span><span class="o">=</span><span class="w"> </span><span class="n">rawShow</span><span class="p">.</span><span class="n">indexOf</span><span class="p">(</span><span class="sc">&#39;-&#39;</span><span class="p">)</span>
+<span class="w">  </span><span class="k">for</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">yearStr</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">bracketOpen</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="o">-</span><span class="mi">1</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">dash</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="n">bracketOpen</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span>
+<span class="w">                 </span><span class="nc">Some</span><span class="p">(</span><span class="n">rawShow</span><span class="p">.</span><span class="n">substring</span><span class="p">(</span><span class="n">bracketOpen</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">dash</span><span class="p">))</span>
+<span class="w">               </span><span class="k">else</span><span class="w"> </span><span class="nc">None</span>
+<span class="w">    </span><span class="n">year</span><span class="w">    </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">yearStr</span><span class="p">.</span><span class="n">toIntOption</span>
+<span class="w">  </span><span class="p">}</span><span class="w"> </span><span class="k">yield</span><span class="w"> </span><span class="n">year</span>
+<span class="p">}</span>
+
+<span class="c1">// 終了年を抽出</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">extractYearEnd</span><span class="p">(</span><span class="n">rawShow</span><span class="p">:</span><span class="w"> </span><span class="nc">String</span><span class="p">):</span><span class="w"> </span><span class="nc">Option</span><span class="p">[</span><span class="nc">Int</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">val</span><span class="w"> </span><span class="n">dash</span><span class="w">         </span><span class="o">=</span><span class="w"> </span><span class="n">rawShow</span><span class="p">.</span><span class="n">indexOf</span><span class="p">(</span><span class="sc">&#39;-&#39;</span><span class="p">)</span>
+<span class="w">  </span><span class="kd">val</span><span class="w"> </span><span class="n">bracketClose</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rawShow</span><span class="p">.</span><span class="n">indexOf</span><span class="p">(</span><span class="sc">&#39;)&#39;</span><span class="p">)</span>
+<span class="w">  </span><span class="k">for</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">yearStr</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">dash</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="o">-</span><span class="mi">1</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">bracketClose</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="n">dash</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span>
+<span class="w">                 </span><span class="nc">Some</span><span class="p">(</span><span class="n">rawShow</span><span class="p">.</span><span class="n">substring</span><span class="p">(</span><span class="n">dash</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">bracketClose</span><span class="p">))</span>
+<span class="w">               </span><span class="k">else</span><span class="w"> </span><span class="nc">None</span>
+<span class="w">    </span><span class="n">year</span><span class="w">    </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">yearStr</span><span class="p">.</span><span class="n">toIntOption</span>
+<span class="w">  </span><span class="p">}</span><span class="w"> </span><span class="k">yield</span><span class="w"> </span><span class="n">year</span>
+<span class="p">}</span>
+</code></pre></div>
+<p><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiBjb250ZW50U3R5bGVUeXBlPSJ0ZXh0L2NzcyIgZGF0YS1kaWFncmFtLXR5cGU9IkRFU0NSSVBUSU9OIiBoZWlnaHQ9IjM1MHB4IiBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSJub25lIiBzdHlsZT0id2lkdGg6NTQ2cHg7aGVpZ2h0OjM1MHB4O2JhY2tncm91bmQ6I0ZGRkZGRjsiIHZlcnNpb249IjEuMSIgdmlld0JveD0iMCAwIDU0NiAzNTAiIHdpZHRoPSI1NDZweCIgem9vbUFuZFBhbj0ibWFnbmlmeSI+PGRlZnMvPjxnPjwhLS1jbHVzdGVyID8/Pz8/Pz8/LS0+PGcgY2xhc3M9ImNsdXN0ZXIiIGRhdGEtZW50aXR5PSIuLi4uLi4uLiIgZGF0YS1zb3VyY2UtbGluZT0iMyIgZGF0YS11aWQ9ImVudDAwMDIiIGlkPSJjbHVzdGVyXy4uLi4uLi4uIj48cmVjdCBmaWxsPSIjRkZGRkZGIiBoZWlnaHQ9IjMzMi44OSIgcng9IjIuNSIgcnk9IjIuNSIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxOyIgd2lkdGg9IjUyOCIgeD0iMTIiIHk9IjEyIi8+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9IlZlcmRhbmEiIGZvbnQtc2l6ZT0iMTQiIGZvbnQtd2VpZ2h0PSJib2xkIiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjExMS45OTk1IiB4PSIyMjAuMDAwMiIgeT0iMjYuOTk1MSI+JiMxMjQ5NzsmIzEyNTQwOyYjMTI0NzM7JiMyMDk2NjsmIzI5NzAyOyYjMTIzOTg7JiMyMDk5ODsmIzM1Mjk5OzwvdGV4dD48L2c+PCEtLWNsdXN0ZXIgZnVuY3MtLT48ZyBjbGFzcz0iY2x1c3RlciIgZGF0YS1lbnRpdHk9ImZ1bmNzIiBkYXRhLXNvdXJjZS1saW5lPSI2IiBkYXRhLXVpZD0iZW50MDAwNCIgaWQ9ImNsdXN0ZXJfZnVuY3MiPjxyZWN0IGZpbGw9IiNGRkZGRkYiIGhlaWdodD0iMTg4LjU5IiByeD0iMi41IiByeT0iMi41IiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE7IiB3aWR0aD0iMzQ5IiB4PSI0NCIgeT0iMTI0LjMiLz48dGV4dCBmaWxsPSIjMDAwMDAwIiBmb250LWZhbWlseT0iVmVyZGFuYSIgZm9udC1zaXplPSIxNCIgZm9udC13ZWlnaHQ9ImJvbGQiIGxlbmd0aEFkanVzdD0ic3BhY2luZyIgdGV4dExlbmd0aD0iNjkuOTk5NyIgeD0iMTgzLjUwMDIiIHk9IjEzOS4yOTUxIj4mIzIzNTY3OyYjMTIzNzM7JiMxMjM5NDsmIzM4MzA2OyYjMjU5Njg7PC90ZXh0PjwvZz48IS0tZW50aXR5IGlucHV0LS0+PGcgY2xhc3M9ImVudGl0eSIgZGF0YS1lbnRpdHk9ImlucHV0IiBkYXRhLXNvdXJjZS1saW5lPSI0IiBkYXRhLXVpZD0iZW50MDAwMyIgaWQ9ImVudGl0eV9pbnB1dCI+PHJlY3QgZmlsbD0iI0ZGRkZGRiIgaGVpZ2h0PSIyMi4yOTY5IiByeD0iMi41IiByeT0iMi41IiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE7IiB3aWR0aD0iMjI3LjgyNjIiIHg9IjI3MS4wOSIgeT0iNDciLz48dGV4dCBmaWxsPSIjMDAwMDAwIiBmb250LWZhbWlseT0iVmVyZGFuYSIgZm9udC1zaXplPSIxNCIgbGVuZ3RoQWRqdXN0PSJzcGFjaW5nIiB0ZXh0TGVuZ3RoPSIyMDcuODI2MiIgeD0iMjgxLjA5IiB5PSI2Mi45OTUxIj5cIkJyZWFraW5nIEJhZCAoMjAwOC0yMDEzKVwiPC90ZXh0PjwvZz48IS0tZW50aXR5IG91dHB1dC0tPjxnIGNsYXNzPSJlbnRpdHkiIGRhdGEtZW50aXR5PSJvdXRwdXQiIGRhdGEtc291cmNlLWxpbmU9IjEyIiBkYXRhLXVpZD0iZW50MDAwOCIgaWQ9ImVudGl0eV9vdXRwdXQiPjxyZWN0IGZpbGw9IiNGRkZGRkYiIGhlaWdodD0iMjIuMjk2OSIgcng9IjIuNSIgcnk9IjIuNSIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxOyIgd2lkdGg9Ijc0LjYxMjMiIHg9IjQxNi42OSIgeT0iMjY2LjU5Ii8+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9IlZlcmRhbmEiIGZvbnQtc2l6ZT0iMTQiIGxlbmd0aEFkanVzdD0ic3BhY2luZyIgdGV4dExlbmd0aD0iNTQuNjEyMyIgeD0iNDI2LjY5IiB5PSIyODIuNTg1MSI+VHZTaG93PC90ZXh0PjwvZz48IS0tZW50aXR5IG5hbWUtLT48ZyBjbGFzcz0iZW50aXR5IiBkYXRhLWVudGl0eT0ibmFtZSIgZGF0YS1zb3VyY2UtbGluZT0iNyIgZGF0YS11aWQ9ImVudDAwMDUiIGlkPSJlbnRpdHlfbmFtZSI+PHJlY3QgZmlsbD0iI0ZGRkZGRiIgaGVpZ2h0PSIyMi4yOTY5IiByeD0iMi41IiByeT0iMi41IiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE7IiB3aWR0aD0iMTExLjIxMTkiIHg9IjY4LjM5IiB5PSIxNjcuMyIvPjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJWZXJkYW5hIiBmb250LXNpemU9IjE0IiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjkxLjIxMTkiIHg9Ijc4LjM5IiB5PSIxODMuMjk1MSI+ZXh0cmFjdE5hbWU8L3RleHQ+PC9nPjwhLS1lbnRpdHkgc3RhcnQtLT48ZyBjbGFzcz0iZW50aXR5IiBkYXRhLWVudGl0eT0ic3RhcnQiIGRhdGEtc291cmNlLWxpbmU9IjgiIGRhdGEtdWlkPSJlbnQwMDA2IiBpZD0iZW50aXR5X3N0YXJ0Ij48cmVjdCBmaWxsPSIjRkZGRkZGIiBoZWlnaHQ9IjIyLjI5NjkiIHJ4PSIyLjUiIHJ5PSIyLjUiIHN0eWxlPSJzdHJva2U6IzAwMDAwMDtzdHJva2Utd2lkdGg6MTsiIHdpZHRoPSIxMzUuNjA5NCIgeD0iMjE0LjIiIHk9IjE2Ny4zIi8+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9IlZlcmRhbmEiIGZvbnQtc2l6ZT0iMTQiIGxlbmd0aEFkanVzdD0ic3BhY2luZyIgdGV4dExlbmd0aD0iMTE1LjYwOTQiIHg9IjIyNC4yIiB5PSIxODMuMjk1MSI+ZXh0cmFjdFllYXJTdGFydDwvdGV4dD48L2c+PCEtLWVudGl0eSBlbmQtLT48ZyBjbGFzcz0iZW50aXR5IiBkYXRhLWVudGl0eT0iZW5kIiBkYXRhLXNvdXJjZS1saW5lPSI5IiBkYXRhLXVpZD0iZW50MDAwNyIgaWQ9ImVudGl0eV9lbmQiPjxyZWN0IGZpbGw9IiNGRkZGRkYiIGhlaWdodD0iMjIuMjk2OSIgcng9IjIuNSIgcnk9IjIuNSIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxOyIgd2lkdGg9IjEyOC4wMTQ2IiB4PSI2Ny45OSIgeT0iMjY2LjU5Ii8+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9IlZlcmRhbmEiIGZvbnQtc2l6ZT0iMTQiIGxlbmd0aEFkanVzdD0ic3BhY2luZyIgdGV4dExlbmd0aD0iMTA4LjAxNDYiIHg9Ijc3Ljk5IiB5PSIyODIuNTg1MSI+ZXh0cmFjdFllYXJFbmQ8L3RleHQ+PC9nPjwhLS1saW5rIGlucHV0IHRvIGZ1bmNzLS0+PGcgY2xhc3M9ImxpbmsiIGRhdGEtZW50aXR5LTE9ImlucHV0IiBkYXRhLWVudGl0eS0yPSJmdW5jcyIgZGF0YS1zb3VyY2UtbGluZT0iMTQiIGRhdGEtdWlkPSJsbms5IiBpZD0ibGlua19pbnB1dF9mdW5jcyI+PHBhdGggZD0iTTM4NSw2OS42NSBDMzg1LDc2Ljc3NSAzODUsODYuOTIxMiAzODUsOTguMTcwMyBDMzg1LDEwMy43OTQ4IDM4NSwxMDkuNjk1MSAzODUsMTE1LjYzMTIgQzM4NSwxMTcuMTE1MiAzODUsMTE4LjYwMTUgMzg1LDEyMC4wODYzIEMzODUsMTIwLjgyODcgMzg1LDEyMS41NzA3IDM4NSwxMjIuMzExOSBDMzg1LDEyMi42ODI0IDM4NSwxMjMuMDUyOCAzODUsMTIzLjQyMjkgQzM4NSwxMjMuNjA4IDM4NSwxMTcuNzkzIDM4NSwxMTcuOTc3OSIgZmlsbD0ibm9uZSIgaWQ9ImlucHV0LXRvLWZ1bmNzIiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE7Ii8+PHBvbHlnb24gZmlsbD0iIzAwMDAwMCIgcG9pbnRzPSIzODUsMTIzLjk3NzksMzg5LDExNC45Nzc5LDM4NSwxMTguOTc3OSwzODEsMTE0Ljk3NzksMzg1LDEyMy45Nzc5IiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE7Ii8+PC9nPjwhLS1saW5rIGZ1bmNzIHRvIG91dHB1dC0tPjxnIGNsYXNzPSJsaW5rIiBkYXRhLWVudGl0eS0xPSJmdW5jcyIgZGF0YS1lbnRpdHktMj0ib3V0cHV0IiBkYXRhLXNvdXJjZS1saW5lPSIxNSIgZGF0YS11aWQ9ImxuazEwIiBpZD0ibGlua19mdW5jc19vdXRwdXQiPjxwYXRoIGQ9Ik0zOTMuMTE1OCwxOTAuODg4OSBDMzkzLjE4NjUsMTkwLjk4ODYgMzkzLjI1NzYsMTkxLjA4ODkgMzkzLjMyOTEsMTkxLjE4OTYgQzM5My40NzIsMTkxLjM5MTIgMzkzLjYxNjQsMTkxLjU5NDcgMzkzLjc2MjIsMTkxLjgwMDMgQzM5NC4wNTM4LDE5Mi4yMTE1IDM5NC4zNTExLDE5Mi42MzA3IDM5NC42NTM4LDE5My4wNTc1IEMzOTUuMjU5MywxOTMuOTExMiAzOTUuODg2NCwxOTQuNzk1NiAzOTYuNTMzNCwxOTUuNzA3OCBDMzk3LjgyNzIsMTk3LjUzMjIgMzk5LjIwMDEsMTk5LjQ2OCA0MDAuNjM1OCwyMDEuNDkyNyBDNDAzLjUwNzMsMjA1LjU0MTkgNDA2LjYzMDYsMjA5Ljk0NjMgNDA5Ljg3NzUsMjE0LjUyNSBDNDIyLjg2NSwyMzIuODQgNDM0LjM1OTMsMjQ5LjA1MDcgNDQzLjA5OTMsMjYxLjM3NTciIGZpbGw9Im5vbmUiIGlkPSJmdW5jcy10by1vdXRwdXQiIHN0eWxlPSJzdHJva2U6IzAwMDAwMDtzdHJva2Utd2lkdGg6MTsiLz48cG9seWdvbiBmaWxsPSIjMDAwMDAwIiBwb2ludHM9IjQ0Ni41NywyNjYuMjcsNDQ0LjYyNjgsMjU2LjYxNDcsNDQzLjY3NzgsMjYyLjE5MTQsNDM4LjEwMTEsMjYxLjI0MjMsNDQ2LjU3LDI2Ni4yNyIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxOyIvPjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJWZXJkYW5hIiBmb250LXNpemU9IjEzIiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjExMy4wMDc0IiB4PSI0MjQuNjMiIHk9IjIzMi42NTY5Ij5mb3IgJiMyMDg2OTsmIzIxMjUzOyYjMzQ5MjA7JiMzNTM1MjsmIzEyMzkxOyYjMjE1MTI7JiMyNTEwNDs8L3RleHQ+PC9nPjwhLS1TUkM9W0tvcDlJQ3JETElaOElTcEN1LThnSWFxa0lTbkJwcWJMSzdoU0ZGNW55dng3SkprVmpZenhGZzdqU1VFd2ZucmpCdk9sTGJBZXZhZkVCNGZISzhmSFNZZkFKU3BFcDRqTlM0ZkNLVDBtQ1oybXEzS29DM0pNWjU1SUthV2lMaVpDQW9XakdKN3F3T1ItbnVySjdwVWtVWmJqcVJFZjZ5MmdxYWhwYWVsWFhnUE1iMUdiOWZWdTlVUWNXY05wVzBuS2dTWktuQUJXYWlJWTRoMXlDT1k1Z1MwckJtS2lkUGdObWJOQjFQS0ZBR2xFbzJ5N1ktVU5iZTNUMWRRWVdnd2s3U0dQTjEzN1dGV0c1R2ZNMmNkdkhHZkZzcmdWemhJLU1CWlluT2VQWm5rTkZ2dEd5UW5aMGJTajAwMDBdLS0+PC9nPjwvc3ZnPg==" class="uml" alt="uml diagram" title="" /></p>
+<h3 id="65-orelse">6.5 orElse によるフォールバック<a class="headerlink" href="#65-orelse" title="Permanent link">&para;</a></h3>
+<p><code>orElse</code> を使って、最初の Option が <code>None</code> の場合に代替を試すことができます。</p>
+<div class="highlight"><pre><span></span><code><span class="kd">val</span><span class="w"> </span><span class="n">seven</span><span class="p">:</span><span class="w"> </span><span class="nc">Option</span><span class="p">[</span><span class="nc">Int</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Some</span><span class="p">(</span><span class="mi">7</span><span class="p">)</span>
+<span class="kd">val</span><span class="w"> </span><span class="n">eight</span><span class="p">:</span><span class="w"> </span><span class="nc">Option</span><span class="p">[</span><span class="nc">Int</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Some</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span>
+<span class="kd">val</span><span class="w"> </span><span class="n">none</span><span class="p">:</span><span class="w"> </span><span class="nc">Option</span><span class="p">[</span><span class="nc">Int</span><span class="p">]</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="nc">None</span>
+
+<span class="n">seven</span><span class="p">.</span><span class="n">orElse</span><span class="p">(</span><span class="n">eight</span><span class="p">)</span><span class="w">  </span><span class="c1">// Some(7) - 最初が Some なのでそのまま</span>
+<span class="n">none</span><span class="p">.</span><span class="n">orElse</span><span class="p">(</span><span class="n">eight</span><span class="p">)</span><span class="w">   </span><span class="c1">// Some(8) - 最初が None なので代替を使用</span>
+<span class="n">seven</span><span class="p">.</span><span class="n">orElse</span><span class="p">(</span><span class="n">none</span><span class="p">)</span><span class="w">   </span><span class="c1">// Some(7)</span>
+<span class="n">none</span><span class="p">.</span><span class="n">orElse</span><span class="p">(</span><span class="n">none</span><span class="p">)</span><span class="w">    </span><span class="c1">// None</span>
+</code></pre></div>
+<h4 id="_2">単年の番組に対応する<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h4>
+<p>「Chernobyl (2019)」のような単年の番組をパースできるようにします。</p>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">extractSingleYear</span><span class="p">(</span><span class="n">rawShow</span><span class="p">:</span><span class="w"> </span><span class="nc">String</span><span class="p">):</span><span class="w"> </span><span class="nc">Option</span><span class="p">[</span><span class="nc">Int</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">val</span><span class="w"> </span><span class="n">dash</span><span class="w">         </span><span class="o">=</span><span class="w"> </span><span class="n">rawShow</span><span class="p">.</span><span class="n">indexOf</span><span class="p">(</span><span class="sc">&#39;-&#39;</span><span class="p">)</span>
+<span class="w">  </span><span class="kd">val</span><span class="w"> </span><span class="n">bracketOpen</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="n">rawShow</span><span class="p">.</span><span class="n">indexOf</span><span class="p">(</span><span class="sc">&#39;(&#39;</span><span class="p">)</span>
+<span class="w">  </span><span class="kd">val</span><span class="w"> </span><span class="n">bracketClose</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rawShow</span><span class="p">.</span><span class="n">indexOf</span><span class="p">(</span><span class="sc">&#39;)&#39;</span><span class="p">)</span>
+<span class="w">  </span><span class="k">for</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">yearStr</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">dash</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="o">-</span><span class="mi">1</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">bracketOpen</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="o">-</span><span class="mi">1</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">bracketClose</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="n">bracketOpen</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span>
+<span class="w">                 </span><span class="nc">Some</span><span class="p">(</span><span class="n">rawShow</span><span class="p">.</span><span class="n">substring</span><span class="p">(</span><span class="n">bracketOpen</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">bracketClose</span><span class="p">))</span>
+<span class="w">               </span><span class="k">else</span><span class="w"> </span><span class="nc">None</span>
+<span class="w">    </span><span class="n">year</span><span class="w">    </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">yearStr</span><span class="p">.</span><span class="n">toIntOption</span>
+<span class="w">  </span><span class="p">}</span><span class="w"> </span><span class="k">yield</span><span class="w"> </span><span class="n">year</span>
+<span class="p">}</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">parseShow</span><span class="p">(</span><span class="n">rawShow</span><span class="p">:</span><span class="w"> </span><span class="nc">String</span><span class="p">):</span><span class="w"> </span><span class="nc">Option</span><span class="p">[</span><span class="nc">TvShow</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">for</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">name</span><span class="w">      </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">extractName</span><span class="p">(</span><span class="n">rawShow</span><span class="p">)</span>
+<span class="w">    </span><span class="n">yearStart</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">extractYearStart</span><span class="p">(</span><span class="n">rawShow</span><span class="p">).</span><span class="n">orElse</span><span class="p">(</span><span class="n">extractSingleYear</span><span class="p">(</span><span class="n">rawShow</span><span class="p">))</span>
+<span class="w">    </span><span class="n">yearEnd</span><span class="w">   </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">extractYearEnd</span><span class="p">(</span><span class="n">rawShow</span><span class="p">).</span><span class="n">orElse</span><span class="p">(</span><span class="n">extractSingleYear</span><span class="p">(</span><span class="n">rawShow</span><span class="p">))</span>
+<span class="w">  </span><span class="p">}</span><span class="w"> </span><span class="k">yield</span><span class="w"> </span><span class="nc">TvShow</span><span class="p">(</span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="n">yearStart</span><span class="p">,</span><span class="w"> </span><span class="n">yearEnd</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="c1">// これで単年の番組もパースできる</span>
+<span class="n">parseShow</span><span class="p">(</span><span class="s">&quot;Chernobyl (2019)&quot;</span><span class="p">)</span><span class="w">  </span><span class="c1">// Some(TvShow(&quot;Chernobyl&quot;, 2019, 2019))</span>
+</code></pre></div>
+<p><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiBjb250ZW50U3R5bGVUeXBlPSJ0ZXh0L2NzcyIgZGF0YS1kaWFncmFtLXR5cGU9IkRFU0NSSVBUSU9OIiBoZWlnaHQ9IjI3M3B4IiBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSJub25lIiBzdHlsZT0id2lkdGg6NDE5cHg7aGVpZ2h0OjI3M3B4O2JhY2tncm91bmQ6I0ZGRkZGRjsiIHZlcnNpb249IjEuMSIgdmlld0JveD0iMCAwIDQxOSAyNzMiIHdpZHRoPSI0MTlweCIgem9vbUFuZFBhbj0ibWFnbmlmeSI+PGRlZnMvPjxnPjwhLS1jbHVzdGVyIG9yRWxzZSA/Pz8/LS0+PGcgY2xhc3M9ImNsdXN0ZXIiIGRhdGEtZW50aXR5PSJvckVsc2UgLi4uLiIgZGF0YS1zb3VyY2UtbGluZT0iMyIgZGF0YS11aWQ9ImVudDAwMDIiIGlkPSJjbHVzdGVyX29yRWxzZSAuLi4uIj48cmVjdCBmaWxsPSIjRkZGRkZGIiBoZWlnaHQ9IjI1NS44OSIgcng9IjIuNSIgcnk9IjIuNSIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxOyIgd2lkdGg9IjQwMSIgeD0iMTIiIHk9IjEyIi8+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9IlZlcmRhbmEiIGZvbnQtc2l6ZT0iMTQiIGZvbnQtd2VpZ2h0PSJib2xkIiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjEwOS41ODY3IiB4PSIxNTcuNzA2NyIgeT0iMjYuOTk1MSI+b3JFbHNlICYjMTIzOTg7JiMxMjUwMTsmIzEyNTI1OyYjMTI1NDA7PC90ZXh0PjwvZz48IS0tZW50aXR5IGZpcnN0LS0+PGcgY2xhc3M9ImVudGl0eSIgZGF0YS1lbnRpdHk9ImZpcnN0IiBkYXRhLXNvdXJjZS1saW5lPSI0IiBkYXRhLXVpZD0iZW50MDAwMyIgaWQ9ImVudGl0eV9maXJzdCI+PHJlY3QgZmlsbD0iI0ZGRkZGRiIgaGVpZ2h0PSIyMi4yOTY5IiByeD0iMi41IiByeT0iMi41IiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE7IiB3aWR0aD0iMjEwLjA5MzgiIHg9IjE0Ny45NSIgeT0iNDciLz48dGV4dCBmaWxsPSIjMDAwMDAwIiBmb250LWZhbWlseT0iVmVyZGFuYSIgZm9udC1zaXplPSIxNCIgbGVuZ3RoQWRqdXN0PSJzcGFjaW5nIiB0ZXh0TGVuZ3RoPSIxOTAuMDkzOCIgeD0iMTU3Ljk1IiB5PSI2Mi45OTUxIj5leHRyYWN0WWVhclN0YXJ0KHJhd1Nob3cpPC90ZXh0PjwvZz48IS0tZW50aXR5IHNlY29uZC0tPjxnIGNsYXNzPSJlbnRpdHkiIGRhdGEtZW50aXR5PSJzZWNvbmQiIGRhdGEtc291cmNlLWxpbmU9IjUiIGRhdGEtdWlkPSJlbnQwMDA0IiBpZD0iZW50aXR5X3NlY29uZCI+PHJlY3QgZmlsbD0iI0ZGRkZGRiIgaGVpZ2h0PSIyMi4yOTY5IiByeD0iMi41IiByeT0iMi41IiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE7IiB3aWR0aD0iMjE4LjkzMjYiIHg9IjI3LjUzIiB5PSIxNDYuMyIvPjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJWZXJkYW5hIiBmb250LXNpemU9IjE0IiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjE5OC45MzI2IiB4PSIzNy41MyIgeT0iMTYyLjI5NTEiPmV4dHJhY3RTaW5nbGVZZWFyKHJhd1Nob3cpPC90ZXh0PjwvZz48IS0tZW50aXR5IHJlc3VsdC0tPjxnIGNsYXNzPSJlbnRpdHkiIGRhdGEtZW50aXR5PSJyZXN1bHQiIGRhdGEtc291cmNlLWxpbmU9IjYiIGRhdGEtdWlkPSJlbnQwMDA1IiBpZD0iZW50aXR5X3Jlc3VsdCI+PHJlY3QgZmlsbD0iI0ZGRkZGRiIgaGVpZ2h0PSIyMi4yOTY5IiByeD0iMi41IiByeT0iMi41IiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE7IiB3aWR0aD0iNDcuOTk5OSIgeD0iMjAzIiB5PSIyMjkuNTkiLz48dGV4dCBmaWxsPSIjMDAwMDAwIiBmb250LWZhbWlseT0iVmVyZGFuYSIgZm9udC1zaXplPSIxNCIgbGVuZ3RoQWRqdXN0PSJzcGFjaW5nIiB0ZXh0TGVuZ3RoPSIyNy45OTk5IiB4PSIyMTMiIHk9IjI0NS41ODUxIj4mIzMyMDgwOyYjMjY1MjQ7PC90ZXh0PjwvZz48IS0tbGluayBmaXJzdCB0byByZXN1bHQtLT48ZyBjbGFzcz0ibGluayIgZGF0YS1lbnRpdHktMT0iZmlyc3QiIGRhdGEtZW50aXR5LTI9InJlc3VsdCIgZGF0YS1zb3VyY2UtbGluZT0iOCIgZGF0YS11aWQ9ImxuazYiIGlkPSJsaW5rX2ZpcnN0X3Jlc3VsdCI+PHBhdGggZD0iTTI2Ni4zMiw2OS41IEMyNzQuNTcsNzYuODIgMjg0LjQ1LDg3LjQgMjg5LDk5LjMgQzI5MS43LDEwNi4zNSAyOTAuNjcsMTA4LjkzIDI4OSwxMTYuMyBDMjc4Ljc3LDE2MS40NCAyNTIuMTI4OSwyMDMuNzQyNCAyMzcuOTY4OSwyMjQuMjUyNCIgZmlsbD0ibm9uZSIgaWQ9ImZpcnN0LXRvLXJlc3VsdCIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxOyIvPjxwb2x5Z29uIGZpbGw9IiMwMDAwMDAiIHBvaW50cz0iMjM0LjU2LDIyOS4xOSwyNDIuOTY1LDIyNC4wNTYyLDIzNy40MDA3LDIyNS4wNzU0LDIzNi4zODE2LDIxOS41MTExLDIzNC41NiwyMjkuMTkiIHN0eWxlPSJzdHJva2U6IzAwMDAwMDtzdHJva2Utd2lkdGg6MTsiLz48dGV4dCBmaWxsPSIjMDAwMDAwIiBmb250LWZhbWlseT0iVmVyZGFuYSIgZm9udC1zaXplPSIxMyIgbGVuZ3RoQWRqdXN0PSJzcGFjaW5nIiB0ZXh0TGVuZ3RoPSI3OS45OTk2IiB4PSIyNzkuOTIiIHk9IjE2Mi4wMDY5Ij5Tb21lICYjMTIzOTg7JiMyMjU4MDsmIzIxNTEyOzwvdGV4dD48L2c+PCEtLWxpbmsgZmlyc3QgdG8gc2Vjb25kLS0+PGcgY2xhc3M9ImxpbmsiIGRhdGEtZW50aXR5LTE9ImZpcnN0IiBkYXRhLWVudGl0eS0yPSJzZWNvbmQiIGRhdGEtc291cmNlLWxpbmU9IjkiIGRhdGEtdWlkPSJsbms3IiBpZD0ibGlua19maXJzdF9zZWNvbmQiPjxwYXRoIGQ9Ik0yNDAuNTksNjkuNTYgQzIxOC4zOCw4OC4xOSAxNzYuNjY3LDEyMy4xNzQyIDE1NC4yNzcsMTQxLjk1NDIiIGZpbGw9Im5vbmUiIGlkPSJmaXJzdC10by1zZWNvbmQiIHN0eWxlPSJzdHJva2U6IzAwMDAwMDtzdHJva2Utd2lkdGg6MTsiLz48cG9seWdvbiBmaWxsPSIjMDAwMDAwIiBwb2ludHM9IjE0OS42OCwxNDUuODEsMTU5LjE0NjEsMTQzLjA5MDksMTUzLjUxMDgsMTQyLjU5NjgsMTU0LjAwNSwxMzYuOTYxNiwxNDkuNjgsMTQ1LjgxIiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE7Ii8+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9IlZlcmRhbmEiIGZvbnQtc2l6ZT0iMTMiIGxlbmd0aEFkanVzdD0ic3BhY2luZyIgdGV4dExlbmd0aD0iNzcuMDQ3OSIgeD0iMjAyLjk1IiB5PSIxMTIuMzY2OSI+Tm9uZSAmIzEyMzk4OyYjMjI1ODA7JiMyMTUxMjs8L3RleHQ+PC9nPjwhLS1saW5rIHNlY29uZCB0byByZXN1bHQtLT48ZyBjbGFzcz0ibGluayIgZGF0YS1lbnRpdHktMT0ic2Vjb25kIiBkYXRhLWVudGl0eS0yPSJyZXN1bHQiIGRhdGEtc291cmNlLWxpbmU9IjEwIiBkYXRhLXVpZD0ibG5rOCIgaWQ9Imxpbmtfc2Vjb25kX3Jlc3VsdCI+PHBhdGggZD0iTTE0OC43NywxNjkuMDcgQzE2Ni4wMSwxODQuNjUgMTkzLjUyNzMsMjA5LjUwODQgMjEwLjc3NzMsMjI1LjA4ODQiIGZpbGw9Im5vbmUiIGlkPSJzZWNvbmQtdG8tcmVzdWx0IiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE7Ii8+PHBvbHlnb24gZmlsbD0iIzAwMDAwMCIgcG9pbnRzPSIyMTUuMjMsMjI5LjExLDIxMS4yMzIsMjIwLjEwOTEsMjExLjUxOTQsMjI1Ljc1ODYsMjA1Ljg2OTksMjI2LjA0NiwyMTUuMjMsMjI5LjExIiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE7Ii8+PC9nPjwhLS1TUkM9W0tvcDlJQ3JETElaOElTcEN1LThnSWFxa0lTbkJwcWJMS0NlbFNpcWZKYkx1dEJaa1NWRktueXJoN3BWbEtMQWV2YWZFQjRmSEs0Z2pBMmJBSjJ3OUo0cWkyWXY5QjJoSEE0ZWkzeXg4QnpUS0thV2lMYVpCQjJla0dMS1BkMGFvNVFHVUxNYm5RZDktTldmS3hWRWo0dnhEY21DTUJxZWpCaXFmdVU4MjZ3TVdnc2k3NUw2bUtXWkVwbUt4dy1jMkJLeWRUMjJmVzlXNUxFNk5kdVVpMFlnRUM4SWg1VzAwXS0tPjwvZz48L3N2Zz4=" class="uml" alt="uml diagram" title="" /></p>
+<h3 id="66-option">6.6 Option の主要メソッド<a class="headerlink" href="#66-option" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>メソッド</th>
+<th>説明</th>
+<th>例</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>map</code></td>
+<td>値があれば変換</td>
+<td><code>Some(5).map(_ * 2)</code> → <code>Some(10)</code></td>
+</tr>
+<tr>
+<td><code>flatMap</code></td>
+<td>値があれば Option を返す関数を適用</td>
+<td><code>Some(5).flatMap(x =&gt; Some(x * 2))</code> → <code>Some(10)</code></td>
+</tr>
+<tr>
+<td><code>filter</code></td>
+<td>条件を満たさなければ None</td>
+<td><code>Some(5).filter(_ &gt; 10)</code> → <code>None</code></td>
+</tr>
+<tr>
+<td><code>orElse</code></td>
+<td>None なら代替を使用</td>
+<td><code>None.orElse(Some(5))</code> → <code>Some(5)</code></td>
+</tr>
+<tr>
+<td><code>getOrElse</code></td>
+<td>None ならデフォルト値</td>
+<td><code>None.getOrElse(0)</code> → <code>0</code></td>
+</tr>
+<tr>
+<td><code>toList</code></td>
+<td>List に変換</td>
+<td><code>Some(5).toList</code> → <code>List(5)</code></td>
+</tr>
+<tr>
+<td><code>toRight</code></td>
+<td>Either に変換</td>
+<td><code>Some(5).toRight("error")</code> → <code>Right(5)</code></td>
+</tr>
+</tbody>
+</table>
+<div class="highlight"><pre><span></span><code><span class="kd">val</span><span class="w"> </span><span class="n">year</span><span class="p">:</span><span class="w"> </span><span class="nc">Option</span><span class="p">[</span><span class="nc">Int</span><span class="p">]</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="nc">Some</span><span class="p">(</span><span class="mi">996</span><span class="p">)</span>
+<span class="kd">val</span><span class="w"> </span><span class="n">noYear</span><span class="p">:</span><span class="w"> </span><span class="nc">Option</span><span class="p">[</span><span class="nc">Int</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">None</span>
+
+<span class="c1">// map</span>
+<span class="n">year</span><span class="p">.</span><span class="n">map</span><span class="p">(</span><span class="n">_</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="w">    </span><span class="c1">// Some(1992)</span>
+<span class="n">noYear</span><span class="p">.</span><span class="n">map</span><span class="p">(</span><span class="n">_</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="w">  </span><span class="c1">// None</span>
+
+<span class="c1">// flatMap</span>
+<span class="n">year</span><span class="p">.</span><span class="n">flatMap</span><span class="p">(</span><span class="n">y</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="nc">Some</span><span class="p">(</span><span class="n">y</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">2</span><span class="p">))</span><span class="w">    </span><span class="c1">// Some(1992)</span>
+<span class="n">noYear</span><span class="p">.</span><span class="n">flatMap</span><span class="p">(</span><span class="n">y</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="nc">Some</span><span class="p">(</span><span class="n">y</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">2</span><span class="p">))</span><span class="w">  </span><span class="c1">// None</span>
+
+<span class="c1">// filter</span>
+<span class="n">year</span><span class="p">.</span><span class="n">filter</span><span class="p">(</span><span class="n">_</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">2020</span><span class="p">)</span><span class="w">   </span><span class="c1">// Some(996)</span>
+<span class="n">year</span><span class="p">.</span><span class="n">filter</span><span class="p">(</span><span class="n">_</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">2020</span><span class="p">)</span><span class="w">   </span><span class="c1">// None</span>
+
+<span class="c1">// orElse</span>
+<span class="n">year</span><span class="p">.</span><span class="n">orElse</span><span class="p">(</span><span class="nc">Some</span><span class="p">(</span><span class="mi">2020</span><span class="p">))</span><span class="w">    </span><span class="c1">// Some(996)</span>
+<span class="n">noYear</span><span class="p">.</span><span class="n">orElse</span><span class="p">(</span><span class="nc">Some</span><span class="p">(</span><span class="mi">2020</span><span class="p">))</span><span class="w">  </span><span class="c1">// Some(2020)</span>
+</code></pre></div>
+<h3 id="67">6.7 エラーハンドリング戦略<a class="headerlink" href="#67" title="Permanent link">&para;</a></h3>
+<p>複数の要素をパースする場合、2つの戦略があります。</p>
+<p><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiBjb250ZW50U3R5bGVUeXBlPSJ0ZXh0L2NzcyIgZGF0YS1kaWFncmFtLXR5cGU9IkRFU0NSSVBUSU9OIiBoZWlnaHQ9IjI0MHB4IiBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSJub25lIiBzdHlsZT0id2lkdGg6ODkwcHg7aGVpZ2h0OjI0MHB4O2JhY2tncm91bmQ6I0ZGRkZGRjsiIHZlcnNpb249IjEuMSIgdmlld0JveD0iMCAwIDg5MCAyNDAiIHdpZHRoPSI4OTBweCIgem9vbUFuZFBhbj0ibWFnbmlmeSI+PGRlZnMvPjxnPjwhLS1jbHVzdGVyID8/Pz8/Pz8/Pz8/LS0+PGcgY2xhc3M9ImNsdXN0ZXIiIGRhdGEtZW50aXR5PSIuLi4uLi4uLi4uLiIgZGF0YS1zb3VyY2UtbGluZT0iMyIgZGF0YS11aWQ9ImVudDAwMDIiIGlkPSJjbHVzdGVyXy4uLi4uLi4uLi4uIj48cmVjdCBmaWxsPSIjRkZGRkZGIiBoZWlnaHQ9IjIyMi41OSIgcng9IjIuNSIgcnk9IjIuNSIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxOyIgd2lkdGg9Ijg3MiIgeD0iMTIiIHk9IjEyIi8+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9IlZlcmRhbmEiIGZvbnQtc2l6ZT0iMTQiIGZvbnQtd2VpZ2h0PSJib2xkIiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjE1My45OTkzIiB4PSIzNzEuMDAwMyIgeT0iMjYuOTk1MSI+JiMxMjQ1NjsmIzEyNTIxOyYjMTI1NDA7JiMxMjQ5NTsmIzEyNTMxOyYjMTI0ODk7JiMxMjUyMjsmIzEyNTMxOyYjMTI0NjQ7JiMyNTEyNjsmIzMwMDUzOzwvdGV4dD48L2c+PCEtLWNsdXN0ZXIgYmVzdC0tPjxnIGNsYXNzPSJjbHVzdGVyIiBkYXRhLWVudGl0eT0iYmVzdCIgZGF0YS1zb3VyY2UtbGluZT0iNCIgZGF0YS11aWQ9ImVudDAwMDMiIGlkPSJjbHVzdGVyX2Jlc3QiPjxyZWN0IGZpbGw9IiNGRkZGRkYiIGhlaWdodD0iMTU1LjU5IiByeD0iMi41IiByeT0iMi41IiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE7IiB3aWR0aD0iMzU5IiB4PSIzNiIgeT0iNTUiLz48dGV4dCBmaWxsPSIjMDAwMDAwIiBmb250LWZhbWlseT0iVmVyZGFuYSIgZm9udC1zaXplPSIxNCIgZm9udC13ZWlnaHQ9ImJvbGQiIGxlbmd0aEFkanVzdD0ic3BhY2luZyIgdGV4dExlbmd0aD0iMTE4Ljc2NzUiIHg9IjE1Ni4xMTYzIiB5PSI2OS45OTUxIj5CZXN0LWVmZm9ydCAmIzI1MTI2OyYjMzAwNTM7PC90ZXh0PjwvZz48IS0tY2x1c3RlciBhbGwtLT48ZyBjbGFzcz0iY2x1c3RlciIgZGF0YS1lbnRpdHk9ImFsbCIgZGF0YS1zb3VyY2UtbGluZT0iMTAiIGRhdGEtdWlkPSJlbnQwMDA3IiBpZD0iY2x1c3Rlcl9hbGwiPjxyZWN0IGZpbGw9IiNGRkZGRkYiIGhlaWdodD0iMTU1LjU5IiByeD0iMi41IiByeT0iMi41IiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE7IiB3aWR0aD0iNDQxIiB4PSI0MTkiIHk9IjU1Ii8+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9IlZlcmRhbmEiIGZvbnQtc2l6ZT0iMTQiIGZvbnQtd2VpZ2h0PSJib2xkIiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjE0Mi40ODEzIiB4PSI1NjguMjU5MyIgeT0iNjkuOTk1MSI+QWxsLW9yLW5vdGhpbmcgJiMyNTEyNjsmIzMwMDUzOzwvdGV4dD48L2c+PCEtLWVudGl0eSA/Pz8/Pz8/Pz8/Pz8tLT48ZyBjbGFzcz0iZW50aXR5IiBkYXRhLWVudGl0eT0iLi4uLi4uLi4uLi4uIiBkYXRhLXNvdXJjZS1saW5lPSI1IiBkYXRhLXVpZD0iZW50MDAwNCIgaWQ9ImVudGl0eV8uLi4uLi4uLi4uLi4iPjxyZWN0IGZpbGw9IiNGRkZGRkYiIGhlaWdodD0iMjIuMjk2OSIgcng9IjIuNSIgcnk9IjIuNSIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxOyIgd2lkdGg9IjE4Ny45OTkzIiB4PSI1MiIgeT0iOTAiLz48dGV4dCBmaWxsPSIjMDAwMDAwIiBmb250LWZhbWlseT0iVmVyZGFuYSIgZm9udC1zaXplPSIxNCIgbGVuZ3RoQWRqdXN0PSJzcGFjaW5nIiB0ZXh0TGVuZ3RoPSIxNjcuOTk5MyIgeD0iNjIiIHk9IjEwNS45OTUxIj4mIzEyNDk3OyYjMTI1NDA7JiMxMjQ3MzsmIzEyMzkxOyYjMTIzNjU7JiMxMjM4MzsmIzEyNDE4OyYjMTIzOTg7JiMxMjM4NDsmIzEyMzY5OyYjMzY4MjA7JiMxMjM3Nzs8L3RleHQ+PC9nPjwhLS1lbnRpdHkgPz8/Pz8/LS0+PGcgY2xhc3M9ImVudGl0eSIgZGF0YS1lbnRpdHk9Ii4uLi4uLiIgZGF0YS1zb3VyY2UtbGluZT0iNiIgZGF0YS11aWQ9ImVudDAwMDUiIGlkPSJlbnRpdHlfLi4uLi4uIj48cmVjdCBmaWxsPSIjRkZGRkZGIiBoZWlnaHQ9IjIyLjI5NjkiIHJ4PSIyLjUiIHJ5PSIyLjUiIHN0eWxlPSJzdHJva2U6IzAwMDAwMDtzdHJva2Utd2lkdGg6MTsiIHdpZHRoPSIxMDMuOTk5NiIgeD0iMjc1IiB5PSI5MCIvPjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJWZXJkYW5hIiBmb250LXNpemU9IjE0IiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjgzLjk5OTYiIHg9IjI4NSIgeT0iMTA1Ljk5NTEiPiYjMTI0NTY7JiMxMjUyMTsmIzEyNTQwOyYjMTIzOTk7JiMyODk2MTsmIzM1MjIyOzwvdGV4dD48L2c+PCEtLWVudGl0eSBMaXN0W1R2U2hvd10gPz8/LS0+PGcgY2xhc3M9ImVudGl0eSIgZGF0YS1lbnRpdHk9Ikxpc3QuVHZTaG93LiAuLi4iIGRhdGEtc291cmNlLWxpbmU9IjciIGRhdGEtdWlkPSJlbnQwMDA2IiBpZD0iZW50aXR5X0xpc3QuVHZTaG93LiAuLi4iPjxyZWN0IGZpbGw9IiNGRkZGRkYiIGhlaWdodD0iMjIuMjk2OSIgcng9IjIuNSIgcnk9IjIuNSIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxOyIgd2lkdGg9IjE1Ni40NTg4IiB4PSI2Ny43NyIgeT0iMTcyLjI5Ii8+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9IlZlcmRhbmEiIGZvbnQtc2l6ZT0iMTQiIGxlbmd0aEFkanVzdD0ic3BhY2luZyIgdGV4dExlbmd0aD0iMTM2LjQ1ODgiIHg9Ijc3Ljc3IiB5PSIxODguMjg1MSI+TGlzdFtUdlNob3ddICYjMTI0MzQ7JiMzNjgyMDsmIzEyMzc3OzwvdGV4dD48L2c+PCEtLWVudGl0eSA/Pz8/Pz8/Pz8/Pz8tLT48ZyBjbGFzcz0iZW50aXR5IiBkYXRhLWVudGl0eT0iLi4uLi4uLi4uLi4uIiBkYXRhLXNvdXJjZS1saW5lPSIxMSIgZGF0YS11aWQ9ImVudDAwMDgiIGlkPSJlbnRpdHlfLi4uLi4uLi4uLi4uIj48cmVjdCBmaWxsPSIjRkZGRkZGIiBoZWlnaHQ9IjIyLjI5NjkiIHJ4PSIyLjUiIHJ5PSIyLjUiIHN0eWxlPSJzdHJva2U6IzAwMDAwMDtzdHJva2Utd2lkdGg6MTsiIHdpZHRoPSIxODcuOTk5MyIgeD0iNDM1IiB5PSI5MCIvPjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJWZXJkYW5hIiBmb250LXNpemU9IjE0IiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjE2Ny45OTkzIiB4PSI0NDUiIHk9IjEwNS45OTUxIj4mIzIwODQwOyYjMzcwOTY7JiMyNTEwNDsmIzIxMTUxOyYjMTIzNzc7JiMxMjQyNzsmIzEyMzYzOyYjMTIyODk7JiMyMDg0MDsmIzM3MDk2OyYjMjI4MzM7JiMyNTk0Mzs8L3RleHQ+PC9nPjwhLS1lbnRpdHkgPz8/Pz8/Pz8/IE5vbmUtLT48ZyBjbGFzcz0iZW50aXR5IiBkYXRhLWVudGl0eT0iLi4uLi4uLi4uIE5vbmUiIGRhdGEtc291cmNlLWxpbmU9IjEyIiBkYXRhLXVpZD0iZW50MDAwOSIgaWQ9ImVudGl0eV8uLi4uLi4uLi4gTm9uZSI+PHJlY3QgZmlsbD0iI0ZGRkZGRiIgaGVpZ2h0PSIyMi4yOTY5IiByeD0iMi41IiByeT0iMi41IiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE7IiB3aWR0aD0iMTg2Ljk3NDEiIHg9IjY1Ny41MSIgeT0iOTAiLz48dGV4dCBmaWxsPSIjMDAwMDAwIiBmb250LWZhbWlseT0iVmVyZGFuYSIgZm9udC1zaXplPSIxNCIgbGVuZ3RoQWRqdXN0PSJzcGFjaW5nIiB0ZXh0TGVuZ3RoPSIxNjYuOTc0MSIgeD0iNjY3LjUxIiB5PSIxMDUuOTk1MSI+JiMxOTk2ODsmIzEyMzg4OyYjMTIzOTE7JiMxMjQxODsmIzIyODMzOyYjMjU5NDM7JiMxMjM3NTsmIzEyMzgzOyYjMTI0MjU7IE5vbmU8L3RleHQ+PC9nPjwhLS1lbnRpdHkgT3B0aW9uW0xpc3RbVHZTaG93XV0gPz8/LS0+PGcgY2xhc3M9ImVudGl0eSIgZGF0YS1lbnRpdHk9Ik9wdGlvbi5MaXN0LlR2U2hvdy4uIC4uLiIgZGF0YS1zb3VyY2UtbGluZT0iMTMiIGRhdGEtdWlkPSJlbnQwMDEwIiBpZD0iZW50aXR5X09wdGlvbi5MaXN0LlR2U2hvdy4uIC4uLiI+PHJlY3QgZmlsbD0iI0ZGRkZGRiIgaGVpZ2h0PSIyMi4yOTY5IiByeD0iMi41IiByeT0iMi41IiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE7IiB3aWR0aD0iMjE0LjEwNjMiIHg9IjQzNC45NSIgeT0iMTcyLjI5Ii8+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9IlZlcmRhbmEiIGZvbnQtc2l6ZT0iMTQiIGxlbmd0aEFkanVzdD0ic3BhY2luZyIgdGV4dExlbmd0aD0iMTk0LjEwNjMiIHg9IjQ0NC45NSIgeT0iMTg4LjI4NTEiPk9wdGlvbltMaXN0W1R2U2hvd11dICYjMTI0MzQ7JiMzNjgyMDsmIzEyMzc3OzwvdGV4dD48L2c+PCEtLVNSQz1bTk9fRklpRDA0OFZsVk9lcnpwbzRkYUtGVVlpVU9qcXNXSkxSYWFLRktrWmlBaEdNcU9nclVBZjJoVDYzVl8yWThGV21GdkZNanAyblI4ZFVYZmJsVmxGRGFsQnZCY1REdUdMWGZIQm5jbEIyWGszQ1dLdld4YzQtTzR2WE5jNndDMHo1ZVAtcHBjR3drN05PR1BiVnVSNW9VUnFrOHlLaXVDTGlFc19kT0NzQlRsOUNxb3kyekpsZTNkRzI2YTVocTJGZTZqSVZWTHcwaFhwQkJreEpxX0ptUFpRdmo5Rkw4NVJMcFJxRE4tdmxDVVhwa3pWd3V4eWlYMmlaRHZKQTN5OTZNU2FKT2M2SzdZTlY5aWF3UC1kbkEwLTF4ZTV3UURFeWR1dlZpaTdHdGxyd1F1RjZYUmhNeW1iZS1GajNid3Q5YTVqa2xRYTI2TFJCY2x5eU1weTBdLS0+PC9nPjwvc3ZnPg==" class="uml" alt="uml diagram" title="" /></p>
+<h4 id="best-effort">Best-effort 戦略<a class="headerlink" href="#best-effort" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">parseShows</span><span class="p">(</span><span class="n">rawShows</span><span class="p">:</span><span class="w"> </span><span class="nc">List</span><span class="p">[</span><span class="nc">String</span><span class="p">]):</span><span class="w"> </span><span class="nc">List</span><span class="p">[</span><span class="nc">TvShow</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">rawShows</span>
+<span class="w">    </span><span class="p">.</span><span class="n">map</span><span class="p">(</span><span class="n">parseShow</span><span class="p">)</span><span class="w">     </span><span class="c1">// List[Option[TvShow]]</span>
+<span class="w">    </span><span class="p">.</span><span class="n">map</span><span class="p">(</span><span class="n">_</span><span class="p">.</span><span class="n">toList</span><span class="p">)</span><span class="w">      </span><span class="c1">// List[List[TvShow]]</span>
+<span class="w">    </span><span class="p">.</span><span class="n">flatten</span><span class="w">            </span><span class="c1">// List[TvShow]</span>
+<span class="p">}</span>
+
+<span class="kd">val</span><span class="w"> </span><span class="n">rawShows</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">List</span><span class="p">(</span>
+<span class="w">  </span><span class="s">&quot;Breaking Bad (2008-2013)&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="s">&quot;The Wire 2002 2008&quot;</span><span class="p">,</span><span class="w">        </span><span class="c1">// 無効な形式</span>
+<span class="w">  </span><span class="s">&quot;Mad Men (2007-2015)&quot;</span>
+<span class="p">)</span>
+
+<span class="n">parseShows</span><span class="p">(</span><span class="n">rawShows</span><span class="p">)</span>
+<span class="c1">// List(TvShow(&quot;Breaking Bad&quot;, 2008, 2013), TvShow(&quot;Mad Men&quot;, 2007, 2015))</span>
+<span class="c1">// 無効なものは無視される</span>
+</code></pre></div>
+<h4 id="all-or-nothing">All-or-nothing 戦略<a class="headerlink" href="#all-or-nothing" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">addOrResign</span><span class="p">(</span>
+<span class="w">    </span><span class="n">parsedShows</span><span class="p">:</span><span class="w"> </span><span class="nc">Option</span><span class="p">[</span><span class="nc">List</span><span class="p">[</span><span class="nc">TvShow</span><span class="p">]],</span>
+<span class="w">    </span><span class="n">newParsedShow</span><span class="p">:</span><span class="w"> </span><span class="nc">Option</span><span class="p">[</span><span class="nc">TvShow</span><span class="p">]</span>
+<span class="p">):</span><span class="w"> </span><span class="nc">Option</span><span class="p">[</span><span class="nc">List</span><span class="p">[</span><span class="nc">TvShow</span><span class="p">]]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">for</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">shows</span><span class="w">      </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">parsedShows</span>
+<span class="w">    </span><span class="n">parsedShow</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">newParsedShow</span>
+<span class="w">  </span><span class="p">}</span><span class="w"> </span><span class="k">yield</span><span class="w"> </span><span class="n">shows</span><span class="p">.</span><span class="n">appended</span><span class="p">(</span><span class="n">parsedShow</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">parseShows</span><span class="p">(</span><span class="n">rawShows</span><span class="p">:</span><span class="w"> </span><span class="nc">List</span><span class="p">[</span><span class="nc">String</span><span class="p">]):</span><span class="w"> </span><span class="nc">Option</span><span class="p">[</span><span class="nc">List</span><span class="p">[</span><span class="nc">TvShow</span><span class="p">]]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">val</span><span class="w"> </span><span class="n">initialResult</span><span class="p">:</span><span class="w"> </span><span class="nc">Option</span><span class="p">[</span><span class="nc">List</span><span class="p">[</span><span class="nc">TvShow</span><span class="p">]]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Some</span><span class="p">(</span><span class="nc">List</span><span class="p">.</span><span class="n">empty</span><span class="p">)</span>
+<span class="w">  </span><span class="n">rawShows</span>
+<span class="w">    </span><span class="p">.</span><span class="n">map</span><span class="p">(</span><span class="n">parseShow</span><span class="p">)</span>
+<span class="w">    </span><span class="p">.</span><span class="n">foldLeft</span><span class="p">(</span><span class="n">initialResult</span><span class="p">)(</span><span class="n">addOrResign</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="c1">// 全部成功 → Some(List(...))</span>
+<span class="n">parseShows</span><span class="p">(</span><span class="nc">List</span><span class="p">(</span><span class="s">&quot;Breaking Bad (2008-2013)&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Mad Men (2007-2015)&quot;</span><span class="p">))</span>
+<span class="c1">// Some(List(TvShow(&quot;Breaking Bad&quot;, 2008, 2013), TvShow(&quot;Mad Men&quot;, 2007, 2015)))</span>
+
+<span class="c1">// 一つでも失敗 → None</span>
+<span class="n">parseShows</span><span class="p">(</span><span class="nc">List</span><span class="p">(</span><span class="s">&quot;Breaking Bad (2008-2013)&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Invalid&quot;</span><span class="p">))</span>
+<span class="c1">// None</span>
+</code></pre></div>
+<hr />
+<h2 id="7-either">第7章: Either 型と複合的なエラー処理<a class="headerlink" href="#7-either" title="Permanent link">&para;</a></h2>
+<h3 id="71-option">7.1 Option の限界<a class="headerlink" href="#71-option" title="Permanent link">&para;</a></h3>
+<p><code>Option</code> は「値があるかないか」しか表現できません。<strong>なぜ失敗したのか</strong>を伝えられません。</p>
+<p><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiBjb250ZW50U3R5bGVUeXBlPSJ0ZXh0L2NzcyIgZGF0YS1kaWFncmFtLXR5cGU9IkRFU0NSSVBUSU9OIiBoZWlnaHQ9IjQyOXB4IiBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSJub25lIiBzdHlsZT0id2lkdGg6NjI5cHg7aGVpZ2h0OjQyOXB4O2JhY2tncm91bmQ6I0ZGRkZGRjsiIHZlcnNpb249IjEuMSIgdmlld0JveD0iMCAwIDYyOSA0MjkiIHdpZHRoPSI2MjlweCIgem9vbUFuZFBhbj0ibWFnbmlmeSI+PGRlZnMvPjxnPjwhLS1jbHVzdGVyIE9wdGlvbiB2cyBFaXRoZXItLT48ZyBjbGFzcz0iY2x1c3RlciIgZGF0YS1lbnRpdHk9Ik9wdGlvbiB2cyBFaXRoZXIiIGRhdGEtc291cmNlLWxpbmU9IjMiIGRhdGEtdWlkPSJlbnQwMDAyIiBpZD0iY2x1c3Rlcl9PcHRpb24gdnMgRWl0aGVyIj48cmVjdCBmaWxsPSIjRkZGRkZGIiBoZWlnaHQ9IjQxMS4zMSIgcng9IjIuNSIgcnk9IjIuNSIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxOyIgd2lkdGg9IjQzMCIgeD0iMTIiIHk9IjEyIi8+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9IlZlcmRhbmEiIGZvbnQtc2l6ZT0iMTQiIGZvbnQtd2VpZ2h0PSJib2xkIiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjEyNy42MjciIHg9IjE2My4xODY1IiB5PSIyNi45OTUxIj5PcHRpb24gdnMgRWl0aGVyPC90ZXh0PjwvZz48IS0tY2x1c3RlciBvcHQtLT48ZyBjbGFzcz0iY2x1c3RlciIgZGF0YS1lbnRpdHk9Im9wdCIgZGF0YS1zb3VyY2UtbGluZT0iNCIgZGF0YS11aWQ9ImVudDAwMDMiIGlkPSJjbHVzdGVyX29wdCI+PHJlY3QgZmlsbD0iI0ZGRkZGRiIgaGVpZ2h0PSIyMjUuNiIgcng9IjIuNSIgcnk9IjIuNSIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxOyIgd2lkdGg9IjE2NCIgeD0iNDQiIHk9IjYzIi8+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9IlZlcmRhbmEiIGZvbnQtc2l6ZT0iMTQiIGZvbnQtd2VpZ2h0PSJib2xkIiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9Ijc2LjYzMDkiIHg9Ijg3LjY4NDYiIHk9Ijc3Ljk5NTEiPk9wdGlvbltBXTwvdGV4dD48L2c+PCEtLWNsdXN0ZXIgZWl0aGVyLS0+PGcgY2xhc3M9ImNsdXN0ZXIiIGRhdGEtZW50aXR5PSJlaXRoZXIiIGRhdGEtc291cmNlLWxpbmU9IjEwIiBkYXRhLXVpZD0iZW50MDAwNyIgaWQ9ImNsdXN0ZXJfZWl0aGVyIj48cmVjdCBmaWxsPSIjRkZGRkZGIiBoZWlnaHQ9IjE5Mi4wMSIgcng9IjIuNSIgcnk9IjIuNSIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxOyIgd2lkdGg9IjE2MiIgeD0iMjQ4IiB5PSIxOTkuMyIvPjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJWZXJkYW5hIiBmb250LXNpemU9IjE0IiBmb250LXdlaWdodD0iYm9sZCIgbGVuZ3RoQWRqdXN0PSJzcGFjaW5nIiB0ZXh0TGVuZ3RoPSI5MC44MDg2IiB4PSIyODMuNTk1NyIgeT0iMjE0LjI5NTEiPkVpdGhlcltFLCBBXTwvdGV4dD48L2c+PCEtLWVudGl0eSBzb21lLS0+PGcgY2xhc3M9ImVudGl0eSIgZGF0YS1lbnRpdHk9InNvbWUiIGRhdGEtc291cmNlLWxpbmU9IjUiIGRhdGEtdWlkPSJlbnQwMDA0IiBpZD0iZW50aXR5X3NvbWUiPjxyZWN0IGZpbGw9IiNGRkZGRkYiIGhlaWdodD0iMjIuMjk2OSIgcng9IjIuNSIgcnk9IjIuNSIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxOyIgd2lkdGg9IjEwOC44NjcyIiB4PSI2Ny41NyIgeT0iMjQyLjMiLz48dGV4dCBmaWxsPSIjMDAwMDAwIiBmb250LWZhbWlseT0iVmVyZGFuYSIgZm9udC1zaXplPSIxNCIgbGVuZ3RoQWRqdXN0PSJzcGFjaW5nIiB0ZXh0TGVuZ3RoPSI4OC44NjcyIiB4PSI3Ny41NyIgeT0iMjU4LjI5NTEiPlNvbWUodmFsdWUpPC90ZXh0PjwvZz48IS0tZW50aXR5IG5vbmUtLT48ZyBjbGFzcz0iZW50aXR5IiBkYXRhLWVudGl0eT0ibm9uZSIgZGF0YS1zb3VyY2UtbGluZT0iNiIgZGF0YS11aWQ9ImVudDAwMDUiIGlkPSJlbnRpdHlfbm9uZSI+PHJlY3QgZmlsbD0iI0ZGRkZGRiIgaGVpZ2h0PSIyMi4yOTY5IiByeD0iMi41IiByeT0iMi41IiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE7IiB3aWR0aD0iNTYuNTI0NCIgeD0iMTAzLjc0IiB5PSIxMDYiLz48dGV4dCBmaWxsPSIjMDAwMDAwIiBmb250LWZhbWlseT0iVmVyZGFuYSIgZm9udC1zaXplPSIxNCIgbGVuZ3RoQWRqdXN0PSJzcGFjaW5nIiB0ZXh0TGVuZ3RoPSIzNi41MjQ0IiB4PSIxMTMuNzQiIHk9IjEyMS45OTUxIj5Ob25lPC90ZXh0PjwvZz48IS0tZW50aXR5IHJpZ2h0LS0+PGcgY2xhc3M9ImVudGl0eSIgZGF0YS1lbnRpdHk9InJpZ2h0IiBkYXRhLXNvdXJjZS1saW5lPSIxMSIgZGF0YS11aWQ9ImVudDAwMDgiIGlkPSJlbnRpdHlfcmlnaHQiPjxyZWN0IGZpbGw9IiNGRkZGRkYiIGhlaWdodD0iMjIuMjk2OSIgcng9IjIuNSIgcnk9IjIuNSIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxOyIgd2lkdGg9IjEwNi4wMzAzIiB4PSIyNzEuOTgiIHk9IjM0NS4wMSIvPjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJWZXJkYW5hIiBmb250LXNpemU9IjE0IiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9Ijg2LjAzMDMiIHg9IjI4MS45OCIgeT0iMzYxLjAwNTEiPlJpZ2h0KHZhbHVlKTwvdGV4dD48L2c+PCEtLWVudGl0eSBsZWZ0LS0+PGcgY2xhc3M9ImVudGl0eSIgZGF0YS1lbnRpdHk9ImxlZnQiIGRhdGEtc291cmNlLWxpbmU9IjEyIiBkYXRhLXVpZD0iZW50MDAwOSIgaWQ9ImVudGl0eV9sZWZ0Ij48cmVjdCBmaWxsPSIjRkZGRkZGIiBoZWlnaHQ9IjIyLjI5NjkiIHJ4PSIyLjUiIHJ5PSIyLjUiIHN0eWxlPSJzdHJva2U6IzAwMDAwMDtzdHJva2Utd2lkdGg6MTsiIHdpZHRoPSI5Mi4yMDEyIiB4PSIyNzQuOSIgeT0iMjQyLjMiLz48dGV4dCBmaWxsPSIjMDAwMDAwIiBmb250LWZhbWlseT0iVmVyZGFuYSIgZm9udC1zaXplPSIxNCIgbGVuZ3RoQWRqdXN0PSJzcGFjaW5nIiB0ZXh0TGVuZ3RoPSI3Mi4yMDEyIiB4PSIyODQuOSIgeT0iMjU4LjI5NTEiPkxlZnQoZXJyb3IpPC90ZXh0PjwvZz48ZyBjbGFzcz0iZW50aXR5IiBkYXRhLWVudGl0eT0iR01OMTIiIGRhdGEtc291cmNlLWxpbmU9IjIwIiBkYXRhLXVpZD0iZW50MDAxMyIgaWQ9ImVudGl0eV9HTU4xMiI+PHBhdGggZD0iTTQ1OC41LDI0MC44OCBMNDU4LjUsMjY2LjAxMjggTDYwOS41MDAyLDI2Ni4wMTI4IEw2MDkuNTAwMiwyNTAuODggTDU5OS41MDAyLDI0MC44OCBMNDU4LjUsMjQwLjg4IiBmaWxsPSIjRkZGRkZGIiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE7Ii8+PHBhdGggZD0iTTU5OS41MDAyLDI0MC44OCBMNTk5LjUwMDIsMjUwLjg4IEw2MDkuNTAwMiwyNTAuODggTDU5OS41MDAyLDI0MC44OCIgZmlsbD0iI0ZGRkZGRiIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxOyIvPjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJWZXJkYW5hIiBmb250LXNpemU9IjEzIiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjEzMC4wMDAyIiB4PSI0NjQuNSIgeT0iMjU3Ljk0NjkiPiYjMjI4MzM7JiMyNTk0MzsmIzI5NzAyOyYjMzAwMDE7JiMxMjM2NDsmIzIwOTk4OyYjMTIzNjM7JiMxMjQyNTsmIzEyMzk0OyYjMTIzNTY7PC90ZXh0PjwvZz48ZyBjbGFzcz0iZW50aXR5IiBkYXRhLWVudGl0eT0iR01OMTUiIGRhdGEtc291cmNlLWxpbmU9IjI0IiBkYXRhLXVpZD0iZW50MDAxNiIgaWQ9ImVudGl0eV9HTU4xNSI+PHBhdGggZD0iTTQ1OCwzNDMuNiBMNDU4LDM2OC43MzI4IEw2MjIuMDAwMiwzNjguNzMyOCBMNjIyLjAwMDIsMzUzLjYgTDYxMi4wMDAyLDM0My42IEw0NTgsMzQzLjYiIGZpbGw9IiNGRkZGRkYiIHN0eWxlPSJzdHJva2U6IzAwMDAwMDtzdHJva2Utd2lkdGg6MTsiLz48cGF0aCBkPSJNNjEyLjAwMDIsMzQzLjYgTDYxMi4wMDAyLDM1My42IEw2MjIuMDAwMiwzNTMuNiBMNjEyLjAwMDIsMzQzLjYiIGZpbGw9IiNGRkZGRkYiIHN0eWxlPSJzdHJva2U6IzAwMDAwMDtzdHJva2Utd2lkdGg6MTsiLz48dGV4dCBmaWxsPSIjMDAwMDAwIiBmb250LWZhbWlseT0iVmVyZGFuYSIgZm9udC1zaXplPSIxMyIgbGVuZ3RoQWRqdXN0PSJzcGFjaW5nIiB0ZXh0TGVuZ3RoPSIxNDMuMDAwMiIgeD0iNDY0IiB5PSIzNjAuNjY2OSI+JiMxMjQ1NjsmIzEyNTIxOyYjMTI1NDA7JiMyNDc3MzsmIzIyNTc3OyYjMTI0MzQ7JiMyMDQ0NTsmIzI1MzQ1OyYjMTIzOTE7JiMxMjM2NTsmIzEyNDI3OzwvdGV4dD48L2c+PCEtLWxpbmsgbm9uZSB0byBzb21lLS0+PCEtLWxpbmsgbGVmdCB0byByaWdodC0tPjwhLS1saW5rIG9wdCB0byBlaXRoZXItLT48ZyBjbGFzcz0ibGluayIgZGF0YS1lbnRpdHktMT0ib3B0IiBkYXRhLWVudGl0eS0yPSJlaXRoZXIiIGRhdGEtc291cmNlLWxpbmU9IjE2IiBkYXRhLXVpZD0ibG5rMTEiIGlkPSJsaW5rX29wdF9laXRoZXIiPjxwYXRoIGQ9Ik0yMDguMTA4OSwxMTguMDU1MyBDMjA4LjM4MTEsMTE4LjA1NjMgMjA4LjY1OTUsMTE4LjA1NzggMjA4Ljk0NCwxMTguMDU5NiBDMjA5LjUxMywxMTguMDYzMyAyMTAuMTA2NSwxMTguMDY4NiAyMTAuNzIzNywxMTguMDc1OSBDMjExLjk1OCwxMTguMDkwNiAyMTMuMjg3MSwxMTguMTEzMSAyMTQuNzA0NiwxMTguMTQ1OCBDMjE3LjUzOTYsMTE4LjIxMTQgMjIwLjcyODQsMTE4LjMxNzkgMjI0LjIyMDYsMTE4LjQ4NDUgQzIzOC4xODk0LDExOS4xNTA5IDI1Ny4wMTI1LDEyMC43NzgxIDI3Ny40Njc1LDEyNC41ODM4IEMzMTguMzc3NSwxMzIuMTk1IDM2NS44MTUsMTQ4LjUyIDM5NCwxODMuMyBDMzk2LjM1ODgsMTg2LjIxIDM5OC4yNjM2LDE4OS40MjkyIDM5OS43ODk5LDE5Mi44NDAxIEM0MDAuNTUzLDE5NC41NDU1IDQwMS4yMjE1LDE5Ni4yOTg5IDQwMS44MDQ4LDE5OC4wODU1IEM0MDEuODc3NywxOTguMzA4OCA0MDEuOTQ5MiwxOTguNTMyNiA0MDIuMDE5NSwxOTguNzU3IEM0MDIuMDU0NiwxOTguODY5MSA0MDAuMzMsMTkzLjI0NTIgNDAwLjM2NDUsMTkzLjM1NzYiIGZpbGw9Im5vbmUiIGlkPSJvcHQtdG8tZWl0aGVyIiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE7Ii8+PHBvbHlnb24gZmlsbD0iIzAwMDAwMCIgcG9pbnRzPSI0MDIuMTIzOSwxOTkuMDkzOCw0MDMuMzA5LDE4OS4zMTY1LDQwMC42NTc3LDE5NC4zMTM2LDM5NS42NjA2LDE5MS42NjI0LDQwMi4xMjM5LDE5OS4wOTM4IiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE7Ii8+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9IlZlcmRhbmEiIGZvbnQtc2l6ZT0iMTMiIGxlbmd0aEFkanVzdD0ic3BhY2luZyIgdGV4dExlbmd0aD0iMjYiIHg9IjM4Ny43NiIgeT0iMTcxLjM2NjkiPiYjMzY5MTQ7JiMyMTI3MDs8L3RleHQ+PC9nPjwhLS1saW5rIG5vbmUgdG8gR01OMTItLT48ZyBjbGFzcz0ibGluayIgZGF0YS1lbnRpdHktMT0ibm9uZSIgZGF0YS1lbnRpdHktMj0iR01OMTIiIGRhdGEtc291cmNlLWxpbmU9IjIwIiBkYXRhLXVpZD0ibG5rMTQiIGlkPSJsaW5rX25vbmVfR01OMTIiPjxwYXRoIGQ9Ik0xNjAuNTQsMTI3LjUgQzE2MS43LDEyNy43OSAxNjIuODYsMTI4LjA1IDE2NCwxMjguMyBDMjc3LjMxLDE1Mi41OSAzMTYuNjksMTEyLjE3IDQyMywxNTguMyBDNDY2LjgxLDE3Ny4zMSA1MDYuNDMsMjE5LjU3IDUyNC4xNywyNDAuMzgiIGZpbGw9Im5vbmUiIGlkPSJub25lLUdNTjEyIiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE7c3Ryb2tlLWRhc2hhcnJheTo3LDc7Ii8+PC9nPjwhLS1saW5rIGxlZnQgdG8gR01OMTUtLT48ZyBjbGFzcz0ibGluayIgZGF0YS1lbnRpdHktMT0ibGVmdCIgZGF0YS1lbnRpdHktMj0iR01OMTUiIGRhdGEtc291cmNlLWxpbmU9IjI0IiBkYXRhLXVpZD0ibG5rMTciIGlkPSJsaW5rX2xlZnRfR01OMTUiPjxwYXRoIGQ9Ik0zMjguNywyNjQuOCBDMzM3LjY2LDI3Ni4xNSAzNTMuNDgsMjk0LjEyIDM3MSwzMDQuNiBDNDAyLjE1LDMyMy4yMiA0NDAuNjcsMzM1LjQzIDQ3My4wNywzNDMuMTgiIGZpbGw9Im5vbmUiIGlkPSJsZWZ0LUdNTjE1IiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE7c3Ryb2tlLWRhc2hhcnJheTo3LDc7Ii8+PC9nPjwhLS1TUkM9W1BPX0RJaUQwNThOdFVPZmhMWE5DMnhXR043R2QyaGVDTlNKY2pXYWFDczRvVFlFMmFzWEg2YTc0ZHZOV0dqMndZc2wxWHhhY25SVG05V2Q1cWlyYnhsZGt1UHBQYTA3NjI0ZGFYU29vMTB3Ym55T0hXZHNHbzkwcGNBSkczX01EaUU1cTdSa3gwbmt5NTdXWURIdndtV1Z4WUNWT2N0WkgyTXVzQkRMeFhfT3ZtcVBaLWM2UDBPdVJYQndGUkUzaWo5VGRBb3RRUkJVXzFMcUlEaThveDMwUzFfOV9jWjEyMV9UbTk3aWUxMVNqWV9Ia2NSNklzWmZxaEZjNGV1S2tPWGotcHAtaHVqNFduWU4yQ1BVSW55MTdSVnRnalFtVmRYUXRxeUx6SVFnZWhnUWFQZkhUYV9lV1RNNFh5eTdPcmluRDJ5aFVBUHpKX2JOZGJ6TEJJVGRUcF9UcE5JWElSd0hrQTlpal9OeTBdLS0+PC9nPjwvc3ZnPg==" class="uml" alt="uml diagram" title="" /></p>
+<h3 id="72-either">7.2 Either の基本<a class="headerlink" href="#72-either" title="Permanent link">&para;</a></h3>
+<p><code>Either[E, A]</code> は「<code>E</code> 型のエラーか、<code>A</code> 型の成功値か」を表す型です。</p>
+<ul>
+<li><code>Right(value)</code>: 成功（慣例的に「正しい」= right）</li>
+<li><code>Left(error)</code>: 失敗（エラー情報を保持）</li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">extractName</span><span class="p">(</span><span class="n">show</span><span class="p">:</span><span class="w"> </span><span class="nc">String</span><span class="p">):</span><span class="w"> </span><span class="nc">Either</span><span class="p">[</span><span class="nc">String</span><span class="p">,</span><span class="w"> </span><span class="nc">String</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">val</span><span class="w"> </span><span class="n">bracketOpen</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">show</span><span class="p">.</span><span class="n">indexOf</span><span class="p">(</span><span class="sc">&#39;(&#39;</span><span class="p">)</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">bracketOpen</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="nc">Right</span><span class="p">(</span><span class="n">show</span><span class="p">.</span><span class="n">substring</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">bracketOpen</span><span class="p">).</span><span class="n">trim</span><span class="p">)</span>
+<span class="w">  </span><span class="k">else</span><span class="w"> </span><span class="nc">Left</span><span class="p">(</span><span class="s">s&quot;Can&#39;t extract name from </span><span class="si">$</span><span class="n">show</span><span class="s">&quot;</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="n">extractName</span><span class="p">(</span><span class="s">&quot;The Wire (2002-2008)&quot;</span><span class="p">)</span><span class="w">  </span><span class="c1">// Right(&quot;The Wire&quot;)</span>
+<span class="n">extractName</span><span class="p">(</span><span class="s">&quot;(2022)&quot;</span><span class="p">)</span><span class="w">                </span><span class="c1">// Left(&quot;Can&#39;t extract name from (2022)&quot;)</span>
+</code></pre></div>
+<h3 id="73-either">7.3 Either を使ったパース<a class="headerlink" href="#73-either" title="Permanent link">&para;</a></h3>
+<p><strong>ソースファイル</strong>: <code>app/scala/src/main/scala/ch06_TvShows.scala</code></p>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">extractYearStart</span><span class="p">(</span><span class="n">rawShow</span><span class="p">:</span><span class="w"> </span><span class="nc">String</span><span class="p">):</span><span class="w"> </span><span class="nc">Either</span><span class="p">[</span><span class="nc">String</span><span class="p">,</span><span class="w"> </span><span class="nc">Int</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">val</span><span class="w"> </span><span class="n">bracketOpen</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rawShow</span><span class="p">.</span><span class="n">indexOf</span><span class="p">(</span><span class="sc">&#39;(&#39;</span><span class="p">)</span>
+<span class="w">  </span><span class="kd">val</span><span class="w"> </span><span class="n">dash</span><span class="w">        </span><span class="o">=</span><span class="w"> </span><span class="n">rawShow</span><span class="p">.</span><span class="n">indexOf</span><span class="p">(</span><span class="sc">&#39;-&#39;</span><span class="p">)</span>
+<span class="w">  </span><span class="k">for</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">yearStr</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">bracketOpen</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="o">-</span><span class="mi">1</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">dash</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="n">bracketOpen</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span>
+<span class="w">                 </span><span class="nc">Right</span><span class="p">(</span><span class="n">rawShow</span><span class="p">.</span><span class="n">substring</span><span class="p">(</span><span class="n">bracketOpen</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">dash</span><span class="p">))</span>
+<span class="w">               </span><span class="k">else</span><span class="w"> </span><span class="nc">Left</span><span class="p">(</span><span class="s">s&quot;Can&#39;t extract start year from </span><span class="si">$</span><span class="n">rawShow</span><span class="s">&quot;</span><span class="p">)</span>
+<span class="w">    </span><span class="n">year</span><span class="w">    </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">yearStr</span><span class="p">.</span><span class="n">toIntOption</span><span class="p">.</span><span class="n">toRight</span><span class="p">(</span><span class="s">s&quot;Can&#39;t parse </span><span class="si">$</span><span class="n">yearStr</span><span class="s">&quot;</span><span class="p">)</span>
+<span class="w">  </span><span class="p">}</span><span class="w"> </span><span class="k">yield</span><span class="w"> </span><span class="n">year</span>
+<span class="p">}</span>
+
+<span class="n">extractYearStart</span><span class="p">(</span><span class="s">&quot;The Wire (2002-2008)&quot;</span><span class="p">)</span><span class="w">  </span><span class="c1">// Right(2002)</span>
+<span class="n">extractYearStart</span><span class="p">(</span><span class="s">&quot;The Wire (-2008)&quot;</span><span class="p">)</span><span class="w">      </span><span class="c1">// Left(&quot;Can&#39;t extract start year from The Wire (-2008)&quot;)</span>
+<span class="n">extractYearStart</span><span class="p">(</span><span class="s">&quot;The Wire (oops-2008)&quot;</span><span class="p">)</span><span class="w">  </span><span class="c1">// Left(&quot;Can&#39;t parse oops&quot;)</span>
+</code></pre></div>
+<h3 id="74-option-either">7.4 Option から Either への変換<a class="headerlink" href="#74-option-either" title="Permanent link">&para;</a></h3>
+<p><code>toRight</code> メソッドで <code>Option</code> を <code>Either</code> に変換できます。</p>
+<div class="highlight"><pre><span></span><code><span class="kd">val</span><span class="w"> </span><span class="n">year</span><span class="p">:</span><span class="w"> </span><span class="nc">Option</span><span class="p">[</span><span class="nc">Int</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Some</span><span class="p">(</span><span class="mi">996</span><span class="p">)</span>
+<span class="kd">val</span><span class="w"> </span><span class="n">noYear</span><span class="p">:</span><span class="w"> </span><span class="nc">Option</span><span class="p">[</span><span class="nc">Int</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">None</span>
+
+<span class="n">year</span><span class="p">.</span><span class="n">toRight</span><span class="p">(</span><span class="s">&quot;no year given&quot;</span><span class="p">)</span><span class="w">    </span><span class="c1">// Right(996)</span>
+<span class="n">noYear</span><span class="p">.</span><span class="n">toRight</span><span class="p">(</span><span class="s">&quot;no year given&quot;</span><span class="p">)</span><span class="w">  </span><span class="c1">// Left(&quot;no year given&quot;)</span>
+</code></pre></div>
+<p><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiBjb250ZW50U3R5bGVUeXBlPSJ0ZXh0L2NzcyIgZGF0YS1kaWFncmFtLXR5cGU9IkRFU0NSSVBUSU9OIiBoZWlnaHQ9IjE5MHB4IiBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSJub25lIiBzdHlsZT0id2lkdGg6MzU5cHg7aGVpZ2h0OjE5MHB4O2JhY2tncm91bmQ6I0ZGRkZGRjsiIHZlcnNpb249IjEuMSIgdmlld0JveD0iMCAwIDM1OSAxOTAiIHdpZHRoPSIzNTlweCIgem9vbUFuZFBhbj0ibWFnbmlmeSI+PGRlZnMvPjxnPjwhLS1jbHVzdGVyIHRvUmlnaHQgPz8/LS0+PGcgY2xhc3M9ImNsdXN0ZXIiIGRhdGEtZW50aXR5PSJ0b1JpZ2h0IC4uLiIgZGF0YS1zb3VyY2UtbGluZT0iMyIgZGF0YS11aWQ9ImVudDAwMDIiIGlkPSJjbHVzdGVyX3RvUmlnaHQgLi4uIj48cmVjdCBmaWxsPSIjRkZGRkZGIiBoZWlnaHQ9IjE3Mi41OSIgcng9IjIuNSIgcnk9IjIuNSIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxOyIgd2lkdGg9IjM0MSIgeD0iMTIiIHk9IjEyIi8+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9IlZlcmRhbmEiIGZvbnQtc2l6ZT0iMTQiIGZvbnQtd2VpZ2h0PSJib2xkIiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjEwNS40NDQyIiB4PSIxMjkuNzc3OSIgeT0iMjYuOTk1MSI+dG9SaWdodCAmIzEyMzk4OyYjMjEyMDU7JiMyMDMxNjs8L3RleHQ+PC9nPjwhLS1lbnRpdHkgc29tZS0tPjxnIGNsYXNzPSJlbnRpdHkiIGRhdGEtZW50aXR5PSJzb21lIiBkYXRhLXNvdXJjZS1saW5lPSI0IiBkYXRhLXVpZD0iZW50MDAwMyIgaWQ9ImVudGl0eV9zb21lIj48cmVjdCBmaWxsPSIjRkZGRkZGIiBoZWlnaHQ9IjIyLjI5NjkiIHJ4PSIyLjUiIHJ5PSIyLjUiIHN0eWxlPSJzdHJva2U6IzAwMDAwMDtzdHJva2Utd2lkdGg6MTsiIHdpZHRoPSIxMDguODY3MiIgeD0iMjcuNTciIHk9IjQ3Ii8+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9IlZlcmRhbmEiIGZvbnQtc2l6ZT0iMTQiIGxlbmd0aEFkanVzdD0ic3BhY2luZyIgdGV4dExlbmd0aD0iODguODY3MiIgeD0iMzcuNTciIHk9IjYyLjk5NTEiPlNvbWUodmFsdWUpPC90ZXh0PjwvZz48IS0tZW50aXR5IG5vbmUtLT48ZyBjbGFzcz0iZW50aXR5IiBkYXRhLWVudGl0eT0ibm9uZSIgZGF0YS1zb3VyY2UtbGluZT0iNSIgZGF0YS11aWQ9ImVudDAwMDQiIGlkPSJlbnRpdHlfbm9uZSI+PHJlY3QgZmlsbD0iI0ZGRkZGRiIgaGVpZ2h0PSIyMi4yOTY5IiByeD0iMi41IiByeT0iMi41IiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE7IiB3aWR0aD0iNTYuNTI0NCIgeD0iMTkxLjc0IiB5PSI0NyIvPjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJWZXJkYW5hIiBmb250LXNpemU9IjE0IiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjM2LjUyNDQiIHg9IjIwMS43NCIgeT0iNjIuOTk1MSI+Tm9uZTwvdGV4dD48L2c+PCEtLWVudGl0eSByaWdodC0tPjxnIGNsYXNzPSJlbnRpdHkiIGRhdGEtZW50aXR5PSJyaWdodCIgZGF0YS1zb3VyY2UtbGluZT0iNyIgZGF0YS11aWQ9ImVudDAwMDUiIGlkPSJlbnRpdHlfcmlnaHQiPjxyZWN0IGZpbGw9IiNGRkZGRkYiIGhlaWdodD0iMjIuMjk2OSIgcng9IjIuNSIgcnk9IjIuNSIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxOyIgd2lkdGg9IjEwNi4wMzAzIiB4PSIyNy45OCIgeT0iMTQ2LjI5Ii8+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9IlZlcmRhbmEiIGZvbnQtc2l6ZT0iMTQiIGxlbmd0aEFkanVzdD0ic3BhY2luZyIgdGV4dExlbmd0aD0iODYuMDMwMyIgeD0iMzcuOTgiIHk9IjE2Mi4yODUxIj5SaWdodCh2YWx1ZSk8L3RleHQ+PC9nPjwhLS1lbnRpdHkgbGVmdC0tPjxnIGNsYXNzPSJlbnRpdHkiIGRhdGEtZW50aXR5PSJsZWZ0IiBkYXRhLXNvdXJjZS1saW5lPSI4IiBkYXRhLXVpZD0iZW50MDAwNiIgaWQ9ImVudGl0eV9sZWZ0Ij48cmVjdCBmaWxsPSIjRkZGRkZGIiBoZWlnaHQ9IjIyLjI5NjkiIHJ4PSIyLjUiIHJ5PSIyLjUiIHN0eWxlPSJzdHJva2U6IzAwMDAwMDtzdHJva2Utd2lkdGg6MTsiIHdpZHRoPSIxMjAuNDYwOSIgeD0iMTY4Ljc3IiB5PSIxNDYuMjkiLz48dGV4dCBmaWxsPSIjMDAwMDAwIiBmb250LWZhbWlseT0iVmVyZGFuYSIgZm9udC1zaXplPSIxNCIgbGVuZ3RoQWRqdXN0PSJzcGFjaW5nIiB0ZXh0TGVuZ3RoPSIxMDAuNDYwOSIgeD0iMTc4Ljc3IiB5PSIxNjIuMjg1MSI+TGVmdChlcnJvck1zZyk8L3RleHQ+PC9nPjwhLS1saW5rIHNvbWUgdG8gcmlnaHQtLT48ZyBjbGFzcz0ibGluayIgZGF0YS1lbnRpdHktMT0ic29tZSIgZGF0YS1lbnRpdHktMj0icmlnaHQiIGRhdGEtc291cmNlLWxpbmU9IjEwIiBkYXRhLXVpZD0ibG5rNyIgaWQ9Imxpbmtfc29tZV9yaWdodCI+PHBhdGggZD0iTTc0LjI0LDY5Ljc2IEM2OS4wOCw3Ny41MiA2Mi43Niw4OC41MSA2MCw5OS4yOSBDNTUuNywxMTYuMDkgNjIuMTczNCwxMjkuODQ2OCA2OS43OTM0LDE0MS4xMzY4IiBmaWxsPSJub25lIiBpZD0ic29tZS10by1yaWdodCIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxOyIvPjxwb2x5Z29uIGZpbGw9IiMwMDAwMDAiIHBvaW50cz0iNzMuMTUsMTQ2LjExLDcxLjQzMDYsMTM2LjQxMjQsNzAuMzUyOCwxNDEuOTY1Niw2NC43OTk2LDE0MC44ODc5LDczLjE1LDE0Ni4xMSIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxOyIvPjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJWZXJkYW5hIiBmb250LXNpemU9IjEzIiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjExNS42NTQzIiB4PSI2MSIgeT0iMTEyLjM1NjkiPnRvUmlnaHQoZXJyb3JNc2cpPC90ZXh0PjwvZz48IS0tbGluayBub25lIHRvIGxlZnQtLT48ZyBjbGFzcz0ibGluayIgZGF0YS1lbnRpdHktMT0ibm9uZSIgZGF0YS1lbnRpdHktMj0ibGVmdCIgZGF0YS1zb3VyY2UtbGluZT0iMTEiIGRhdGEtdWlkPSJsbms4IiBpZD0ibGlua19ub25lX2xlZnQiPjxwYXRoIGQ9Ik0yMjAuOTYsNjkuNTYgQzIyMi42OSw4OC4xOSAyMjUuNzI2OCwxMjEuMDQ1NiAyMjcuNDY2OCwxMzkuODM1NiIgZmlsbD0ibm9uZSIgaWQ9Im5vbmUtdG8tbGVmdCIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxOyIvPjxwb2x5Z29uIGZpbGw9IiMwMDAwMDAiIHBvaW50cz0iMjI4LjAyLDE0NS44MSwyMzEuMTczMSwxMzYuNDc5NSwyMjcuNTU5LDE0MC44MzEzLDIyMy4yMDcyLDEzNy4yMTcyLDIyOC4wMiwxNDUuODEiIHN0eWxlPSJzdHJva2U6IzAwMDAwMDtzdHJva2Utd2lkdGg6MTsiLz48dGV4dCBmaWxsPSIjMDAwMDAwIiBmb250LWZhbWlseT0iVmVyZGFuYSIgZm9udC1zaXplPSIxMyIgbGVuZ3RoQWRqdXN0PSJzcGFjaW5nIiB0ZXh0TGVuZ3RoPSIxMTUuNjU0MyIgeD0iMjI2LjA0IiB5PSIxMTIuMzU2OSI+dG9SaWdodChlcnJvck1zZyk8L3RleHQ+PC9nPjwhLS1TUkM9W0tvcDlJQ3JETElaOElTcEN1LThnSWFxa0lTbkJwcWJMSzJoOTN5ZkNwb1hIVURvdXhjZHRyMlR4dm9XZkw3Q2I5blFiQTJXNXYtVWNRZkdidmZJY1FZZWY5MU9oNTBGdksyY19fQm5LaTVXVWFDNDU1R0dSWEFvWDIyRzBiVkg5SklsSEkycWdvWV9vQkt3N0lFUzBYUll1R0FPZ3dFaFFHTEdoTTJiME5PSEdwME1vMUFtNGYwRWhZYmUwXS0tPjwvZz48L3N2Zz4=" class="uml" alt="uml diagram" title="" /></p>
+<h3 id="75-either">7.5 Either による完全なパーサー<a class="headerlink" href="#75-either" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">parseShow</span><span class="p">(</span><span class="n">rawShow</span><span class="p">:</span><span class="w"> </span><span class="nc">String</span><span class="p">):</span><span class="w"> </span><span class="nc">Either</span><span class="p">[</span><span class="nc">String</span><span class="p">,</span><span class="w"> </span><span class="nc">TvShow</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">for</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">name</span><span class="w">      </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">extractName</span><span class="p">(</span><span class="n">rawShow</span><span class="p">)</span>
+<span class="w">    </span><span class="n">yearStart</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">extractYearStart</span><span class="p">(</span><span class="n">rawShow</span><span class="p">).</span><span class="n">orElse</span><span class="p">(</span><span class="n">extractSingleYear</span><span class="p">(</span><span class="n">rawShow</span><span class="p">))</span>
+<span class="w">    </span><span class="n">yearEnd</span><span class="w">   </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">extractYearEnd</span><span class="p">(</span><span class="n">rawShow</span><span class="p">).</span><span class="n">orElse</span><span class="p">(</span><span class="n">extractSingleYear</span><span class="p">(</span><span class="n">rawShow</span><span class="p">))</span>
+<span class="w">  </span><span class="p">}</span><span class="w"> </span><span class="k">yield</span><span class="w"> </span><span class="nc">TvShow</span><span class="p">(</span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="n">yearStart</span><span class="p">,</span><span class="w"> </span><span class="n">yearEnd</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="n">parseShow</span><span class="p">(</span><span class="s">&quot;The Wire (2002-2008)&quot;</span><span class="p">)</span><span class="w">  </span><span class="c1">// Right(TvShow(&quot;The Wire&quot;, 2002, 2008))</span>
+<span class="n">parseShow</span><span class="p">(</span><span class="s">&quot;Mad Men ()&quot;</span><span class="p">)</span><span class="w">            </span><span class="c1">// Left(&quot;Can&#39;t extract single year from Mad Men ()&quot;)</span>
+<span class="n">parseShow</span><span class="p">(</span><span class="s">&quot;The Wire (-)&quot;</span><span class="p">)</span><span class="w">          </span><span class="c1">// Left(&quot;Can&#39;t extract single year from The Wire (-)&quot;)</span>
+<span class="n">parseShow</span><span class="p">(</span><span class="s">&quot;(2002-2008)&quot;</span><span class="p">)</span><span class="w">           </span><span class="c1">// Left(&quot;Can&#39;t extract name from (2002-2008)&quot;)</span>
+</code></pre></div>
+<h3 id="76-either">7.6 Either の主要メソッド<a class="headerlink" href="#76-either" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>メソッド</th>
+<th>説明</th>
+<th>例</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>map</code></td>
+<td>Right の値を変換</td>
+<td><code>Right(5).map(_ * 2)</code> → <code>Right(10)</code></td>
+</tr>
+<tr>
+<td><code>flatMap</code></td>
+<td>Right なら Either を返す関数を適用</td>
+<td><code>Right(5).flatMap(x =&gt; Right(x * 2))</code> → <code>Right(10)</code></td>
+</tr>
+<tr>
+<td><code>orElse</code></td>
+<td>Left なら代替を使用</td>
+<td><code>Left("err").orElse(Right(5))</code> → <code>Right(5)</code></td>
+</tr>
+<tr>
+<td><code>toOption</code></td>
+<td>Option に変換</td>
+<td><code>Right(5).toOption</code> → <code>Some(5)</code></td>
+</tr>
+<tr>
+<td><code>flatten</code></td>
+<td>ネストした Either を平坦化</td>
+<td><code>Right(Right(5)).flatten</code> → <code>Right(5)</code></td>
+</tr>
+</tbody>
+</table>
+<div class="highlight"><pre><span></span><code><span class="kd">val</span><span class="w"> </span><span class="n">year</span><span class="p">:</span><span class="w"> </span><span class="nc">Either</span><span class="p">[</span><span class="nc">String</span><span class="p">,</span><span class="w"> </span><span class="nc">Int</span><span class="p">]</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="nc">Right</span><span class="p">(</span><span class="mi">996</span><span class="p">)</span>
+<span class="kd">val</span><span class="w"> </span><span class="n">noYear</span><span class="p">:</span><span class="w"> </span><span class="nc">Either</span><span class="p">[</span><span class="nc">String</span><span class="p">,</span><span class="w"> </span><span class="nc">Int</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Left</span><span class="p">(</span><span class="s">&quot;no year&quot;</span><span class="p">)</span>
+
+<span class="c1">// map</span>
+<span class="n">year</span><span class="p">.</span><span class="n">map</span><span class="p">(</span><span class="n">_</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="w">    </span><span class="c1">// Right(1992)</span>
+<span class="n">noYear</span><span class="p">.</span><span class="n">map</span><span class="p">(</span><span class="n">_</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="w">  </span><span class="c1">// Left(&quot;no year&quot;)</span>
+
+<span class="c1">// flatMap</span>
+<span class="n">year</span><span class="p">.</span><span class="n">flatMap</span><span class="p">(</span><span class="n">y</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="nc">Right</span><span class="p">(</span><span class="n">y</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">2</span><span class="p">))</span><span class="w">             </span><span class="c1">// Right(1992)</span>
+<span class="n">noYear</span><span class="p">.</span><span class="n">flatMap</span><span class="p">(</span><span class="n">y</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="nc">Right</span><span class="p">(</span><span class="n">y</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">2</span><span class="p">))</span><span class="w">           </span><span class="c1">// Left(&quot;no year&quot;)</span>
+<span class="n">year</span><span class="p">.</span><span class="n">flatMap</span><span class="p">(</span><span class="n">y</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="nc">Left</span><span class="p">(</span><span class="s">&quot;can&#39;t progress&quot;</span><span class="p">))</span><span class="w">   </span><span class="c1">// Left(&quot;can&#39;t progress&quot;)</span>
+
+<span class="c1">// orElse</span>
+<span class="n">year</span><span class="p">.</span><span class="n">orElse</span><span class="p">(</span><span class="nc">Right</span><span class="p">(</span><span class="mi">2020</span><span class="p">))</span><span class="w">           </span><span class="c1">// Right(996)</span>
+<span class="n">noYear</span><span class="p">.</span><span class="n">orElse</span><span class="p">(</span><span class="nc">Right</span><span class="p">(</span><span class="mi">2020</span><span class="p">))</span><span class="w">         </span><span class="c1">// Right(2020)</span>
+<span class="n">noYear</span><span class="p">.</span><span class="n">orElse</span><span class="p">(</span><span class="nc">Left</span><span class="p">(</span><span class="s">&quot;can&#39;t recover&quot;</span><span class="p">))</span><span class="w"> </span><span class="c1">// Left(&quot;can&#39;t recover&quot;)</span>
+
+<span class="c1">// toOption</span>
+<span class="n">year</span><span class="p">.</span><span class="n">toOption</span><span class="w">    </span><span class="c1">// Some(996)</span>
+<span class="n">noYear</span><span class="p">.</span><span class="n">toOption</span><span class="w">  </span><span class="c1">// None</span>
+</code></pre></div>
+<h3 id="77">7.7 音楽アーティスト検索の例<a class="headerlink" href="#77" title="Permanent link">&para;</a></h3>
+<p><strong>ソースファイル</strong>: <code>app/scala/src/main/scala/ch07_MusicArtistsSearch.scala</code></p>
+<p>より複雑な例として、音楽アーティストの検索機能を見てみましょう。</p>
+<h4 id="_3">基本的なモデル（問題あり）<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="k">case</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="nc">Artist</span><span class="p">(</span>
+<span class="w">    </span><span class="n">name</span><span class="p">:</span><span class="w"> </span><span class="nc">String</span><span class="p">,</span>
+<span class="w">    </span><span class="n">genre</span><span class="p">:</span><span class="w"> </span><span class="nc">String</span><span class="p">,</span>
+<span class="w">    </span><span class="n">origin</span><span class="p">:</span><span class="w"> </span><span class="nc">String</span><span class="p">,</span>
+<span class="w">    </span><span class="n">yearsActiveStart</span><span class="p">:</span><span class="w"> </span><span class="nc">Int</span><span class="p">,</span>
+<span class="w">    </span><span class="n">isActive</span><span class="p">:</span><span class="w"> </span><span class="nc">Boolean</span><span class="p">,</span>
+<span class="w">    </span><span class="n">yearsActiveEnd</span><span class="p">:</span><span class="w"> </span><span class="nc">Int</span><span class="w">  </span><span class="c1">// アクティブな場合は 0 を入れる？</span>
+<span class="p">)</span>
+</code></pre></div>
+<p>この設計には問題があります:
+- <code>isActive</code> が <code>true</code> の場合、<code>yearsActiveEnd</code> は何を入れるべき？
+- 無効な状態（<code>isActive = true</code> かつ <code>yearsActiveEnd = 2020</code>）を作れてしまう</p>
+<h4 id="option_1">Option を使った改善<a class="headerlink" href="#option_1" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="k">case</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="nc">Artist</span><span class="p">(</span>
+<span class="w">    </span><span class="n">name</span><span class="p">:</span><span class="w"> </span><span class="nc">String</span><span class="p">,</span>
+<span class="w">    </span><span class="n">genre</span><span class="p">:</span><span class="w"> </span><span class="nc">String</span><span class="p">,</span>
+<span class="w">    </span><span class="n">origin</span><span class="p">:</span><span class="w"> </span><span class="nc">String</span><span class="p">,</span>
+<span class="w">    </span><span class="n">yearsActiveStart</span><span class="p">:</span><span class="w"> </span><span class="nc">Int</span><span class="p">,</span>
+<span class="w">    </span><span class="n">yearsActiveEnd</span><span class="p">:</span><span class="w"> </span><span class="nc">Option</span><span class="p">[</span><span class="nc">Int</span><span class="p">]</span><span class="w">  </span><span class="c1">// アクティブなら None</span>
+<span class="p">)</span>
+
+<span class="kd">val</span><span class="w"> </span><span class="n">metallica</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Artist</span><span class="p">(</span><span class="s">&quot;Metallica&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Heavy Metal&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;U.S.&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">1981</span><span class="p">,</span><span class="w"> </span><span class="nc">None</span><span class="p">)</span>
+<span class="kd">val</span><span class="w"> </span><span class="n">ledZeppelin</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Artist</span><span class="p">(</span><span class="s">&quot;Led Zeppelin&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Hard Rock&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;England&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">1968</span><span class="p">,</span><span class="w"> </span><span class="nc">Some</span><span class="p">(</span><span class="mi">1980</span><span class="p">))</span>
+</code></pre></div>
+<h3 id="78-adt">7.8 代数的データ型（ADT）<a class="headerlink" href="#78-adt" title="Permanent link">&para;</a></h3>
+<p><strong>enum</strong>（列挙型）を使って、より表現力の高いモデルを作れます。</p>
+<h4 id="product-type">直積型（Product Type）<a class="headerlink" href="#product-type" title="Permanent link">&para;</a></h4>
+<p>複数のフィールドを<strong>AND</strong>で組み合わせる型です。</p>
+<div class="highlight"><pre><span></span><code><span class="k">case</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="nc">PeriodInYears</span><span class="p">(</span><span class="n">start</span><span class="p">:</span><span class="w"> </span><span class="nc">Int</span><span class="p">,</span><span class="w"> </span><span class="n">end</span><span class="p">:</span><span class="w"> </span><span class="nc">Option</span><span class="p">[</span><span class="nc">Int</span><span class="p">])</span>
+
+<span class="k">case</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="nc">Artist</span><span class="p">(</span>
+<span class="w">    </span><span class="n">name</span><span class="p">:</span><span class="w"> </span><span class="nc">String</span><span class="p">,</span>
+<span class="w">    </span><span class="n">genre</span><span class="p">:</span><span class="w"> </span><span class="nc">MusicGenre</span><span class="p">,</span>
+<span class="w">    </span><span class="n">origin</span><span class="p">:</span><span class="w"> </span><span class="nc">Location</span><span class="p">,</span>
+<span class="w">    </span><span class="n">yearsActive</span><span class="p">:</span><span class="w"> </span><span class="nc">PeriodInYears</span>
+<span class="p">)</span>
+</code></pre></div>
+<h4 id="sum-type">直和型（Sum Type）<a class="headerlink" href="#sum-type" title="Permanent link">&para;</a></h4>
+<p>複数の選択肢を<strong>OR</strong>で表す型です。</p>
+<div class="highlight"><pre><span></span><code><span class="k">enum</span><span class="w"> </span><span class="nc">MusicGenre</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">case</span><span class="w"> </span><span class="nc">HeavyMetal</span>
+<span class="w">  </span><span class="k">case</span><span class="w"> </span><span class="nc">Pop</span>
+<span class="w">  </span><span class="k">case</span><span class="w"> </span><span class="nc">HardRock</span>
+<span class="p">}</span>
+
+<span class="k">enum</span><span class="w"> </span><span class="nc">YearsActive</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">case</span><span class="w"> </span><span class="nc">StillActive</span><span class="p">(</span><span class="n">since</span><span class="p">:</span><span class="w"> </span><span class="nc">Int</span><span class="p">)</span>
+<span class="w">  </span><span class="k">case</span><span class="w"> </span><span class="nc">ActiveBetween</span><span class="p">(</span><span class="n">start</span><span class="p">:</span><span class="w"> </span><span class="nc">Int</span><span class="p">,</span><span class="w"> </span><span class="n">end</span><span class="p">:</span><span class="w"> </span><span class="nc">Int</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></div>
+<p><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiBjb250ZW50U3R5bGVUeXBlPSJ0ZXh0L2NzcyIgZGF0YS1kaWFncmFtLXR5cGU9IkRFU0NSSVBUSU9OIiBoZWlnaHQ9IjI3NHB4IiBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSJub25lIiBzdHlsZT0id2lkdGg6MTU0MXB4O2hlaWdodDoyNzRweDtiYWNrZ3JvdW5kOiNGRkZGRkY7IiB2ZXJzaW9uPSIxLjEiIHZpZXdCb3g9IjAgMCAxNTQxIDI3NCIgd2lkdGg9IjE1NDFweCIgem9vbUFuZFBhbj0ibWFnbmlmeSI+PGRlZnMvPjxnPjwhLS1jbHVzdGVyID8/Pz8/Pz8/QURUPy0tPjxnIGNsYXNzPSJjbHVzdGVyIiBkYXRhLWVudGl0eT0iLi4uLi4uLi5BRFQuIiBkYXRhLXNvdXJjZS1saW5lPSIzIiBkYXRhLXVpZD0iZW50MDAwMiIgaWQ9ImNsdXN0ZXJfLi4uLi4uLi5BRFQuIj48cmVjdCBmaWxsPSIjRkZGRkZGIiBoZWlnaHQ9IjI1Ni4wMSIgcng9IjIuNSIgcnk9IjIuNSIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxOyIgd2lkdGg9Ijc5MSIgeD0iMTIiIHk9IjEyIi8+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9IlZlcmRhbmEiIGZvbnQtc2l6ZT0iMTQiIGZvbnQtd2VpZ2h0PSJib2xkIiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjE1OC4wMDUzIiB4PSIzMjguNDk3MyIgeT0iMjYuOTk1MSI+JiMyMDE5NTsmIzI1OTY4OyYjMzAzNDA7JiMxMjQ4NzsmIzEyNTQwOyYjMTI0Nzk7JiMyMjQxMTsmIzY1Mjg4O0FEVCYjNjUyODk7PC90ZXh0PjwvZz48IS0tY2x1c3RlciBwcm9kdWN0LS0+PGcgY2xhc3M9ImNsdXN0ZXIiIGRhdGEtZW50aXR5PSJwcm9kdWN0IiBkYXRhLXNvdXJjZS1saW5lPSI0IiBkYXRhLXVpZD0iZW50MDAwMyIgaWQ9ImNsdXN0ZXJfcHJvZHVjdCI+PHJlY3QgZmlsbD0iI0ZGRkZGRiIgaGVpZ2h0PSIxNzMuMDEiIHJ4PSIyLjUiIHJ5PSIyLjUiIHN0eWxlPSJzdHJva2U6IzAwMDAwMDtzdHJva2Utd2lkdGg6MTsiIHdpZHRoPSIzMjMiIHg9IjQ0IiB5PSI2MyIvPjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJWZXJkYW5hIiBmb250LXNpemU9IjE0IiBmb250LXdlaWdodD0iYm9sZCIgbGVuZ3RoQWRqdXN0PSJzcGFjaW5nIiB0ZXh0TGVuZ3RoPSIxNzQuODI4OCIgeD0iMTE4LjA4NTYiIHk9Ijc3Ljk5NTEiPiYjMzA0NTI7JiMzMTMwOTsmIzIyNDExOyYjNjUyODg7UHJvZHVjdCBUeXBlJiM2NTI4OTs8L3RleHQ+PC9nPjwhLS1jbHVzdGVyIHN1bS0tPjxnIGNsYXNzPSJjbHVzdGVyIiBkYXRhLWVudGl0eT0ic3VtIiBkYXRhLXNvdXJjZS1saW5lPSIxMCIgZGF0YS11aWQ9ImVudDAwMDciIGlkPSJjbHVzdGVyX3N1bSI+PHJlY3QgZmlsbD0iI0ZGRkZGRiIgaGVpZ2h0PSIxNzMuMDEiIHJ4PSIyLjUiIHJ5PSIyLjUiIHN0eWxlPSJzdHJva2U6IzAwMDAwMDtzdHJva2Utd2lkdGg6MTsiIHdpZHRoPSIzNjQiIHg9IjQwNyIgeT0iNjMiLz48dGV4dCBmaWxsPSIjMDAwMDAwIiBmb250LWZhbWlseT0iVmVyZGFuYSIgZm9udC1zaXplPSIxNCIgZm9udC13ZWlnaHQ9ImJvbGQiIGxlbmd0aEFkanVzdD0ic3BhY2luZyIgdGV4dExlbmd0aD0iMTQ3LjcwMzgiIHg9IjUxNS4xNDgxIiB5PSI3Ny45OTUxIj4mIzMwNDUyOyYjMjE2NDQ7JiMyMjQxMTsmIzY1Mjg4O1N1bSBUeXBlJiM2NTI4OTs8L3RleHQ+PC9nPjwhLS1lbnRpdHkgY2FzZSBjbGFzcy0tPjxnIGNsYXNzPSJlbnRpdHkiIGRhdGEtZW50aXR5PSJjYXNlIGNsYXNzIiBkYXRhLXNvdXJjZS1saW5lPSI1IiBkYXRhLXVpZD0iZW50MDAwNCIgaWQ9ImVudGl0eV9jYXNlIGNsYXNzIj48cmVjdCBmaWxsPSIjRkZGRkZGIiBoZWlnaHQ9IjIyLjI5NjkiIHJ4PSIyLjUiIHJ5PSIyLjUiIHN0eWxlPSJzdHJva2U6IzAwMDAwMDtzdHJva2Utd2lkdGg6MTsiIHdpZHRoPSI5MS4zODc3IiB4PSI2OC4zMSIgeT0iMTA2Ii8+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9IlZlcmRhbmEiIGZvbnQtc2l6ZT0iMTQiIGxlbmd0aEFkanVzdD0ic3BhY2luZyIgdGV4dExlbmd0aD0iNzEuMzg3NyIgeD0iNzguMzEiIHk9IjEyMS45OTUxIj5jYXNlIGNsYXNzPC90ZXh0PjwvZz48IS0tZW50aXR5IEEgQU5EIEIgQU5EIEMtLT48ZyBjbGFzcz0iZW50aXR5IiBkYXRhLWVudGl0eT0iQSBBTkQgQiBBTkQgQyIgZGF0YS1zb3VyY2UtbGluZT0iNiIgZGF0YS11aWQ9ImVudDAwMDUiIGlkPSJlbnRpdHlfQSBBTkQgQiBBTkQgQyI+PHJlY3QgZmlsbD0iI0ZGRkZGRiIgaGVpZ2h0PSIyMi4yOTY5IiByeD0iMi41IiByeT0iMi41IiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE7IiB3aWR0aD0iMTI4LjQxOCIgeD0iMTk0Ljc5IiB5PSIxMDYiLz48dGV4dCBmaWxsPSIjMDAwMDAwIiBmb250LWZhbWlseT0iVmVyZGFuYSIgZm9udC1zaXplPSIxNCIgbGVuZ3RoQWRqdXN0PSJzcGFjaW5nIiB0ZXh0TGVuZ3RoPSIxMDguNDE4IiB4PSIyMDQuNzkiIHk9IjEyMS45OTUxIj5BIEFORCBCIEFORCBDPC90ZXh0PjwvZz48IS0tZW50aXR5ID8/Pz8/Pz8/Pz8/LS0+PGcgY2xhc3M9ImVudGl0eSIgZGF0YS1lbnRpdHk9Ii4uLi4uLi4uLi4uIiBkYXRhLXNvdXJjZS1saW5lPSI3IiBkYXRhLXVpZD0iZW50MDAwNiIgaWQ9ImVudGl0eV8uLi4uLi4uLi4uLiI+PHJlY3QgZmlsbD0iI0ZGRkZGRiIgaGVpZ2h0PSIyMi4yOTY5IiByeD0iMi41IiByeT0iMi41IiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE7IiB3aWR0aD0iMTczLjk5OTMiIHg9IjY4IiB5PSIxODkuNzEiLz48dGV4dCBmaWxsPSIjMDAwMDAwIiBmb250LWZhbWlseT0iVmVyZGFuYSIgZm9udC1zaXplPSIxNCIgbGVuZ3RoQWRqdXN0PSJzcGFjaW5nIiB0ZXh0TGVuZ3RoPSIxNTMuOTk5MyIgeD0iNzgiIHk9IjIwNS43MDUxIj4mIzEyNTAxOyYjMTI0NTE7JiMxMjU0MDsmIzEyNTIzOyYjMTI0ODk7JiMxMjM5ODsmIzMyMDY4OyYjMTI0MTU7JiMyMTUxMjsmIzEyNDMxOyYjMTIzNzk7PC90ZXh0PjwvZz48IS0tZW50aXR5IGVudW0gLyBzZWFsZWQgdHJhaXQtLT48ZyBjbGFzcz0iZW50aXR5IiBkYXRhLWVudGl0eT0iZW51bSAuIHNlYWxlZCB0cmFpdCIgZGF0YS1zb3VyY2UtbGluZT0iMTEiIGRhdGEtdWlkPSJlbnQwMDA4IiBpZD0iZW50aXR5X2VudW0gLiBzZWFsZWQgdHJhaXQiPjxyZWN0IGZpbGw9IiNGRkZGRkYiIGhlaWdodD0iMjIuMjk2OSIgcng9IjIuNSIgcnk9IjIuNSIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxOyIgd2lkdGg9IjE1My4xNDM2IiB4PSI0MzEuNDMiIHk9IjEwNiIvPjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJWZXJkYW5hIiBmb250LXNpemU9IjE0IiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjEzMy4xNDM2IiB4PSI0NDEuNDMiIHk9IjEyMS45OTUxIj5lbnVtIC8gc2VhbGVkIHRyYWl0PC90ZXh0PjwvZz48IS0tZW50aXR5IEEgT1IgQiBPUiBDLS0+PGcgY2xhc3M9ImVudGl0eSIgZGF0YS1lbnRpdHk9IkEgT1IgQiBPUiBDIiBkYXRhLXNvdXJjZS1saW5lPSIxMiIgZGF0YS11aWQ9ImVudDAwMDkiIGlkPSJlbnRpdHlfQSBPUiBCIE9SIEMiPjxyZWN0IGZpbGw9IiNGRkZGRkYiIGhlaWdodD0iMjIuMjk2OSIgcng9IjIuNSIgcnk9IjIuNSIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxOyIgd2lkdGg9IjEwOC4yNTIiIHg9IjYxOS44NyIgeT0iMTA2Ii8+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9IlZlcmRhbmEiIGZvbnQtc2l6ZT0iMTQiIGxlbmd0aEFkanVzdD0ic3BhY2luZyIgdGV4dExlbmd0aD0iODguMjUyIiB4PSI2MjkuODciIHk9IjEyMS45OTUxIj5BIE9SIEIgT1IgQzwvdGV4dD48L2c+PCEtLWVudGl0eSA/Pz8/Pz8/Py0tPjxnIGNsYXNzPSJlbnRpdHkiIGRhdGEtZW50aXR5PSIuLi4uLi4uLiIgZGF0YS1zb3VyY2UtbGluZT0iMTMiIGRhdGEtdWlkPSJlbnQwMDEwIiBpZD0iZW50aXR5Xy4uLi4uLi4uIj48cmVjdCBmaWxsPSIjRkZGRkZGIiBoZWlnaHQ9IjIyLjI5NjkiIHJ4PSIyLjUiIHJ5PSIyLjUiIHN0eWxlPSJzdHJva2U6IzAwMDAwMDtzdHJva2Utd2lkdGg6MTsiIHdpZHRoPSIxMzEuOTk5NSIgeD0iNDQyIiB5PSIxODkuNzEiLz48dGV4dCBmaWxsPSIjMDAwMDAwIiBmb250LWZhbWlseT0iVmVyZGFuYSIgZm9udC1zaXplPSIxNCIgbGVuZ3RoQWRqdXN0PSJzcGFjaW5nIiB0ZXh0TGVuZ3RoPSIxMTEuOTk5NSIgeD0iNDUyIiB5PSIyMDUuNzA1MSI+JiMzNjk4NDsmIzI1MjQ2OyYjMzI5MzA7JiMxMjM5ODsmIzEyMzU2OyYjMTIzNzg7JiMxMjQyODsmIzEyMzYzOzwvdGV4dD48L2c+PGcgY2xhc3M9ImVudGl0eSIgZGF0YS1lbnRpdHk9IkdNTjExIiBkYXRhLXNvdXJjZS1saW5lPSIxOCIgZGF0YS11aWQ9ImVudDAwMTIiIGlkPSJlbnRpdHlfR01OMTEiPjxwYXRoIGQ9Ik04MTkuMjEsMTg4LjMgTDgxOS4yMSwyMTMuNDMyOCBMMTE5Mi43OTA2LDIxMy40MzI4IEwxMTkyLjc5MDYsMTk4LjMgTDExODIuNzkwNiwxODguMyBMODE5LjIxLDE4OC4zIiBmaWxsPSIjRkZGRkZGIiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE7Ii8+PHBhdGggZD0iTTExODIuNzkwNiwxODguMyBMMTE4Mi43OTA2LDE5OC4zIEwxMTkyLjc5MDYsMTk4LjMgTDExODIuNzkwNiwxODguMyIgZmlsbD0iI0ZGRkZGRiIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxOyIvPjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJWZXJkYW5hIiBmb250LXNpemU9IjEzIiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjM1Mi41ODA2IiB4PSI4MjUuMjEiIHk9IjIwNS4zNjY5Ij5BcnRpc3QgPSBuYW1lIEFORCBnZW5yZSBBTkQgb3JpZ2luIEFORCB5ZWFyc0FjdGl2ZTwvdGV4dD48L2c+PGcgY2xhc3M9ImVudGl0eSIgZGF0YS1lbnRpdHk9IkdNTjE0IiBkYXRhLXNvdXJjZS1saW5lPSIyMiIgZGF0YS11aWQ9ImVudDAwMTUiIGlkPSJlbnRpdHlfR01OMTQiPjxwYXRoIGQ9Ik0xMjI3Ljk1LDE4OC4zIEwxMjI3Ljk1LDIxMy40MzI4IEwxNTM0LjA0ODYsMjEzLjQzMjggTDE1MzQuMDQ4NiwxOTguMyBMMTUyNC4wNDg2LDE4OC4zIEwxMjI3Ljk1LDE4OC4zIiBmaWxsPSIjRkZGRkZGIiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE7Ii8+PHBhdGggZD0iTTE1MjQuMDQ4NiwxODguMyBMMTUyNC4wNDg2LDE5OC4zIEwxNTM0LjA0ODYsMTk4LjMgTDE1MjQuMDQ4NiwxODguMyIgZmlsbD0iI0ZGRkZGRiIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxOyIvPjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJWZXJkYW5hIiBmb250LXNpemU9IjEzIiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjI4NS4wOTg2IiB4PSIxMjMzLjk1IiB5PSIyMDUuMzY2OSI+WWVhcnNBY3RpdmUgPSBTdGlsbEFjdGl2ZSBPUiBBY3RpdmVCZXR3ZWVuPC90ZXh0PjwvZz48IS0tbGluayBwcm9kdWN0IHRvIEdNTjExLS0+PGcgY2xhc3M9ImxpbmsiIGRhdGEtZW50aXR5LTE9InByb2R1Y3QiIGRhdGEtZW50aXR5LTI9IkdNTjExIiBkYXRhLXNvdXJjZS1saW5lPSIxOCIgZGF0YS11aWQ9ImxuazEzIiBpZD0ibGlua19wcm9kdWN0X0dNTjExIj48cGF0aCBkPSJNMzY3LjA3MTgsMTE5Ljc2NTIgQzM2Ny4xMzE4LDExOS43NzcgMzY3LjE5MjEsMTE5Ljc4ODkgMzY3LjI1MjcsMTE5LjgwMDggQzM2Ny40OTQ5LDExOS44NDg1IDM2Ny43NDE1LDExOS44OTcgMzY3Ljk5MjQsMTE5Ljk0NjMgQzM2OC45OTYsMTIwLjE0MzMgMzcwLjA2OCwxMjAuMzUyOCAzNzEuMjAwMSwxMjAuNTcyOCBDMzczLjQ2NDMsMTIxLjAxMjYgMzc1Ljk2OTEsMTIxLjQ5NDEgMzc4LjY0ODgsMTIyLjAwMTIgQzM4OS4zNjc1LDEyNC4wMyA0MDIuODg1LDEyNi40NyA0MTUsMTI4LjMgQzU3OS4yOCwxNTMuMTEgNzcwLjI3LDE3NC45OCA4ODkuNjYsMTg3LjgyIiBmaWxsPSJub25lIiBpZD0icHJvZHVjdC1HTU4xMSIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxO3N0cm9rZS1kYXNoYXJyYXk6Nyw3OyIvPjwvZz48IS0tbGluayBzdW0gdG8gR01OMTQtLT48ZyBjbGFzcz0ibGluayIgZGF0YS1lbnRpdHktMT0ic3VtIiBkYXRhLWVudGl0eS0yPSJHTU4xNCIgZGF0YS1zb3VyY2UtbGluZT0iMjIiIGRhdGEtdWlkPSJsbmsxNiIgaWQ9Imxpbmtfc3VtX0dNTjE0Ij48cGF0aCBkPSJNNzcxLjQ5ODYsMTE5LjI2OSBDNzcxLjczMjIsMTE5LjI5OTkgNzcxLjk3MDQsMTE5LjMzMTQgNzcyLjIxMzIsMTE5LjM2MzUgQzc3Mi42OTg3LDExOS40Mjc3IDc3My4yMDIzLDExOS40OTQzIDc3My43MjM5LDExOS41NjMyIEM3NzUuODEwMSwxMTkuODM5MSA3NzguMTgyOCwxMjAuMTUyOCA3ODAuODI1OSwxMjAuNTAyMiBDNzkxLjM5ODMsMTIxLjkwMDEgODA2LjI5ODQsMTIzLjg3MDIgODI0LjUwODEsMTI2LjI3OCBDODYwLjkyNzUsMTMxLjA5MzQgOTEwLjU4NSwxMzcuNjU5NCA5NjUuMzM1LDE0NC44OTg4IEMxMDc0LjgzNSwxNTkuMzc3NSAxMjA0LjcwNSwxNzYuNTUgMTI4OS43OCwxODcuOCIgZmlsbD0ibm9uZSIgaWQ9InN1bS1HTU4xNCIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxO3N0cm9rZS1kYXNoYXJyYXk6Nyw3OyIvPjwvZz48IS0tU1JDPVtQUDNGSWlEMDRDUmwtbkhaTmkwZHk5M1FpdWhqblVFUVo3NFh0UEpUaExBQVhvRzVNcmpIWDV2UXdDNlVIMTBGMmVBNUZpcFFIYXp6MUpUX3NsaGRDaW1DN3pfdGN6YklmclgzZ0ZrS1NLODRFZWZvcHFVbUZqdWRZeTVwQ2NwaC01QjdLbnREdmtGVVNqZ25vek5iajZqMXd3U3U2UnFhM3pVdnU0MDRSaURISzZ0TUNMREkyVkxZcm84RTVJdk8zZks4WmEtYmo4Z0QzVlBVNktmUHRMcWpUSnBHcUlIRFpuenJ0RE5YS19CUXJrNWlWamxIcU9xRUhuUXY4N3l1dmRWemRBRklnRnJZYTZQVXZJQ3RtcFA4ZjN3d2UwSGJRV0VvVnNXdUo1YlpWOExsWXdsblB0SGwwN0hlMDhPd3dra21id1FSVjF1ZVhFRDBnUTA2bVNkZ0xjOEJuUUkyN1UzS0YzWXpvcUNreVl1R3A2Q3lRdmo4WFJHVG5Td0c4N1NYVFZsZFFUWjlxS1BlSjJrQS1OdW42VFF5QXc0d0gtSGhkc3kwXS0tPjwvZz48L3N2Zz4=" class="uml" alt="uml diagram" title="" /></p>
+<h3 id="79">7.9 パターンマッチング<a class="headerlink" href="#79" title="Permanent link">&para;</a></h3>
+<p>直和型は<strong>パターンマッチング</strong>で処理します。</p>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">wasArtistActive</span><span class="p">(</span><span class="n">artist</span><span class="p">:</span><span class="w"> </span><span class="nc">Artist</span><span class="p">,</span><span class="w"> </span><span class="n">yearStart</span><span class="p">:</span><span class="w"> </span><span class="nc">Int</span><span class="p">,</span><span class="w"> </span><span class="n">yearEnd</span><span class="p">:</span><span class="w"> </span><span class="nc">Int</span><span class="p">):</span><span class="w"> </span><span class="nc">Boolean</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">artist</span><span class="p">.</span><span class="n">yearsActive</span><span class="w"> </span><span class="k">match</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="nc">StillActive</span><span class="p">(</span><span class="n">since</span><span class="p">)</span><span class="w">        </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">since</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">yearEnd</span>
+<span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="nc">ActiveBetween</span><span class="p">(</span><span class="n">start</span><span class="p">,</span><span class="w"> </span><span class="n">end</span><span class="p">)</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">start</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">yearEnd</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">end</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="n">yearStart</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">activeLength</span><span class="p">(</span><span class="n">artist</span><span class="p">:</span><span class="w"> </span><span class="nc">Artist</span><span class="p">,</span><span class="w"> </span><span class="n">currentYear</span><span class="p">:</span><span class="w"> </span><span class="nc">Int</span><span class="p">):</span><span class="w"> </span><span class="nc">Int</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">artist</span><span class="p">.</span><span class="n">yearsActive</span><span class="w"> </span><span class="k">match</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="nc">StillActive</span><span class="p">(</span><span class="n">since</span><span class="p">)</span><span class="w">        </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">currentYear</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">since</span>
+<span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="nc">ActiveBetween</span><span class="p">(</span><span class="n">start</span><span class="p">,</span><span class="w"> </span><span class="n">end</span><span class="p">)</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">end</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">start</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<p><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiBjb250ZW50U3R5bGVUeXBlPSJ0ZXh0L2NzcyIgZGF0YS1kaWFncmFtLXR5cGU9IkRFU0NSSVBUSU9OIiBoZWlnaHQ9IjM0OHB4IiBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSJub25lIiBzdHlsZT0id2lkdGg6NzI5cHg7aGVpZ2h0OjM0OHB4O2JhY2tncm91bmQ6I0ZGRkZGRjsiIHZlcnNpb249IjEuMSIgdmlld0JveD0iMCAwIDcyOSAzNDgiIHdpZHRoPSI3MjlweCIgem9vbUFuZFBhbj0ibWFnbmlmeSI+PGRlZnMvPjxnPjwhLS1jbHVzdGVyID8/Pz8/Pz8/Py0tPjxnIGNsYXNzPSJjbHVzdGVyIiBkYXRhLWVudGl0eT0iLi4uLi4uLi4uIiBkYXRhLXNvdXJjZS1saW5lPSIzIiBkYXRhLXVpZD0iZW50MDAwMiIgaWQ9ImNsdXN0ZXJfLi4uLi4uLi4uIj48cmVjdCBmaWxsPSIjRkZGRkZGIiBoZWlnaHQ9IjI0NC44OSIgcng9IjIuNSIgcnk9IjIuNSIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxOyIgd2lkdGg9IjYzNiIgeD0iMTIiIHk9IjEyIi8+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9IlZlcmRhbmEiIGZvbnQtc2l6ZT0iMTQiIGZvbnQtd2VpZ2h0PSJib2xkIiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjEyNS45OTk1IiB4PSIyNjcuMDAwMyIgeT0iMjYuOTk1MSI+JiMxMjQ5NzsmIzEyNDc5OyYjMTI1NDA7JiMxMjUzMTsmIzEyNTEwOyYjMTI0ODM7JiMxMjQ4MTsmIzEyNTMxOyYjMTI0NjQ7PC90ZXh0PjwvZz48IS0tY2x1c3RlciBtYXRjaF9ibG9jay0tPjxnIGNsYXNzPSJjbHVzdGVyIiBkYXRhLWVudGl0eT0ibWF0Y2hfYmxvY2siIGRhdGEtc291cmNlLWxpbmU9IjYiIGRhdGEtdWlkPSJlbnQwMDA0IiBpZD0iY2x1c3Rlcl9tYXRjaF9ibG9jayI+PHJlY3QgZmlsbD0iI0ZGRkZGRiIgaGVpZ2h0PSI4OS4zIiByeD0iMi41IiByeT0iMi41IiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE7IiB3aWR0aD0iNTcyIiB4PSI0NCIgeT0iOTMuMyIvPjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJWZXJkYW5hIiBmb250LXNpemU9IjE0IiBmb250LXdlaWdodD0iYm9sZCIgbGVuZ3RoQWRqdXN0PSJzcGFjaW5nIiB0ZXh0TGVuZ3RoPSI0OC45OTMyIiB4PSIzMDUuNTAzNCIgeT0iMTA4LjI5NTEiPm1hdGNoPC90ZXh0PjwvZz48IS0tZW50aXR5IGlucHV0LS0+PGcgY2xhc3M9ImVudGl0eSIgZGF0YS1lbnRpdHk9ImlucHV0IiBkYXRhLXNvdXJjZS1saW5lPSI0IiBkYXRhLXVpZD0iZW50MDAwMyIgaWQ9ImVudGl0eV9pbnB1dCI+PHJlY3QgZmlsbD0iI0ZGRkZGRiIgaGVpZ2h0PSIyMi4yOTY5IiByeD0iMi41IiByeT0iMi41IiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE7IiB3aWR0aD0iMTQzLjAyNjQiIHg9IjQ4OC40OSIgeT0iNDciLz48dGV4dCBmaWxsPSIjMDAwMDAwIiBmb250LWZhbWlseT0iVmVyZGFuYSIgZm9udC1zaXplPSIxNCIgbGVuZ3RoQWRqdXN0PSJzcGFjaW5nIiB0ZXh0TGVuZ3RoPSIxMjMuMDI2NCIgeD0iNDk4LjQ5IiB5PSI2Mi45OTUxIj5hcnRpc3QueWVhcnNBY3RpdmU8L3RleHQ+PC9nPjwhLS1lbnRpdHkgcmVzdWx0LS0+PGcgY2xhc3M9ImVudGl0eSIgZGF0YS1lbnRpdHk9InJlc3VsdCIgZGF0YS1zb3VyY2UtbGluZT0iMTEiIGRhdGEtdWlkPSJlbnQwMDA3IiBpZD0iZW50aXR5X3Jlc3VsdCI+PHJlY3QgZmlsbD0iI0ZGRkZGRiIgaGVpZ2h0PSIyMi4yOTY5IiByeD0iMi41IiByeT0iMi41IiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE7IiB3aWR0aD0iNDcuOTk5OSIgeD0iNTg0IiB5PSIyMTguNiIvPjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJWZXJkYW5hIiBmb250LXNpemU9IjE0IiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjI3Ljk5OTkiIHg9IjU5NCIgeT0iMjM0LjU5NTEiPiYjMzIwODA7JiMyNjUyNDs8L3RleHQ+PC9nPjwhLS1lbnRpdHkgY2FzZTEtLT48ZyBjbGFzcz0iZW50aXR5IiBkYXRhLWVudGl0eT0iY2FzZTEiIGRhdGEtc291cmNlLWxpbmU9IjciIGRhdGEtdWlkPSJlbnQwMDA1IiBpZD0iZW50aXR5X2Nhc2UxIj48cmVjdCBmaWxsPSIjRkZGRkZGIiBoZWlnaHQ9IjIyLjI5NjkiIHJ4PSIyLjUiIHJ5PSIyLjUiIHN0eWxlPSJzdHJva2U6IzAwMDAwMDtzdHJva2Utd2lkdGg6MTsiIHdpZHRoPSIyMDEuNDMyNiIgeD0iNjguMjgiIHk9IjEzNi4zIi8+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9IlZlcmRhbmEiIGZvbnQtc2l6ZT0iMTQiIGxlbmd0aEFkanVzdD0ic3BhY2luZyIgdGV4dExlbmd0aD0iMTgxLjQzMjYiIHg9Ijc4LjI4IiB5PSIxNTIuMjk1MSI+Y2FzZSBTdGlsbEFjdGl2ZShzaW5jZSkgPSZndDs8L3RleHQ+PC9nPjwhLS1lbnRpdHkgY2FzZTItLT48ZyBjbGFzcz0iZW50aXR5IiBkYXRhLWVudGl0eT0iY2FzZTIiIGRhdGEtc291cmNlLWxpbmU9IjgiIGRhdGEtdWlkPSJlbnQwMDA2IiBpZD0iZW50aXR5X2Nhc2UyIj48cmVjdCBmaWxsPSIjRkZGRkZGIiBoZWlnaHQ9IjIyLjI5NjkiIHJ4PSIyLjUiIHJ5PSIyLjUiIHN0eWxlPSJzdHJva2U6IzAwMDAwMDtzdHJva2Utd2lkdGg6MTsiIHdpZHRoPSIyNjguMTU4MiIgeD0iMzA0LjkyIiB5PSIxMzYuMyIvPjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJWZXJkYW5hIiBmb250LXNpemU9IjE0IiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjI0OC4xNTgyIiB4PSIzMTQuOTIiIHk9IjE1Mi4yOTUxIj5jYXNlIEFjdGl2ZUJldHdlZW4oc3RhcnQsIGVuZCkgPSZndDs8L3RleHQ+PC9nPjxnIGNsYXNzPSJlbnRpdHkiIGRhdGEtZW50aXR5PSJHTU4xMCIgZGF0YS1zb3VyY2UtbGluZT0iMTgiIGRhdGEtdWlkPSJlbnQwMDExIiBpZD0iZW50aXR5X0dNTjEwIj48cGF0aCBkPSJNNDkzLjUsMzAwLjg5IEw0OTMuNSwzNDEuMTU1NiBBMCwwIDAgMCAwIDQ5My41LDM0MS4xNTU2IEw3MjIuNTAwMiwzNDEuMTU1NiBBMCwwIDAgMCAwIDcyMi41MDAyLDM0MS4xNTU2IEw3MjIuNTAwMiwzMTAuODkgTDcxMi41MDAyLDMwMC44OSBMNjEyLDMwMC44OSBMNjA4LDI0MS4zNCBMNjA0LDMwMC44OSBMNDkzLjUsMzAwLjg5IEEwLDAgMCAwIDAgNDkzLjUsMzAwLjg5IiBmaWxsPSIjRkZGRkZGIiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE7Ii8+PHBhdGggZD0iTTcxMi41MDAyLDMwMC44OSBMNzEyLjUwMDIsMzEwLjg5IEw3MjIuNTAwMiwzMTAuODkgTDcxMi41MDAyLDMwMC44OSIgZmlsbD0iI0ZGRkZGRiIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxOyIvPjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJWZXJkYW5hIiBmb250LXNpemU9IjEzIiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjIwOC4wMDAyIiB4PSI0OTkuNSIgeT0iMzE3Ljk1NjkiPiYjMjA4NDA7JiMxMjM5MDsmIzEyMzk4OyYjMTI0NjU7JiMxMjU0MDsmIzEyNDczOyYjMTI0MzQ7JiMzMjE3ODsmIzMyNjQ1OyYjMTIzNzc7JiMxMjQyNzsmIzI0NTE3OyYjMzUyMDE7JiMxMjM2NDsmIzEyMzU0OyYjMTI0Mjc7PC90ZXh0Pjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJWZXJkYW5hIiBmb250LXNpemU9IjEzIiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjE1Ni4wMDAyIiB4PSI0OTkuNSIgeT0iMzMzLjA4OTciPiYjNjUyODg7JiMxMjQ2NzsmIzEyNTMxOyYjMTI0OTc7JiMxMjQ1MjsmIzEyNTIxOyYjMTIzNjQ7JiMxMjQ4MTsmIzEyNDU1OyYjMTI0ODM7JiMxMjQ2MzsmIzY1Mjg5OzwvdGV4dD48L2c+PCEtLWxpbmsgaW5wdXQgdG8gbWF0Y2hfYmxvY2stLT48ZyBjbGFzcz0ibGluayIgZGF0YS1lbnRpdHktMT0iaW5wdXQiIGRhdGEtZW50aXR5LTI9Im1hdGNoX2Jsb2NrIiBkYXRhLXNvdXJjZS1saW5lPSIxMyIgZGF0YS11aWQ9ImxuazgiIGlkPSJsaW5rX2lucHV0X21hdGNoX2Jsb2NrIj48cGF0aCBkPSJNNTgxLjIzLDY5Ljc1IEM1ODQuMTUsNzEuOTMgNTg2Ljg3LDc0LjQ0IDU4OSw3Ny4zIEM1OTEuMzA1LDgwLjM5NjMgNTkzLjMzMDMsODMuNzU2NiA1OTUuMTA5OSw4Ny4yNzE2IEM1OTUuOTk5Nyw4OS4wMjkxIDU5Ni44MjgsOTAuODI1MyA1OTcuNTk5Miw5Mi42NDY1IEM1OTcuNjQ3NCw5Mi43NjAzIDU5NS4zNzc1LDg3LjM0IDU5NS40MjUzLDg3LjQ1NCIgZmlsbD0ibm9uZSIgaWQ9ImlucHV0LXRvLW1hdGNoX2Jsb2NrIiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE7Ii8+PHBvbHlnb24gZmlsbD0iIzAwMDAwMCIgcG9pbnRzPSI1OTcuNzQzMSw5Mi45ODgyLDU5Ny45NTU5LDgzLjE0MTcsNTk1LjgxMTYsODguMzc2NCw1OTAuNTc2OSw4Ni4yMzIxLDU5Ny43NDMxLDkyLjk4ODIiIHN0eWxlPSJzdHJva2U6IzAwMDAwMDtzdHJva2Utd2lkdGg6MTsiLz48L2c+PCEtLWxpbmsgbWF0Y2hfYmxvY2sgdG8gcmVzdWx0LS0+PGcgY2xhc3M9ImxpbmsiIGRhdGEtZW50aXR5LTE9Im1hdGNoX2Jsb2NrIiBkYXRhLWVudGl0eS0yPSJyZXN1bHQiIGRhdGEtc291cmNlLWxpbmU9IjE0IiBkYXRhLXVpZD0ibG5rOSIgaWQ9ImxpbmtfbWF0Y2hfYmxvY2tfcmVzdWx0Ij48cGF0aCBkPSJNNjA4LDE4Mi42NjkgQzYwOCwxODIuNzg2NyA2MDgsMTgyLjkwNDQgNjA4LDE4My4wMjIxIEM2MDgsMTgzLjQ5MzIgNjA4LDE4My45NjUzIDYwOCwxODQuNDM4MiBDNjA4LDE4NS4zODQgNjA4LDE4Ni4zMzMgNjA4LDE4Ny4yODI5IEM2MDgsMTkxLjA4MjQgNjA4LDE5NC44OTc3IDYwOCwxOTguNTkyMiBDNjA4LDIwNS45ODEzIDYwOCwyMDYuODg3NSA2MDgsMjEyLjIyIiBmaWxsPSJub25lIiBpZD0ibWF0Y2hfYmxvY2stdG8tcmVzdWx0IiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE7Ii8+PHBvbHlnb24gZmlsbD0iIzAwMDAwMCIgcG9pbnRzPSI2MDgsMjE4LjIyLDYxMiwyMDkuMjIsNjA4LDIxMy4yMiw2MDQsMjA5LjIyLDYwOCwyMTguMjIiIHN0eWxlPSJzdHJva2U6IzAwMDAwMDtzdHJva2Utd2lkdGg6MTsiLz48L2c+PCEtLVNSQz1bTFAzQklXQ241OFJ0VU9ldWdtZk1xQnE1VkdLVkdEQnFPMFRkQ2NMb2dlWXVJQ0EwZVdqcjlxWE5LZE5aaElXOFd0c09HbnJ0VkdNSlFQNXNUeTlfb1NVX1dicjhXVlNJNElsNlNmMGVyN3UyRjI5dEpOUENoWUd0OFpTV3Z5WVBTRGxOWTl5bUFWOEVacUlFaVNSck9uMnZ0Zk9PN3FCNFhVUW53bExuZ0lxTEFCa3JMYnp4eElJSjFfeXJLY1pXa25XZG9Rb2FlTUNiT1BMbGpVZjhhM1NNaEpGTjNrMEhXNmZlejFYaDc1SGRBUjc5SmpheUw3clNfR3BrUVlLN3RLeXlNdXQ4Y3l0TThYMVJYMGxRdEVzQkw4UjBzbmJZYmg5OXlLWGNJRVFQeDVpT283d0hsUWEtdHdsbFdpbWpzT2w5a0ZXVDZaQU5QQW5faWNidkhkUEszLWI3bElWdDUzR19mdHE4a3pnTlFOZEVGM3lGbF9tMV0tLT48L2c+PC9zdmc+" class="uml" alt="uml diagram" title="" /></p>
+<h3 id="710">7.10 検索条件のモデリング<a class="headerlink" href="#710" title="Permanent link">&para;</a></h3>
+<p>検索条件も ADT でモデリングできます。</p>
+<div class="highlight"><pre><span></span><code><span class="k">enum</span><span class="w"> </span><span class="nc">SearchCondition</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">case</span><span class="w"> </span><span class="nc">SearchByGenre</span><span class="p">(</span><span class="n">genres</span><span class="p">:</span><span class="w"> </span><span class="nc">List</span><span class="p">[</span><span class="nc">MusicGenre</span><span class="p">])</span>
+<span class="w">  </span><span class="k">case</span><span class="w"> </span><span class="nc">SearchByOrigin</span><span class="p">(</span><span class="n">locations</span><span class="p">:</span><span class="w"> </span><span class="nc">List</span><span class="p">[</span><span class="nc">Location</span><span class="p">])</span>
+<span class="w">  </span><span class="k">case</span><span class="w"> </span><span class="nc">SearchByActiveYears</span><span class="p">(</span><span class="n">start</span><span class="p">:</span><span class="w"> </span><span class="nc">Int</span><span class="p">,</span><span class="w"> </span><span class="n">end</span><span class="p">:</span><span class="w"> </span><span class="nc">Int</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">searchArtists</span><span class="p">(</span>
+<span class="w">    </span><span class="n">artists</span><span class="p">:</span><span class="w"> </span><span class="nc">List</span><span class="p">[</span><span class="nc">Artist</span><span class="p">],</span>
+<span class="w">    </span><span class="n">requiredConditions</span><span class="p">:</span><span class="w"> </span><span class="nc">List</span><span class="p">[</span><span class="nc">SearchCondition</span><span class="p">]</span>
+<span class="p">):</span><span class="w"> </span><span class="nc">List</span><span class="p">[</span><span class="nc">Artist</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">artists</span><span class="p">.</span><span class="n">filter</span><span class="p">(</span><span class="n">artist</span><span class="w"> </span><span class="o">=&gt;</span>
+<span class="w">    </span><span class="n">requiredConditions</span><span class="p">.</span><span class="n">forall</span><span class="p">(</span><span class="n">condition</span><span class="w"> </span><span class="o">=&gt;</span>
+<span class="w">      </span><span class="n">condition</span><span class="w"> </span><span class="k">match</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">case</span><span class="w"> </span><span class="nc">SearchByGenre</span><span class="p">(</span><span class="n">genres</span><span class="p">)</span><span class="w">           </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">genres</span><span class="p">.</span><span class="n">contains</span><span class="p">(</span><span class="n">artist</span><span class="p">.</span><span class="n">genre</span><span class="p">)</span>
+<span class="w">        </span><span class="k">case</span><span class="w"> </span><span class="nc">SearchByOrigin</span><span class="p">(</span><span class="n">locations</span><span class="p">)</span><span class="w">       </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">locations</span><span class="p">.</span><span class="n">contains</span><span class="p">(</span><span class="n">artist</span><span class="p">.</span><span class="n">origin</span><span class="p">)</span>
+<span class="w">        </span><span class="k">case</span><span class="w"> </span><span class="nc">SearchByActiveYears</span><span class="p">(</span><span class="n">start</span><span class="p">,</span><span class="w"> </span><span class="n">end</span><span class="p">)</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">wasArtistActive</span><span class="p">(</span><span class="n">artist</span><span class="p">,</span><span class="w"> </span><span class="n">start</span><span class="p">,</span><span class="w"> </span><span class="n">end</span><span class="p">)</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">)</span>
+<span class="w">  </span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></div>
+<h3 id="711-forall-exists">7.11 forall と exists<a class="headerlink" href="#711-forall-exists" title="Permanent link">&para;</a></h3>
+<p>Option と List で条件判定をする際に便利なメソッドです。</p>
+<table>
+<thead>
+<tr>
+<th>メソッド</th>
+<th>Option での動作</th>
+<th>List での動作</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>forall(p)</code></td>
+<td>None → true, Some(x) → p(x)</td>
+<td>全要素が p を満たす</td>
+</tr>
+<tr>
+<td><code>exists(p)</code></td>
+<td>None → false, Some(x) → p(x)</td>
+<td>いずれかの要素が p を満たす</td>
+</tr>
+<tr>
+<td><code>contains(x)</code></td>
+<td>Some(x) と等しいか</td>
+<td>x を含むか</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight"><pre><span></span><code><span class="kd">val</span><span class="w"> </span><span class="n">year</span><span class="p">:</span><span class="w"> </span><span class="nc">Option</span><span class="p">[</span><span class="nc">Int</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">Some</span><span class="p">(</span><span class="mi">996</span><span class="p">)</span>
+<span class="kd">val</span><span class="w"> </span><span class="n">noYear</span><span class="p">:</span><span class="w"> </span><span class="nc">Option</span><span class="p">[</span><span class="nc">Int</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">None</span>
+
+<span class="c1">// forall - 「全て」または「存在しない」</span>
+<span class="n">year</span><span class="p">.</span><span class="n">forall</span><span class="p">(</span><span class="n">_</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">2020</span><span class="p">)</span><span class="w">    </span><span class="c1">// true (996 &lt; 2020)</span>
+<span class="n">noYear</span><span class="p">.</span><span class="n">forall</span><span class="p">(</span><span class="n">_</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">2020</span><span class="p">)</span><span class="w">  </span><span class="c1">// true (値がないので「全て」が自明に真)</span>
+<span class="n">year</span><span class="p">.</span><span class="n">forall</span><span class="p">(</span><span class="n">_</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">2020</span><span class="p">)</span><span class="w">    </span><span class="c1">// false</span>
+
+<span class="c1">// exists - 「存在して条件を満たす」</span>
+<span class="n">year</span><span class="p">.</span><span class="n">exists</span><span class="p">(</span><span class="n">_</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">2020</span><span class="p">)</span><span class="w">    </span><span class="c1">// true</span>
+<span class="n">noYear</span><span class="p">.</span><span class="n">exists</span><span class="p">(</span><span class="n">_</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">2020</span><span class="p">)</span><span class="w">  </span><span class="c1">// false (値がないので存在しない)</span>
+</code></pre></div>
+<hr />
+<h2 id="_4">まとめ<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h2>
+<h3 id="part-iii">Part III で学んだこと<a class="headerlink" href="#part-iii" title="Permanent link">&para;</a></h3>
+<p><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiBjb250ZW50U3R5bGVUeXBlPSJ0ZXh0L2NzcyIgZGF0YS1kaWFncmFtLXR5cGU9IkRFU0NSSVBUSU9OIiBoZWlnaHQ9IjM2MXB4IiBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSJub25lIiBzdHlsZT0id2lkdGg6MTAyOXB4O2hlaWdodDozNjFweDtiYWNrZ3JvdW5kOiNGRkZGRkY7IiB2ZXJzaW9uPSIxLjEiIHZpZXdCb3g9IjAgMCAxMDI5IDM2MSIgd2lkdGg9IjEwMjlweCIgem9vbUFuZFBhbj0ibWFnbmlmeSI+PGRlZnMvPjxnPjwhLS1jbHVzdGVyIFBhcnQgSUlJOiA/Pz8/Pz8/Pz8tLT48ZyBjbGFzcz0iY2x1c3RlciIgZGF0YS1lbnRpdHk9IlBhcnQgSUlJLiAuLi4uLi4uLi4iIGRhdGEtc291cmNlLWxpbmU9IjMiIGRhdGEtdWlkPSJlbnQwMDAyIiBpZD0iY2x1c3Rlcl9QYXJ0IElJSS4gLi4uLi4uLi4uIj48cmVjdCBmaWxsPSIjRkZGRkZGIiBoZWlnaHQ9IjM0My44OSIgcng9IjIuNSIgcnk9IjIuNSIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxOyIgd2lkdGg9IjEwMTEiIHg9IjEyIiB5PSIxMiIvPjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJWZXJkYW5hIiBmb250LXNpemU9IjE0IiBmb250LXdlaWdodD0iYm9sZCIgbGVuZ3RoQWRqdXN0PSJzcGFjaW5nIiB0ZXh0TGVuZ3RoPSIxOTAuMjc3OCIgeD0iNDIyLjM2MTEiIHk9IjI2Ljk5NTEiPlBhcnQgSUlJOiAmIzEyNDU2OyYjMTI1MjE7JiMxMjU0MDsmIzEyNDk1OyYjMTI1MzE7JiMxMjQ4OTsmIzEyNTIyOyYjMTI1MzE7JiMxMjQ2NDs8L3RleHQ+PC9nPjwhLS1jbHVzdGVyIGNoNi0tPjxnIGNsYXNzPSJjbHVzdGVyIiBkYXRhLWVudGl0eT0iY2g2IiBkYXRhLXNvdXJjZS1saW5lPSI0IiBkYXRhLXVpZD0iZW50MDAwMyIgaWQ9ImNsdXN0ZXJfY2g2Ij48cmVjdCBmaWxsPSIjRkZGRkZGIiBoZWlnaHQ9IjE3OC41OSIgcng9IjIuNSIgcnk9IjIuNSIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxOyIgd2lkdGg9IjM5OCIgeD0iNDQiIHk9IjYzIi8+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9IlZlcmRhbmEiIGZvbnQtc2l6ZT0iMTQiIGZvbnQtd2VpZ2h0PSJib2xkIiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjM3Ljc0MTEiIHg9IjIyNC4xMjk1IiB5PSI3Ny45OTUxIj4mIzMxNTMyOzYmIzMxNDU2OzwvdGV4dD48L2c+PCEtLWNsdXN0ZXIgY2g3LS0+PGcgY2xhc3M9ImNsdXN0ZXIiIGRhdGEtZW50aXR5PSJjaDciIGRhdGEtc291cmNlLWxpbmU9IjEyIiBkYXRhLXVpZD0iZW50MDAwOSIgaWQ9ImNsdXN0ZXJfY2g3Ij48cmVjdCBmaWxsPSIjRkZGRkZGIiBoZWlnaHQ9IjE3MS41OSIgcng9IjIuNSIgcnk9IjIuNSIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxOyIgd2lkdGg9IjUwOSIgeD0iNDgyIiB5PSIxNTIuMyIvPjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJWZXJkYW5hIiBmb250LXNpemU9IjE0IiBmb250LXdlaWdodD0iYm9sZCIgbGVuZ3RoQWRqdXN0PSJzcGFjaW5nIiB0ZXh0TGVuZ3RoPSIzNy43NDExIiB4PSI3MTcuNjI5NSIgeT0iMTY3LjI5NTEiPiYjMzE1MzI7NyYjMzE0NTY7PC90ZXh0PjwvZz48IS0tZW50aXR5IE9wdGlvbltBXS0tPjxnIGNsYXNzPSJlbnRpdHkiIGRhdGEtZW50aXR5PSJPcHRpb24uQS4iIGRhdGEtc291cmNlLWxpbmU9IjUiIGRhdGEtdWlkPSJlbnQwMDA0IiBpZD0iZW50aXR5X09wdGlvbi5BLiI+PHJlY3QgZmlsbD0iI0ZGRkZGRiIgaGVpZ2h0PSIyMi4yOTY5IiByeD0iMi41IiByeT0iMi41IiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE7IiB3aWR0aD0iODcuMjI0NiIgeD0iNjguMzkiIHk9IjEwNiIvPjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJWZXJkYW5hIiBmb250LXNpemU9IjE0IiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjY3LjIyNDYiIHg9Ijc4LjM5IiB5PSIxMjEuOTk1MSI+T3B0aW9uW0FdPC90ZXh0PjwvZz48IS0tZW50aXR5IFNvbWUgLyBOb25lLS0+PGcgY2xhc3M9ImVudGl0eSIgZGF0YS1lbnRpdHk9IlNvbWUgLiBOb25lIiBkYXRhLXNvdXJjZS1saW5lPSI2IiBkYXRhLXVpZD0iZW50MDAwNSIgaWQ9ImVudGl0eV9Tb21lIC4gTm9uZSI+PHJlY3QgZmlsbD0iI0ZGRkZGRiIgaGVpZ2h0PSIyMi4yOTY5IiByeD0iMi41IiByeT0iMi41IiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE7IiB3aWR0aD0iMTA5Ljg0NDciIHg9IjE5MS4wOCIgeT0iMTA2Ii8+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9IlZlcmRhbmEiIGZvbnQtc2l6ZT0iMTQiIGxlbmd0aEFkanVzdD0ic3BhY2luZyIgdGV4dExlbmd0aD0iODkuODQ0NyIgeD0iMjAxLjA4IiB5PSIxMjEuOTk1MSI+U29tZSAvIE5vbmU8L3RleHQ+PC9nPjwhLS1lbnRpdHkgb3JFbHNlLS0+PGcgY2xhc3M9ImVudGl0eSIgZGF0YS1lbnRpdHk9Im9yRWxzZSIgZGF0YS1zb3VyY2UtbGluZT0iNyIgZGF0YS11aWQ9ImVudDAwMDYiIGlkPSJlbnRpdHlfb3JFbHNlIj48cmVjdCBmaWxsPSIjRkZGRkZGIiBoZWlnaHQ9IjIyLjI5NjkiIHJ4PSIyLjUiIHJ5PSIyLjUiIHN0eWxlPSJzdHJva2U6IzAwMDAwMDtzdHJva2Utd2lkdGg6MTsiIHdpZHRoPSI2Mi45NjM5IiB4PSIzMzUuNTIiIHk9IjEwNiIvPjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJWZXJkYW5hIiBmb250LXNpemU9IjE0IiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjQyLjk2MzkiIHg9IjM0NS41MiIgeT0iMTIxLjk5NTEiPm9yRWxzZTwvdGV4dD48L2c+PCEtLWVudGl0eSBmb3IgPz8/Py0tPjxnIGNsYXNzPSJlbnRpdHkiIGRhdGEtZW50aXR5PSJmb3IgLi4uLiIgZGF0YS1zb3VyY2UtbGluZT0iOCIgZGF0YS11aWQ9ImVudDAwMDciIGlkPSJlbnRpdHlfZm9yIC4uLi4iPjxyZWN0IGZpbGw9IiNGRkZGRkYiIGhlaWdodD0iMjIuMjk2OSIgcng9IjIuNSIgcnk9IjIuNSIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxOyIgd2lkdGg9Ijk5LjciIHg9IjY4LjE1IiB5PSIxOTUuMyIvPjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJWZXJkYW5hIiBmb250LXNpemU9IjE0IiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9Ijc5LjciIHg9Ijc4LjE1IiB5PSIyMTEuMjk1MSI+Zm9yICYjMjA4Njk7JiMyMTI1MzsmIzM0OTIwOyYjMzUzNTI7PC90ZXh0PjwvZz48IS0tZW50aXR5ID8/Pz8/Pz8/Pz8/LS0+PGcgY2xhc3M9ImVudGl0eSIgZGF0YS1lbnRpdHk9Ii4uLi4uLi4uLi4uIiBkYXRhLXNvdXJjZS1saW5lPSI5IiBkYXRhLXVpZD0iZW50MDAwOCIgaWQ9ImVudGl0eV8uLi4uLi4uLi4uLiI+PHJlY3QgZmlsbD0iI0ZGRkZGRiIgaGVpZ2h0PSIyMi4yOTY5IiByeD0iMi41IiByeT0iMi41IiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE7IiB3aWR0aD0iMTczLjk5OTMiIHg9IjIwMyIgeT0iMTk1LjMiLz48dGV4dCBmaWxsPSIjMDAwMDAwIiBmb250LWZhbWlseT0iVmVyZGFuYSIgZm9udC1zaXplPSIxNCIgbGVuZ3RoQWRqdXN0PSJzcGFjaW5nIiB0ZXh0TGVuZ3RoPSIxNTMuOTk5MyIgeD0iMjEzIiB5PSIyMTEuMjk1MSI+JiMxMjQ1NjsmIzEyNTIxOyYjMTI1NDA7JiMxMjQ5NTsmIzEyNTMxOyYjMTI0ODk7JiMxMjUyMjsmIzEyNTMxOyYjMTI0NjQ7JiMyNTEyNjsmIzMwMDUzOzwvdGV4dD48L2c+PCEtLWVudGl0eSBFaXRoZXJbRSwgQV0tLT48ZyBjbGFzcz0iZW50aXR5IiBkYXRhLWVudGl0eT0iRWl0aGVyLkUuIEEuIiBkYXRhLXNvdXJjZS1saW5lPSIxMyIgZGF0YS11aWQ9ImVudDAwMTAiIGlkPSJlbnRpdHlfRWl0aGVyLkUuIEEuIj48cmVjdCBmaWxsPSIjRkZGRkZGIiBoZWlnaHQ9IjIyLjI5NjkiIHJ4PSIyLjUiIHJ5PSIyLjUiIHN0eWxlPSJzdHJva2U6IzAwMDAwMDtzdHJva2Utd2lkdGg6MTsiIHdpZHRoPSI5OS43MTM5IiB4PSI1MDYuMTQiIHk9IjE5NS4zIi8+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9IlZlcmRhbmEiIGZvbnQtc2l6ZT0iMTQiIGxlbmd0aEFkanVzdD0ic3BhY2luZyIgdGV4dExlbmd0aD0iNzkuNzEzOSIgeD0iNTE2LjE0IiB5PSIyMTEuMjk1MSI+RWl0aGVyW0UsIEFdPC90ZXh0PjwvZz48IS0tZW50aXR5IFJpZ2h0IC8gTGVmdC0tPjxnIGNsYXNzPSJlbnRpdHkiIGRhdGEtZW50aXR5PSJSaWdodCAuIExlZnQiIGRhdGEtc291cmNlLWxpbmU9IjE0IiBkYXRhLXVpZD0iZW50MDAxMSIgaWQ9ImVudGl0eV9SaWdodCAuIExlZnQiPjxyZWN0IGZpbGw9IiNGRkZGRkYiIGhlaWdodD0iMjIuMjk2OSIgcng9IjIuNSIgcnk9IjIuNSIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxOyIgd2lkdGg9Ijk3LjMxNDUiIHg9IjY0MS4zNCIgeT0iMTk1LjMiLz48dGV4dCBmaWxsPSIjMDAwMDAwIiBmb250LWZhbWlseT0iVmVyZGFuYSIgZm9udC1zaXplPSIxNCIgbGVuZ3RoQWRqdXN0PSJzcGFjaW5nIiB0ZXh0TGVuZ3RoPSI3Ny4zMTQ1IiB4PSI2NTEuMzQiIHk9IjIxMS4yOTUxIj5SaWdodCAvIExlZnQ8L3RleHQ+PC9nPjwhLS1lbnRpdHkgPz8/Pz8/Pz8/Pz8tLT48ZyBjbGFzcz0iZW50aXR5IiBkYXRhLWVudGl0eT0iLi4uLi4uLi4uLi4iIGRhdGEtc291cmNlLWxpbmU9IjE1IiBkYXRhLXVpZD0iZW50MDAxMiIgaWQ9ImVudGl0eV8uLi4uLi4uLi4uLiI+PHJlY3QgZmlsbD0iI0ZGRkZGRiIgaGVpZ2h0PSIyMi4yOTY5IiByeD0iMi41IiByeT0iMi41IiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE7IiB3aWR0aD0iMTczLjk5OTMiIHg9Ijc3NCIgeT0iMTk1LjMiLz48dGV4dCBmaWxsPSIjMDAwMDAwIiBmb250LWZhbWlseT0iVmVyZGFuYSIgZm9udC1zaXplPSIxNCIgbGVuZ3RoQWRqdXN0PSJzcGFjaW5nIiB0ZXh0TGVuZ3RoPSIxNTMuOTk5MyIgeD0iNzg0IiB5PSIyMTEuMjk1MSI+JiMxMjQ1NjsmIzEyNTIxOyYjMTI1NDA7JiMxMjUxMzsmIzEyNDgzOyYjMTI0NzU7JiMxMjU0MDsmIzEyNDcyOyYjMTIzOTg7JiMyMDQ0NTsmIzI1MzQ1OzwvdGV4dD48L2c+PCEtLWVudGl0eSBBRFQ/Pz8/Pz8/Pz8tLT48ZyBjbGFzcz0iZW50aXR5IiBkYXRhLWVudGl0eT0iQURULi4uLi4uLi4uIiBkYXRhLXNvdXJjZS1saW5lPSIxNiIgZGF0YS11aWQ9ImVudDAwMTMiIGlkPSJlbnRpdHlfQURULi4uLi4uLi4uIj48cmVjdCBmaWxsPSIjRkZGRkZGIiBoZWlnaHQ9IjIyLjI5NjkiIHJ4PSIyLjUiIHJ5PSIyLjUiIHN0eWxlPSJzdHJva2U6IzAwMDAwMDtzdHJva2Utd2lkdGg6MTsiIHdpZHRoPSIxNzQuOTA4NiIgeD0iNTA1LjU1IiB5PSIyNzcuNTkiLz48dGV4dCBmaWxsPSIjMDAwMDAwIiBmb250LWZhbWlseT0iVmVyZGFuYSIgZm9udC1zaXplPSIxNCIgbGVuZ3RoQWRqdXN0PSJzcGFjaW5nIiB0ZXh0TGVuZ3RoPSIxNTQuOTA4NiIgeD0iNTE1LjU1IiB5PSIyOTMuNTg1MSI+QURUJiM2NTI4ODsmIzIwMTk1OyYjMjU5Njg7JiMzMDM0MDsmIzEyNDg3OyYjMTI1NDA7JiMxMjQ3OTsmIzIyNDExOyYjNjUyODk7PC90ZXh0PjwvZz48IS0tZW50aXR5ID8/Pz8/Pz8/Py0tPjxnIGNsYXNzPSJlbnRpdHkiIGRhdGEtZW50aXR5PSIuLi4uLi4uLi4iIGRhdGEtc291cmNlLWxpbmU9IjE3IiBkYXRhLXVpZD0iZW50MDAxNCIgaWQ9ImVudGl0eV8uLi4uLi4uLi4iPjxyZWN0IGZpbGw9IiNGRkZGRkYiIGhlaWdodD0iMjIuMjk2OSIgcng9IjIuNSIgcnk9IjIuNSIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxOyIgd2lkdGg9IjE0NS45OTk1IiB4PSI3MTUiIHk9IjI3Ny41OSIvPjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJWZXJkYW5hIiBmb250LXNpemU9IjE0IiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjEyNS45OTk1IiB4PSI3MjUiIHk9IjI5My41ODUxIj4mIzEyNDk3OyYjMTI0Nzk7JiMxMjU0MDsmIzEyNTMxOyYjMTI1MTA7JiMxMjQ4MzsmIzEyNDgxOyYjMTI1MzE7JiMxMjQ2NDs8L3RleHQ+PC9nPjwhLS1saW5rIGNoNiB0byBjaDctLT48ZyBjbGFzcz0ibGluayIgZGF0YS1lbnRpdHktMT0iY2g2IiBkYXRhLWVudGl0eS0yPSJjaDciIGRhdGEtc291cmNlLWxpbmU9IjIxIiBkYXRhLXVpZD0ibG5rMTUiIGlkPSJsaW5rX2NoNl9jaDciPjxwYXRoIGQ9Ik00NDIuNjg2NywxMTguMTU2NyBDNDQzLjI1MDEsMTE4LjE1NzUgNDQzLjgzOTQsMTE4LjE1ODMgNDQ0LjQ1NCwxMTguMTU5MiBDNDQ1LjY4MzIsMTE4LjE2MSA0NDcuMDE0LDExOC4xNjMxIDQ0OC40NDI1LDExOC4xNjU3IEM0NTEuMjk5NiwxMTguMTcwOCA0NTQuNTQ4LDExOC4xNzc2IDQ1OC4xNTgxLDExOC4xODY3IEM0NzIuNTk4NiwxMTguMjIyOSA0OTIuODI2OSwxMTguMjk0OCA1MTYuOTUzMSwxMTguNDM3OCBDNTY1LjIwNTYsMTE4LjcyMzggNjI5LjA1LDExOS4yOTM3IDY5My4zNjc1LDEyMC40MyBDODIyLjAwMjUsMTIyLjcwMjUgOTUyLjUzLDEyNy4yNCA5NjQsMTM2LjMgQzk2Ny4wMjg4LDEzOC42OTEyIDk2OS42MDI3LDE0MS41MTczIDk3MS43ODc1LDE0NC42Mzc5IEM5NzIuODc5OSwxNDYuMTk4MiA5NzMuODc1LDE0Ny44MzIxIDk3NC43ODExLDE0OS41MjIgQzk3NS4yMzQxLDE1MC4zNjcgOTczLjExMTQsMTQ1Ljc5NjQgOTczLjUyMSwxNDYuNjY3MiIgZmlsbD0ibm9uZSIgaWQ9ImNoNi10by1jaDciIHN0eWxlPSJzdHJva2U6IzAwMDAwMDtzdHJva2Utd2lkdGg6MTsiLz48cG9seWdvbiBmaWxsPSIjMDAwMDAwIiBwb2ludHM9Ijk3Ni4wNzQ0LDE1Mi4wOTY4LDk3NS44NjM5LDE0Mi4yNTAyLDk3My45NDY1LDE0Ny41NzIyLDk2OC42MjQ1LDE0NS42NTQ4LDk3Ni4wNzQ0LDE1Mi4wOTY4IiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE7Ii8+PC9nPjwhLS1TUkM9W0tvcDlJQ3JETElaOElTcEN1LThnSWFxa0lTbkJwcWJMSzBmOEIyZkh5RkpxajU5dXRCSllTVkZBbnlyeDdaVnRGc3hVX0JZdnl0N3BBWDJaUU9FSUdaTW9ka1RocmZXek54cjBJSTZuTTI0dm1tbWVjUG5PYkFBV3Y1ekdhZmNWNS1xT2dtR0wyQ3U3c2djbHU5VVZibWVKb1l6b3BJYzZ5ekJvWW5JVWpoSy14TWJ6aU4zNVluS3BPRTl1dEZBaU96ZHBnS2tMazZndnE5bmFaZDJJRVRuOWhmYjBablQ1ay1lZTg1bUxiOWNVS0c5cWJhemdNV2FNMm5TLVJjdi10QkdSbjZ4UXlSWG50UEZ6U3ZfckRDOEtFaGc0bERfSnlNSnR1Y1RKRHBvVnJWQXVrSHNpU0ZfSlVUdGx6dEoyWk1rVTIxRzM2bVRxXzNvR1lTc0RxQjA0a1hwZVRiMnV3VWhRV0htQjAwMDBdLS0+PC9nPjwvc3ZnPg==" class="uml" alt="uml diagram" title="" /></p>
+<h3 id="option-vs-either">Option vs Either の使い分け<a class="headerlink" href="#option-vs-either" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>状況</th>
+<th>使用する型</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>値があるかないかだけが重要</td>
+<td><code>Option[A]</code></td>
+</tr>
+<tr>
+<td>失敗理由を伝える必要がある</td>
+<td><code>Either[E, A]</code></td>
+</tr>
+<tr>
+<td>検索結果が見つからない</td>
+<td><code>Option[A]</code></td>
+</tr>
+<tr>
+<td>バリデーションエラーを伝える</td>
+<td><code>Either[String, A]</code></td>
+</tr>
+<tr>
+<td>複数のエラー種別がある</td>
+<td><code>Either[ErrorType, A]</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="_5">キーポイント<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>Option</strong>: 値の有無を型で表現する</li>
+<li><strong>Either</strong>: 成功/失敗とエラー情報を型で表現する</li>
+<li><strong>for 内包表記</strong>: Option/Either を組み合わせて使う</li>
+<li><strong>orElse</strong>: フォールバックを提供する</li>
+<li><strong>ADT</strong>: 直積型と直和型でドメインを正確にモデリング</li>
+<li><strong>パターンマッチング</strong>: 直和型を安全に処理する</li>
+</ol>
+<h3 id="_6">次のステップ<a class="headerlink" href="#_6" title="Permanent link">&para;</a></h3>
+<p>Part IV では、以下のトピックを学びます:</p>
+<ul>
+<li>IO モナドの導入</li>
+<li>副作用の管理</li>
+<li>ストリーム処理</li>
+</ul>
+<hr />
+<h2 id="_7">演習問題<a class="headerlink" href="#_7" title="Permanent link">&para;</a></h2>
+<h3 id="1-option">問題 1: Option の基本<a class="headerlink" href="#1-option" title="Permanent link">&para;</a></h3>
+<p>以下の関数を実装してください。</p>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">safeDivide</span><span class="p">(</span><span class="n">a</span><span class="p">:</span><span class="w"> </span><span class="nc">Int</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="p">:</span><span class="w"> </span><span class="nc">Int</span><span class="p">):</span><span class="w"> </span><span class="nc">Option</span><span class="p">[</span><span class="nc">Int</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">???</span>
+
+<span class="c1">// 期待される動作</span>
+<span class="n">assert</span><span class="p">(</span><span class="n">safeDivide</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="nc">Some</span><span class="p">(</span><span class="mi">5</span><span class="p">))</span>
+<span class="n">assert</span><span class="p">(</span><span class="n">safeDivide</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="nc">None</span><span class="p">)</span>
+<span class="n">assert</span><span class="p">(</span><span class="n">safeDivide</span><span class="p">(</span><span class="mi">7</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="nc">Some</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span>
+</code></pre></div>
+<details>
+<summary>解答</summary>
+
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">safeDivide</span><span class="p">(</span><span class="n">a</span><span class="p">:</span><span class="w"> </span><span class="nc">Int</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="p">:</span><span class="w"> </span><span class="nc">Int</span><span class="p">):</span><span class="w"> </span><span class="nc">Option</span><span class="p">[</span><span class="nc">Int</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">b</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="nc">None</span>
+<span class="w">  </span><span class="k">else</span><span class="w"> </span><span class="nc">Some</span><span class="p">(</span><span class="n">a</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">b</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></div>
+
+</details>
+
+<h3 id="2-option">問題 2: Option の合成<a class="headerlink" href="#2-option" title="Permanent link">&para;</a></h3>
+<p>以下の関数を実装してください。2つの数値文字列を受け取り、その合計を返します。</p>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">addStrings</span><span class="p">(</span><span class="n">a</span><span class="p">:</span><span class="w"> </span><span class="nc">String</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="p">:</span><span class="w"> </span><span class="nc">String</span><span class="p">):</span><span class="w"> </span><span class="nc">Option</span><span class="p">[</span><span class="nc">Int</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">???</span>
+
+<span class="c1">// 期待される動作</span>
+<span class="n">assert</span><span class="p">(</span><span class="n">addStrings</span><span class="p">(</span><span class="s">&quot;10&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;20&quot;</span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="nc">Some</span><span class="p">(</span><span class="mi">30</span><span class="p">))</span>
+<span class="n">assert</span><span class="p">(</span><span class="n">addStrings</span><span class="p">(</span><span class="s">&quot;10&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;abc&quot;</span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="nc">None</span><span class="p">)</span>
+<span class="n">assert</span><span class="p">(</span><span class="n">addStrings</span><span class="p">(</span><span class="s">&quot;xyz&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;20&quot;</span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="nc">None</span><span class="p">)</span>
+</code></pre></div>
+<details>
+<summary>解答</summary>
+
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">addStrings</span><span class="p">(</span><span class="n">a</span><span class="p">:</span><span class="w"> </span><span class="nc">String</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="p">:</span><span class="w"> </span><span class="nc">String</span><span class="p">):</span><span class="w"> </span><span class="nc">Option</span><span class="p">[</span><span class="nc">Int</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">for</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">x</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">a</span><span class="p">.</span><span class="n">toIntOption</span>
+<span class="w">    </span><span class="n">y</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">b</span><span class="p">.</span><span class="n">toIntOption</span>
+<span class="w">  </span><span class="p">}</span><span class="w"> </span><span class="k">yield</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">y</span>
+<span class="p">}</span>
+</code></pre></div>
+
+</details>
+
+<h3 id="3-either">問題 3: Either によるバリデーション<a class="headerlink" href="#3-either" title="Permanent link">&para;</a></h3>
+<p>以下の関数を実装してください。年齢を検証し、エラーメッセージを返します。</p>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">validateAge</span><span class="p">(</span><span class="n">age</span><span class="p">:</span><span class="w"> </span><span class="nc">Int</span><span class="p">):</span><span class="w"> </span><span class="nc">Either</span><span class="p">[</span><span class="nc">String</span><span class="p">,</span><span class="w"> </span><span class="nc">Int</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">???</span>
+
+<span class="c1">// 期待される動作</span>
+<span class="n">assert</span><span class="p">(</span><span class="n">validateAge</span><span class="p">(</span><span class="mi">25</span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="nc">Right</span><span class="p">(</span><span class="mi">25</span><span class="p">))</span>
+<span class="n">assert</span><span class="p">(</span><span class="n">validateAge</span><span class="p">(</span><span class="o">-</span><span class="mi">5</span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="nc">Left</span><span class="p">(</span><span class="s">&quot;Age cannot be negative&quot;</span><span class="p">))</span>
+<span class="n">assert</span><span class="p">(</span><span class="n">validateAge</span><span class="p">(</span><span class="mi">200</span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="nc">Left</span><span class="p">(</span><span class="s">&quot;Age cannot be greater than 150&quot;</span><span class="p">))</span>
+</code></pre></div>
+<details>
+<summary>解答</summary>
+
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">validateAge</span><span class="p">(</span><span class="n">age</span><span class="p">:</span><span class="w"> </span><span class="nc">Int</span><span class="p">):</span><span class="w"> </span><span class="nc">Either</span><span class="p">[</span><span class="nc">String</span><span class="p">,</span><span class="w"> </span><span class="nc">Int</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">age</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="nc">Left</span><span class="p">(</span><span class="s">&quot;Age cannot be negative&quot;</span><span class="p">)</span>
+<span class="w">  </span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">age</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">150</span><span class="p">)</span><span class="w"> </span><span class="nc">Left</span><span class="p">(</span><span class="s">&quot;Age cannot be greater than 150&quot;</span><span class="p">)</span>
+<span class="w">  </span><span class="k">else</span><span class="w"> </span><span class="nc">Right</span><span class="p">(</span><span class="n">age</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></div>
+
+</details>
+
+<h3 id="4">問題 4: パターンマッチング<a class="headerlink" href="#4" title="Permanent link">&para;</a></h3>
+<p>以下の enum とパターンマッチングを使った関数を実装してください。</p>
+<div class="highlight"><pre><span></span><code><span class="k">enum</span><span class="w"> </span><span class="nc">PaymentMethod</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">case</span><span class="w"> </span><span class="nc">CreditCard</span><span class="p">(</span><span class="n">number</span><span class="p">:</span><span class="w"> </span><span class="nc">String</span><span class="p">,</span><span class="w"> </span><span class="n">expiry</span><span class="p">:</span><span class="w"> </span><span class="nc">String</span><span class="p">)</span>
+<span class="w">  </span><span class="k">case</span><span class="w"> </span><span class="nc">BankTransfer</span><span class="p">(</span><span class="n">accountNumber</span><span class="p">:</span><span class="w"> </span><span class="nc">String</span><span class="p">)</span>
+<span class="w">  </span><span class="k">case</span><span class="w"> </span><span class="nc">Cash</span>
+<span class="p">}</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">describePayment</span><span class="p">(</span><span class="n">method</span><span class="p">:</span><span class="w"> </span><span class="nc">PaymentMethod</span><span class="p">):</span><span class="w"> </span><span class="nc">String</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">???</span>
+
+<span class="c1">// 期待される動作</span>
+<span class="n">assert</span><span class="p">(</span><span class="n">describePayment</span><span class="p">(</span><span class="nc">CreditCard</span><span class="p">(</span><span class="s">&quot;1234&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;12/25&quot;</span><span class="p">))</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s">&quot;Credit card ending in 1234&quot;</span><span class="p">)</span>
+<span class="n">assert</span><span class="p">(</span><span class="n">describePayment</span><span class="p">(</span><span class="nc">BankTransfer</span><span class="p">(</span><span class="s">&quot;9876&quot;</span><span class="p">))</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s">&quot;Bank transfer to account 9876&quot;</span><span class="p">)</span>
+<span class="n">assert</span><span class="p">(</span><span class="n">describePayment</span><span class="p">(</span><span class="nc">Cash</span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s">&quot;Cash payment&quot;</span><span class="p">)</span>
+</code></pre></div>
+<details>
+<summary>解答</summary>
+
+<div class="highlight"><pre><span></span><code><span class="k">import</span><span class="w"> </span><span class="nc">PaymentMethod</span><span class="p">.</span><span class="n">_</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">describePayment</span><span class="p">(</span><span class="n">method</span><span class="p">:</span><span class="w"> </span><span class="nc">PaymentMethod</span><span class="p">):</span><span class="w"> </span><span class="nc">String</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">method</span><span class="w"> </span><span class="k">match</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">case</span><span class="w"> </span><span class="nc">CreditCard</span><span class="p">(</span><span class="n">number</span><span class="p">,</span><span class="w"> </span><span class="n">_</span><span class="p">)</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="s">s&quot;Credit card ending in </span><span class="si">$</span><span class="n">number</span><span class="s">&quot;</span>
+<span class="w">  </span><span class="k">case</span><span class="w"> </span><span class="nc">BankTransfer</span><span class="p">(</span><span class="n">account</span><span class="p">)</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="s">s&quot;Bank transfer to account </span><span class="si">$</span><span class="n">account</span><span class="s">&quot;</span>
+<span class="w">  </span><span class="k">case</span><span class="w"> </span><span class="nc">Cash</span><span class="w">                  </span><span class="o">=&gt;</span><span class="w"> </span><span class="s">&quot;Cash payment&quot;</span>
+<span class="p">}</span>
+</code></pre></div>
+
+</details>
+
+<h3 id="5-forall-exists">問題 5: forall と exists<a class="headerlink" href="#5-forall-exists" title="Permanent link">&para;</a></h3>
+<p>以下の条件に合うユーザーを抽出する関数を実装してください。</p>
+<div class="highlight"><pre><span></span><code><span class="k">case</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="nc">User</span><span class="p">(</span><span class="n">name</span><span class="p">:</span><span class="w"> </span><span class="nc">String</span><span class="p">,</span><span class="w"> </span><span class="n">email</span><span class="p">:</span><span class="w"> </span><span class="nc">Option</span><span class="p">[</span><span class="nc">String</span><span class="p">],</span><span class="w"> </span><span class="n">age</span><span class="p">:</span><span class="w"> </span><span class="nc">Int</span><span class="p">)</span>
+
+<span class="kd">val</span><span class="w"> </span><span class="n">users</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">List</span><span class="p">(</span>
+<span class="w">  </span><span class="nc">User</span><span class="p">(</span><span class="s">&quot;Alice&quot;</span><span class="p">,</span><span class="w"> </span><span class="nc">Some</span><span class="p">(</span><span class="s">&quot;alice@example.com&quot;</span><span class="p">),</span><span class="w"> </span><span class="mi">25</span><span class="p">),</span>
+<span class="w">  </span><span class="nc">User</span><span class="p">(</span><span class="s">&quot;Bob&quot;</span><span class="p">,</span><span class="w"> </span><span class="nc">None</span><span class="p">,</span><span class="w"> </span><span class="mi">30</span><span class="p">),</span>
+<span class="w">  </span><span class="nc">User</span><span class="p">(</span><span class="s">&quot;Charlie&quot;</span><span class="p">,</span><span class="w"> </span><span class="nc">Some</span><span class="p">(</span><span class="s">&quot;charlie@test.com&quot;</span><span class="p">),</span><span class="w"> </span><span class="mi">17</span><span class="p">)</span>
+<span class="p">)</span>
+
+<span class="c1">// 1. メールアドレスが設定されていないか、example.com ドメインのユーザー</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">f1</span><span class="p">(</span><span class="n">users</span><span class="p">:</span><span class="w"> </span><span class="nc">List</span><span class="p">[</span><span class="nc">User</span><span class="p">]):</span><span class="w"> </span><span class="nc">List</span><span class="p">[</span><span class="nc">User</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">???</span>
+
+<span class="c1">// 2. メールアドレスが設定されていて、test.com ドメインのユーザー</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">f2</span><span class="p">(</span><span class="n">users</span><span class="p">:</span><span class="w"> </span><span class="nc">List</span><span class="p">[</span><span class="nc">User</span><span class="p">]):</span><span class="w"> </span><span class="nc">List</span><span class="p">[</span><span class="nc">User</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">???</span>
+</code></pre></div>
+<details>
+<summary>解答</summary>
+
+<div class="highlight"><pre><span></span><code><span class="c1">// 1. メールアドレスが設定されていないか、example.com ドメイン</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">f1</span><span class="p">(</span><span class="n">users</span><span class="p">:</span><span class="w"> </span><span class="nc">List</span><span class="p">[</span><span class="nc">User</span><span class="p">]):</span><span class="w"> </span><span class="nc">List</span><span class="p">[</span><span class="nc">User</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">users</span><span class="p">.</span><span class="n">filter</span><span class="p">(</span><span class="n">_</span><span class="p">.</span><span class="n">email</span><span class="p">.</span><span class="n">forall</span><span class="p">(</span><span class="n">_</span><span class="p">.</span><span class="n">endsWith</span><span class="p">(</span><span class="s">&quot;@example.com&quot;</span><span class="p">)))</span>
+<span class="p">}</span>
+<span class="c1">// List(User(&quot;Alice&quot;, ...), User(&quot;Bob&quot;, None, 30))</span>
+
+<span class="c1">// 2. メールアドレスが設定されていて、test.com ドメイン</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">f2</span><span class="p">(</span><span class="n">users</span><span class="p">:</span><span class="w"> </span><span class="nc">List</span><span class="p">[</span><span class="nc">User</span><span class="p">]):</span><span class="w"> </span><span class="nc">List</span><span class="p">[</span><span class="nc">User</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">users</span><span class="p">.</span><span class="n">filter</span><span class="p">(</span><span class="n">_</span><span class="p">.</span><span class="n">email</span><span class="p">.</span><span class="n">exists</span><span class="p">(</span><span class="n">_</span><span class="p">.</span><span class="n">endsWith</span><span class="p">(</span><span class="s">&quot;@test.com&quot;</span><span class="p">)))</span>
+<span class="p">}</span>
+<span class="c1">// List(User(&quot;Charlie&quot;, ...))</span>
+</code></pre></div>
+
+</details>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+    <a href="https://github.com/k2works" target="_blank" rel="noopener" title="GitHub Repository/claude-code-booster" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.tabs", "navigation.sections", "toc.integrate", "search.suggest", "search.highlight"], "search": "../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.e71a0d61.min.js"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+      
+        <script src="../docs/assets/js/extra.js"></script>
+      
+    
+  </body>
+</html>
