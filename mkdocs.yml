@@ -74,3 +74,6 @@ nav:
       - Part IV - IO と副作用: java/part-4.md
       - Part V - 並行処理: java/part-5.md
       - Part VI - 実践: java/part-6.md
+  - F#:
+      - 概要: fsharp/index.md
+      - Part I - 基礎: fsharp/part-1.md

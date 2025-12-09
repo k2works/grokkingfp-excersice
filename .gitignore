@@ -227,3 +227,14 @@ src/main/scala/Playground.scala
 node_modules
 .claude
 docs/wiki
+
+# F# / .NET
+app/fsharp/bin/
+app/fsharp/obj/
+app/fsharp/src/bin/
+app/fsharp/src/obj/
+app/fsharp/tests/bin/
+app/fsharp/tests/obj/
+*.user
+*.suo
+.vs/
