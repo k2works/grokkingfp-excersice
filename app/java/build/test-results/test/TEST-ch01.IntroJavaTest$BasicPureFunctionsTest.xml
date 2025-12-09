@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="基本的な純粋関数" tests="7" skipped="0" failures="0" errors="0" timestamp="2025-12-09T10:53:06.654Z" hostname="PC202411-1" time="0.015">
+  <properties/>
+  <testcase name="concatenate は2つの文字列を連結" classname="ch01.IntroJavaTest$BasicPureFunctionsTest" time="0.003"/>
+  <testcase name="isEven は偶数を判定" classname="ch01.IntroJavaTest$BasicPureFunctionsTest" time="0.001"/>
+  <testcase name="increment は入力に1を加える" classname="ch01.IntroJavaTest$BasicPureFunctionsTest" time="0.0"/>
+  <testcase name="getFirstCharacter は最初の文字を返す" classname="ch01.IntroJavaTest$BasicPureFunctionsTest" time="0.001"/>
+  <testcase name="greet は挨拶文を生成" classname="ch01.IntroJavaTest$BasicPureFunctionsTest" time="0.004"/>
+  <testcase name="add は2つの数を加算" classname="ch01.IntroJavaTest$BasicPureFunctionsTest" time="0.0"/>
+  <testcase name="doubleValue は入力を2倍にする" classname="ch01.IntroJavaTest$BasicPureFunctionsTest" time="0.0"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

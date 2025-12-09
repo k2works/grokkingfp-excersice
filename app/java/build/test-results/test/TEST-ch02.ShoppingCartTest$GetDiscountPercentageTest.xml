@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="getDiscountPercentage" tests="5" skipped="0" failures="0" errors="0" timestamp="2025-12-09T10:53:06.748Z" hostname="PC202411-1" time="0.006">
+  <properties/>
+  <testcase name="Book のみのカートも5%割引" classname="ch02.ShoppingCartTest$GetDiscountPercentageTest" time="0.001"/>
+  <testcase name="Book があるカートは5%割引" classname="ch02.ShoppingCartTest$GetDiscountPercentageTest" time="0.0"/>
+  <testcase name="複数の Book があるカートも5%割引" classname="ch02.ShoppingCartTest$GetDiscountPercentageTest" time="0.001"/>
+  <testcase name="Book がないカートは割引なし" classname="ch02.ShoppingCartTest$GetDiscountPercentageTest" time="0.001"/>
+  <testcase name="空のカートは割引なし" classname="ch02.ShoppingCartTest$GetDiscountPercentageTest" time="0.001"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

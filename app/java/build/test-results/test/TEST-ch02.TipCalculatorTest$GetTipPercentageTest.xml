@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="getTipPercentage" tests="5" skipped="0" failures="0" errors="0" timestamp="2025-12-09T10:53:06.768Z" hostname="PC202411-1" time="0.006">
+  <properties/>
+  <testcase name="7人以上のグループも20%チップ" classname="ch02.TipCalculatorTest$GetTipPercentageTest" time="0.001"/>
+  <testcase name="空のグループはチップなし" classname="ch02.TipCalculatorTest$GetTipPercentageTest" time="0.001"/>
+  <testcase name="6人のグループは20%チップ" classname="ch02.TipCalculatorTest$GetTipPercentageTest" time="0.001"/>
+  <testcase name="1人のグループは10%チップ" classname="ch02.TipCalculatorTest$GetTipPercentageTest" time="0.001"/>
+  <testcase name="5人のグループは10%チップ" classname="ch02.TipCalculatorTest$GetTipPercentageTest" time="0.001"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

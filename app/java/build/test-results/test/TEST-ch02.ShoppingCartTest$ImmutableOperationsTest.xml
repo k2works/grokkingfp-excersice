@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="イミュータブル操作" tests="3" skipped="0" failures="0" errors="0" timestamp="2025-12-09T10:53:06.740Z" hostname="PC202411-1" time="0.006">
+  <properties/>
+  <testcase name="連鎖的な操作でも元のリストは変更されない" classname="ch02.ShoppingCartTest$ImmutableOperationsTest" time="0.004"/>
+  <testcase name="remove は新しいリストを作成" classname="ch02.ShoppingCartTest$ImmutableOperationsTest" time="0.001"/>
+  <testcase name="append は新しいリストを作成" classname="ch02.ShoppingCartTest$ImmutableOperationsTest" time="0.001"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

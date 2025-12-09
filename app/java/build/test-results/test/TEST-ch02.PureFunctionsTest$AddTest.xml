@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="add" tests="4" skipped="0" failures="0" errors="0" timestamp="2025-12-09T10:53:06.704Z" hostname="PC202411-1" time="0.003">
+  <properties/>
+  <testcase name="負の数を含む加算" classname="ch02.PureFunctionsTest$AddTest" time="0.0"/>
+  <testcase name="2つの正の数を加算" classname="ch02.PureFunctionsTest$AddTest" time="0.0"/>
+  <testcase name="0を含む加算" classname="ch02.PureFunctionsTest$AddTest" time="0.0"/>
+  <testcase name="加算の交換法則" classname="ch02.PureFunctionsTest$AddTest" time="0.0"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>
