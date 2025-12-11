@@ -1,0 +1,2465 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Scala、Java、F# で学ぶ関数型プログラミング">
+      
+      
+        <meta name="author" content="Project Team">
+      
+      
+      
+        <link rel="prev" href="../part-3/">
+      
+      
+        <link rel="next" href="../part-5/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.0">
+    
+    
+      
+        <title>Part IV - 非同期処理とストリーム - Grokking Functional Programming</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.618322db.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../docs/mkdocs/assets/css/extra.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#part-iv" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="Grokking Functional Programming" class="md-header__button md-logo" aria-label="Grokking Functional Programming" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Grokking Functional Programming
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Part IV - 非同期処理とストリーム
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/k2works/grokkingfp-excersice" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    grokkingfp-excersice
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../scala/" class="md-tabs__link">
+          
+  
+  
+  Scala
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../java/" class="md-tabs__link">
+          
+  
+  
+  Java
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../" class="md-tabs__link">
+          
+  
+  
+  F#
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+  
+
+<nav class="md-nav md-nav--primary md-nav--lifted md-nav--integrated" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Grokking Functional Programming" class="md-nav__button md-logo" aria-label="Grokking Functional Programming" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Grokking Functional Programming
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/k2works/grokkingfp-excersice" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    grokkingfp-excersice
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Scala
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Scala
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../scala/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    概要
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../scala/part-1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Part I - 基礎
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../scala/part-2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Part II - 関数型スタイル
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../scala/part-3/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Part III - エラーハンドリング
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../scala/part-4/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Part IV - IO と副作用
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../scala/part-5/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Part V - 並行処理
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../scala/part-6/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Part VI - 実践
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Java
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Java
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../java/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    概要
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../java/part-1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Part I - 基礎
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../java/part-2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Part II - 関数型スタイル
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../java/part-3/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Part III - エラーハンドリング
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../java/part-4/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Part IV - IO と副作用
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../java/part-5/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Part V - 並行処理
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../java/part-6/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Part VI - 実践
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    F#
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    F#
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    概要
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../part-1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Part I - 基礎
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../part-2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Part II - 関数型スタイル
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../part-3/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Part III - エラーハンドリング
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Part IV - 非同期処理とストリーム
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Part IV - 非同期処理とストリーム
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#8-async" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第8章: Async による非同期処理
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="第8章: Async による非同期処理">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#81" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.1 副作用の問題
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#82-f-async" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.2 F# の Async とは
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#83" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.3 サイコロを振る例
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="8.3 サイコロを振る例">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        不純な関数（副作用あり）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#async" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Async を使った純粋な記述
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#84-async" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.4 Async の作成方法
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#85-async" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.5 Async の合成
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#86" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.6 ミーティングスケジューリングの例
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="8.6 ミーティングスケジューリングの例">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        予定の取得
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        空き時間の計算（純粋関数）
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#87-orelse" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.7 orElse によるエラーハンドリング
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="8.7 orElse によるエラーハンドリング">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        リトライ戦略
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        汎用リトライ関数
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#88-sequence-async" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.8 sequence による Async のリスト処理
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="8.8 sequence による Async のリスト処理">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        複数人の予定を取得
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#89" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.9 並列実行
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第9章: ストリーム処理
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="第9章: ストリーム処理">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#91-seq" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.1 Seq（シーケンス）とは
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#92" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.2 純粋なシーケンス
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#93" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.3 無限シーケンス
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#94" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.4 サイコロを振るストリーム
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#95" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.5 シーケンスの主要操作
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#96" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.6 通貨交換レートの例
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="9.6 通貨交換レートの例">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        トレンド判定（純粋関数）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_8" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        レートのストリーム
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#97" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.7 スライディングウィンドウ
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="9.7 スライディングウィンドウ">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_9" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        トレンドを検出して交換
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#98" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.8 シーケンスの結合
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#99" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.9 実用的なストリーム操作
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#scala" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Scala との比較
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Scala との比較">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#io-async" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        IO と Async の比較
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#stream-seq" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Stream と Seq の比較
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_10" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        まとめ
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="まとめ">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#part-iv_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part IV で学んだこと
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#async-seq" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Async と Seq の比較
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_11" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        キーポイント
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_12" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        次のステップ
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_13" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        演習問題
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="演習問題">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-async" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        問題 1: Async の基本
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-async" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        問題 2: Async の合成
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        問題 3: リトライ
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        問題 4: シーケンス操作
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        問題 5: トレンド検出
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../part-5/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Part V - 並行処理
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../part-6/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Part VI - 実践
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="part-iv">Part IV: 非同期処理とストリーム<a class="headerlink" href="#part-iv" title="Permanent link">&para;</a></h1>
+<p>本章では、関数型プログラミングにおける副作用の扱い方を学びます。F# の Async を使って副作用を純粋関数内で安全に記述し、Seq（シーケンス）で無限のデータを扱う方法を習得します。</p>
+<hr />
+<h2 id="8-async">第8章: Async による非同期処理<a class="headerlink" href="#8-async" title="Permanent link">&para;</a></h2>
+<h3 id="81">8.1 副作用の問題<a class="headerlink" href="#81" title="Permanent link">&para;</a></h3>
+<p>純粋関数は副作用を持ちません。しかし、実際のプログラムには副作用が必要です:</p>
+<ul>
+<li>ファイルの読み書き</li>
+<li>ネットワーク通信</li>
+<li>データベースアクセス</li>
+<li>乱数生成</li>
+<li>現在時刻の取得</li>
+</ul>
+<p><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiBjb250ZW50U3R5bGVUeXBlPSJ0ZXh0L2NzcyIgZGF0YS1kaWFncmFtLXR5cGU9IkRFU0NSSVBUSU9OIiBoZWlnaHQ9IjI0OXB4IiBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSJub25lIiBzdHlsZT0id2lkdGg6OTcycHg7aGVpZ2h0OjI0OXB4O2JhY2tncm91bmQ6I0ZGRkZGRjsiIHZlcnNpb249IjEuMSIgdmlld0JveD0iMCAwIDk3MiAyNDkiIHdpZHRoPSI5NzJweCIgem9vbUFuZFBhbj0ibWFnbmlmeSI+PGRlZnMvPjxnPjwhLS1jbHVzdGVyID8/Pz8/Py0tPjxnIGNsYXNzPSJjbHVzdGVyIiBkYXRhLWVudGl0eT0iLi4uLi4uIiBkYXRhLXNvdXJjZS1saW5lPSIzIiBkYXRhLXVpZD0iZW50MDAwMiIgaWQ9ImNsdXN0ZXJfLi4uLi4uIj48cmVjdCBmaWxsPSIjRkZGRkZGIiBoZWlnaHQ9IjIzMS41OCIgcng9IjIuNSIgcnk9IjIuNSIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxOyIgd2lkdGg9Ijc0NyIgeD0iMTIiIHk9IjEyIi8+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9IlZlcmRhbmEiIGZvbnQtc2l6ZT0iMTQiIGZvbnQtd2VpZ2h0PSJib2xkIiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjgzLjk5OTYiIHg9IjM0My41MDAyIiB5PSIyNi45OTUxIj4mIzIxMTAzOyYjMjAzMTY7JiMyOTk5MjsmIzEyMzk4OyYjMjE4Mzk7JiMzODk4ODs8L3RleHQ+PC9nPjwhLS1jbHVzdGVyIGltcHVyZS0tPjxnIGNsYXNzPSJjbHVzdGVyIiBkYXRhLWVudGl0eT0iaW1wdXJlIiBkYXRhLXNvdXJjZS1saW5lPSI0IiBkYXRhLXVpZD0iZW50MDAwMyIgaWQ9ImNsdXN0ZXJfaW1wdXJlIj48cmVjdCBmaWxsPSIjRkZGRkZGIiBoZWlnaHQ9IjE2NC41OCIgcng9IjIuNSIgcnk9IjIuNSIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxOyIgd2lkdGg9IjI2MSIgeD0iMzYiIHk9IjU1Ii8+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9IlZlcmRhbmEiIGZvbnQtc2l6ZT0iMTQiIGZvbnQtd2VpZ2h0PSJib2xkIiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjExMS45OTk1IiB4PSIxMTAuNTAwMiIgeT0iNjkuOTk1MSI+JiMyMTEwMzsmIzIwMzE2OyYjMjk5OTI7JiMxMjQzNDsmIzI1MzQ1OyYjMTIzODg7JiMzODMwNjsmIzI1OTY4OzwvdGV4dD48L2c+PCEtLWNsdXN0ZXIgcHVyZS0tPjxnIGNsYXNzPSJjbHVzdGVyIiBkYXRhLWVudGl0eT0icHVyZSIgZGF0YS1zb3VyY2UtbGluZT0iMTAiIGRhdGEtdWlkPSJlbnQwMDA3IiBpZD0iY2x1c3Rlcl9wdXJlIj48cmVjdCBmaWxsPSIjRkZGRkZGIiBoZWlnaHQ9IjczLjMiIHJ4PSIyLjUiIHJ5PSIyLjUiIHN0eWxlPSJzdHJva2U6IzAwMDAwMDtzdHJva2Utd2lkdGg6MTsiIHdpZHRoPSI0MTQiIHg9IjMyMSIgeT0iNTUiLz48dGV4dCBmaWxsPSIjMDAwMDAwIiBmb250LWZhbWlseT0iVmVyZGFuYSIgZm9udC1zaXplPSIxNCIgZm9udC13ZWlnaHQ9ImJvbGQiIGxlbmd0aEFkanVzdD0ic3BhY2luZyIgdGV4dExlbmd0aD0iNTUuOTk5OCIgeD0iNTAwLjAwMDEiIHk9IjY5Ljk5NTEiPiYjMzIwMjA7JiMzMTg4MzsmIzM4MzA2OyYjMjU5Njg7PC90ZXh0PjwvZz48IS0tZW50aXR5ID8/Pz8/Py0tPjxnIGNsYXNzPSJlbnRpdHkiIGRhdGEtZW50aXR5PSIuLi4uLi4iIGRhdGEtc291cmNlLWxpbmU9IjUiIGRhdGEtdWlkPSJlbnQwMDA0IiBpZD0iZW50aXR5Xy4uLi4uLiI+PHJlY3QgZmlsbD0iI0ZGRkZGRiIgaGVpZ2h0PSIyMi4yOTY5IiByeD0iMi41IiByeT0iMi41IiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE7IiB3aWR0aD0iMTAzLjk5OTYiIHg9IjUyIiB5PSI5MCIvPjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJWZXJkYW5hIiBmb250LXNpemU9IjE0IiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjgzLjk5OTYiIHg9IjYyIiB5PSIxMDUuOTk1MSI+JiMxMjQ4NjsmIzEyNDczOyYjMTI0ODg7JiMxMjM2NDsmIzIyMjU2OyYjMzg2Mjc7PC90ZXh0PjwvZz48IS0tZW50aXR5ID8/Pz8/LS0+PGcgY2xhc3M9ImVudGl0eSIgZGF0YS1lbnRpdHk9Ii4uLi4uIiBkYXRhLXNvdXJjZS1saW5lPSI2IiBkYXRhLXVpZD0iZW50MDAwNSIgaWQ9ImVudGl0eV8uLi4uLiI+PHJlY3QgZmlsbD0iI0ZGRkZGRiIgaGVpZ2h0PSIyMi4yOTY5IiByeD0iMi41IiByeT0iMi41IiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE7IiB3aWR0aD0iODkuOTk5NyIgeD0iMTkxIiB5PSI5MCIvPjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJWZXJkYW5hIiBmb250LXNpemU9IjE0IiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjY5Ljk5OTciIHg9IjIwMSIgeT0iMTA1Ljk5NTEiPiYjMjAxMDQ7JiMyODIwNDsmIzE5OTgxOyYjMjE0ODc7JiMzMzAyMTs8L3RleHQ+PC9nPjwhLS1lbnRpdHkgPz8/Pz8/Pz8tLT48ZyBjbGFzcz0iZW50aXR5IiBkYXRhLWVudGl0eT0iLi4uLi4uLi4iIGRhdGEtc291cmNlLWxpbmU9IjciIGRhdGEtdWlkPSJlbnQwMDA2IiBpZD0iZW50aXR5Xy4uLi4uLi4uIj48cmVjdCBmaWxsPSIjRkZGRkZGIiBoZWlnaHQ9IjIyLjI5NjkiIHJ4PSIyLjUiIHJ5PSIyLjUiIHN0eWxlPSJzdHJva2U6IzAwMDAwMDtzdHJva2Utd2lkdGg6MTsiIHdpZHRoPSIxMzEuOTk5NSIgeD0iNTIiIHk9IjE4MS4yOCIvPjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJWZXJkYW5hIiBmb250LXNpemU9IjE0IiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjExMS45OTk1IiB4PSI2MiIgeT0iMTk3LjI3NTEiPiYjMjE0NDI7JiMyOTAzMTsmIzM2ODc5OyYjMzY5NDI7JiMyNDYxNTsmIzEyMzY0OyYjMTIzOTQ7JiMxMjM1Njs8L3RleHQ+PC9nPjwhLS1lbnRpdHkgPz8/Pz8/LS0+PGcgY2xhc3M9ImVudGl0eSIgZGF0YS1lbnRpdHk9Ii4uLi4uLiIgZGF0YS1zb3VyY2UtbGluZT0iMTEiIGRhdGEtdWlkPSJlbnQwMDA4IiBpZD0iZW50aXR5Xy4uLi4uLiI+PHJlY3QgZmlsbD0iI0ZGRkZGRiIgaGVpZ2h0PSIyMi4yOTY5IiByeD0iMi41IiByeT0iMi41IiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE7IiB3aWR0aD0iMTAzLjk5OTYiIHg9IjMzNyIgeT0iOTAiLz48dGV4dCBmaWxsPSIjMDAwMDAwIiBmb250LWZhbWlseT0iVmVyZGFuYSIgZm9udC1zaXplPSIxNCIgbGVuZ3RoQWRqdXN0PSJzcGFjaW5nIiB0ZXh0TGVuZ3RoPSI4My45OTk2IiB4PSIzNDciIHk9IjEwNS45OTUxIj4mIzEyNDg2OyYjMTI0NzM7JiMxMjQ4ODsmIzEyMzY0OyYjMjM0ODE7JiMyNjEzMTs8L3RleHQ+PC9nPjwhLS1lbnRpdHkgPz8/Py0tPjxnIGNsYXNzPSJlbnRpdHkiIGRhdGEtZW50aXR5PSIuLi4uIiBkYXRhLXNvdXJjZS1saW5lPSIxMiIgZGF0YS11aWQ9ImVudDAwMDkiIGlkPSJlbnRpdHlfLi4uLiI+PHJlY3QgZmlsbD0iI0ZGRkZGRiIgaGVpZ2h0PSIyMi4yOTY5IiByeD0iMi41IiByeT0iMi41IiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE7IiB3aWR0aD0iNzUuOTk5OCIgeD0iNDc2IiB5PSI5MCIvPjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJWZXJkYW5hIiBmb250LXNpemU9IjE0IiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjU1Ljk5OTgiIHg9IjQ4NiIgeT0iMTA1Ljk5NTEiPiYjMjAxMDQ7JiMyODIwNDsmIzIxNDg3OyYjMzMwMjE7PC90ZXh0PjwvZz48IS0tZW50aXR5ID8/Pz8/Pz8/LS0+PGcgY2xhc3M9ImVudGl0eSIgZGF0YS1lbnRpdHk9Ii4uLi4uLi4uIiBkYXRhLXNvdXJjZS1saW5lPSIxMyIgZGF0YS11aWQ9ImVudDAwMTAiIGlkPSJlbnRpdHlfLi4uLi4uLi4iPjxyZWN0IGZpbGw9IiNGRkZGRkYiIGhlaWdodD0iMjIuMjk2OSIgcng9IjIuNSIgcnk9IjIuNSIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxOyIgd2lkdGg9IjEzMS45OTk1IiB4PSI1ODciIHk9IjkwIi8+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9IlZlcmRhbmEiIGZvbnQtc2l6ZT0iMTQiIGxlbmd0aEFkanVzdD0ic3BhY2luZyIgdGV4dExlbmd0aD0iMTExLjk5OTUiIHg9IjU5NyIgeT0iMTA1Ljk5NTEiPiYjMjE0NDI7JiMyOTAzMTsmIzM2ODc5OyYjMzY5NDI7JiMyNDYxNTsmIzEyMzY0OyYjMTIzNTQ7JiMxMjQyNzs8L3RleHQ+PC9nPjxnIGNsYXNzPSJlbnRpdHkiIGRhdGEtZW50aXR5PSJHTU4xMSIgZGF0YS1zb3VyY2UtbGluZT0iMTgiIGRhdGEtdWlkPSJlbnQwMDEyIiBpZD0iZW50aXR5X0dNTjExIj48cGF0aCBkPSJNNzc1LDE3Mi4zIEw3NzUsMjEyLjU2NTYgQTAsMCAwIDAgMCA3NzUsMjEyLjU2NTYgTDk2NS4wMDAyLDIxMi41NjU2IEEwLDAgMCAwIDAgOTY1LjAwMDIsMjEyLjU2NTYgTDk2NS4wMDAyLDE4Mi4zIEw5NTUuMDAwMiwxNzIuMyBMODI2LjU1LDE3Mi4zIEw2NzguNzQsMTEyLjc0IEw4MTguNTUsMTcyLjMgTDc3NSwxNzIuMyBBMCwwIDAgMCAwIDc3NSwxNzIuMyIgZmlsbD0iI0ZGRkZGRiIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxOyIvPjxwYXRoIGQ9Ik05NTUuMDAwMiwxNzIuMyBMOTU1LjAwMDIsMTgyLjMgTDk2NS4wMDAyLDE4Mi4zIEw5NTUuMDAwMiwxNzIuMyIgZmlsbD0iI0ZGRkZGRiIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxOyIvPjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJWZXJkYW5hIiBmb250LXNpemU9IjEzIiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjExNy4wMDAxIiB4PSI3ODEiIHk9IjE4OS4zNjY5Ij4mIzEyMzkzOyYjMTIzNTg7JiMxMjM3NzsmIzEyNDI4OyYjMTI0MDA7JiMyMTEwMzsmIzIwMzE2OyYjMjk5OTI7JiMxMjQzNDs8L3RleHQ+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9IlZlcmRhbmEiIGZvbnQtc2l6ZT0iMTMiIGxlbmd0aEFkanVzdD0ic3BhY2luZyIgdGV4dExlbmd0aD0iMTY5LjAwMDIiIHg9Ijc4MSIgeT0iMjA0LjQ5OTciPiYjMzIwMjA7JiMzMTg4MzsmIzM4MzA2OyYjMjU5Njg7JiMxMjM5ODsmIzEyNDI0OyYjMTIzNTg7JiMxMjM5NTsmIzI1MjAxOyYjMTIzNjA7JiMxMjQyNzsmIzEyMzYzOyYjNjUzMTE7PC90ZXh0PjwvZz48IS0tU1JDPVtYUDNESWlEMDU4TnR5bkpKVVJGTzNiZmVhWEI3YkdZejRvcWZZR1FxNVFNMi0wRnJacFFBWXdRcUp0Q3BheXhBTC1YSzU1OUdraHR0ZEZDVEphdGlTUFZKVGlqZlVlRzRsMnVTUnhWNUFMRXpJUjZ1QVZqRjI2Q3JJQ3JUbWtaWHRtOXZoWEQwVTNJTnp0Z0dDVWhpcXdSUkZXWXVEVElUZTQ0UFhic0tFT09IR2dBNmNIYS1pOXpGQ09scXpBc09kZ2ZxaVdtTmxzVUxvbDlhUDNnZldKRlQ2TGFSbVdsMkNJRDc2b3RCcHR4djRMVjBfc0Y3a1J3d3NDSGtQcWdLeVBmZmdQdWxFRHRuWFYxVFdsMkNxNE11SGNiNU1OS0FLZ3JhanFDUFZLalZUVXlUOFI5djJGN05fOVBtaHE3TmNJaTBdLS0+PC9nPjwvc3ZnPg==" class="uml" alt="uml diagram" title="" /></p>
+<h3 id="82-f-async">8.2 F# の Async とは<a class="headerlink" href="#82-f-async" title="Permanent link">&para;</a></h3>
+<p><strong>Async</strong>（非同期計算）は「副作用を持つ計算の<strong>記述</strong>」を表す型です。</p>
+<ul>
+<li><code>Async&lt;'a&gt;</code> は「実行すると <code>'a</code> 型の値を返す副作用のある計算」</li>
+<li>Async 値を作成しただけでは副作用は発生しない</li>
+<li><code>Async.RunSynchronously</code> で実際に実行される</li>
+</ul>
+<p><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiBjb250ZW50U3R5bGVUeXBlPSJ0ZXh0L2NzcyIgZGF0YS1kaWFncmFtLXR5cGU9IkRFU0NSSVBUSU9OIiBoZWlnaHQ9IjQwN3B4IiBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSJub25lIiBzdHlsZT0id2lkdGg6NDA0cHg7aGVpZ2h0OjQwN3B4O2JhY2tncm91bmQ6I0ZGRkZGRjsiIHZlcnNpb249IjEuMSIgdmlld0JveD0iMCAwIDQwNCA0MDciIHdpZHRoPSI0MDRweCIgem9vbUFuZFBhbj0ibWFnbmlmeSI+PGRlZnMvPjxnPjwhLS1jbHVzdGVyIEFzeW5jID8/Pz8tLT48ZyBjbGFzcz0iY2x1c3RlciIgZGF0YS1lbnRpdHk9IkFzeW5jIC4uLi4iIGRhdGEtc291cmNlLWxpbmU9IjMiIGRhdGEtdWlkPSJlbnQwMDAyIiBpZD0iY2x1c3Rlcl9Bc3luYyAuLi4uIj48cmVjdCBmaWxsPSIjRkZGRkZGIiBoZWlnaHQ9IjM4OS4xNiIgcng9IjIuNSIgcnk9IjIuNSIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxOyIgd2lkdGg9IjIyOCIgeD0iMTIiIHk9IjEyIi8+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9IlZlcmRhbmEiIGZvbnQtc2l6ZT0iMTQiIGZvbnQtd2VpZ2h0PSJib2xkIiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjEwNy40MzMzIiB4PSI3Mi4yODMzIiB5PSIyNi45OTUxIj5Bc3luYyAmIzEyMzk4OyYjMjAxODE7JiMzMjA2ODsmIzEyNDE1OzwvdGV4dD48L2c+PCEtLWVudGl0eSBjcmVhdGUtLT48ZyBjbGFzcz0iZW50aXR5IiBkYXRhLWVudGl0eT0iY3JlYXRlIiBkYXRhLXNvdXJjZS1saW5lPSI0IiBkYXRhLXVpZD0iZW50MDAwMyIgaWQ9ImVudGl0eV9jcmVhdGUiPjxyZWN0IGZpbGw9IiNGRkZGRkYiIGhlaWdodD0iMjIuMjk2OSIgcng9IjIuNSIgcnk9IjIuNSIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxOyIgd2lkdGg9IjEwNS4yNDQxIiB4PSI5Ni4zOCIgeT0iNDciLz48dGV4dCBmaWxsPSIjMDAwMDAwIiBmb250LWZhbWlseT0iVmVyZGFuYSIgZm9udC1zaXplPSIxNCIgbGVuZ3RoQWRqdXN0PSJzcGFjaW5nIiB0ZXh0TGVuZ3RoPSI4NS4yNDQxIiB4PSIxMDYuMzgiIHk9IjYyLjk5NTEiPmFzeW5jIHsgLi4uIH08L3RleHQ+PC9nPjwhLS1lbnRpdHkgYXN5bmNWYWwtLT48ZyBjbGFzcz0iZW50aXR5IiBkYXRhLWVudGl0eT0iYXN5bmNWYWwiIGRhdGEtc291cmNlLWxpbmU9IjUiIGRhdGEtdWlkPSJlbnQwMDA0IiBpZD0iZW50aXR5X2FzeW5jVmFsIj48cmVjdCBmaWxsPSIjRkZGRkZGIiBoZWlnaHQ9IjIyLjI5NjkiIHJ4PSIyLjUiIHJ5PSIyLjUiIHN0eWxlPSJzdHJva2U6IzAwMDAwMDtzdHJva2Utd2lkdGg6MTsiIHdpZHRoPSIxMTYuMDY1NCIgeD0iOTAuOTciIHk9IjE0Ni4zIi8+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9IlZlcmRhbmEiIGZvbnQtc2l6ZT0iMTQiIGxlbmd0aEFkanVzdD0ic3BhY2luZyIgdGV4dExlbmd0aD0iOTYuMDY1NCIgeD0iMTAwLjk3IiB5PSIxNjIuMjk1MSI+QXN5bmMmbHQ7J2EmZ3Q7ICYjMjA1MTY7PC90ZXh0PjwvZz48IS0tZW50aXR5IHJ1bi0tPjxnIGNsYXNzPSJlbnRpdHkiIGRhdGEtZW50aXR5PSJydW4iIGRhdGEtc291cmNlLWxpbmU9IjYiIGRhdGEtdWlkPSJlbnQwMDA1IiBpZD0iZW50aXR5X3J1biI+PHJlY3QgZmlsbD0iI0ZGRkZGRiIgaGVpZ2h0PSIyMi4yOTY5IiByeD0iMi41IiByeT0iMi41IiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE7IiB3aWR0aD0iMTk2LjM2NzIiIHg9IjI3LjgyIiB5PSIyNTQuNTgiLz48dGV4dCBmaWxsPSIjMDAwMDAwIiBmb250LWZhbWlseT0iVmVyZGFuYSIgZm9udC1zaXplPSIxNCIgbGVuZ3RoQWRqdXN0PSJzcGFjaW5nIiB0ZXh0TGVuZ3RoPSIxNzYuMzY3MiIgeD0iMzcuODIiIHk9IjI3MC41NzUxIj5Bc3luYy5SdW5TeW5jaHJvbm91c2x5PC90ZXh0PjwvZz48IS0tZW50aXR5IGVmZmVjdC0tPjxnIGNsYXNzPSJlbnRpdHkiIGRhdGEtZW50aXR5PSJlZmZlY3QiIGRhdGEtc291cmNlLWxpbmU9IjciIGRhdGEtdWlkPSJlbnQwMDA2IiBpZD0iZW50aXR5X2VmZmVjdCI+PHJlY3QgZmlsbD0iI0ZGRkZGRiIgaGVpZ2h0PSIyMi4yOTY5IiByeD0iMi41IiByeT0iMi41IiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE7IiB3aWR0aD0iMTQ1Ljk5OTUiIHg9IjUzIiB5PSIzNjIuODYiLz48dGV4dCBmaWxsPSIjMDAwMDAwIiBmb250LWZhbWlseT0iVmVyZGFuYSIgZm9udC1zaXplPSIxNCIgbGVuZ3RoQWRqdXN0PSJzcGFjaW5nIiB0ZXh0TGVuZ3RoPSIxMjUuOTk5NSIgeD0iNjMiIHk9IjM3OC44NTUxIj4mIzIxMTAzOyYjMjAzMTY7JiMyOTk5MjsmIzEyMzY0OyYjMjM0NTU7JiMzNDg5MjsmIzEyMzczOyYjMTI0Mjg7JiMxMjQyNzs8L3RleHQ+PC9nPjxnIGNsYXNzPSJlbnRpdHkiIGRhdGEtZW50aXR5PSJHTU4xMCIgZGF0YS1zb3VyY2UtbGluZT0iMTUiIGRhdGEtdWlkPSJlbnQwMDExIiBpZD0iZW50aXR5X0dNTjEwIj48cGF0aCBkPSJNMjU5LDI0NS42IEwyNTksMjg1Ljg2NTYgQTAsMCAwIDAgMCAyNTksMjg1Ljg2NTYgTDM5Ny4wMDAxLDI4NS44NjU2IEEwLDAgMCAwIDAgMzk3LjAwMDEsMjg1Ljg2NTYgTDM5Ny4wMDAxLDI1NS42IEwzODcuMDAwMSwyNDUuNiBMMjk5LjE2LDI0NS42IEwxNjYuODIsMTY5LjAzIEwyOTEuMTYsMjQ1LjYgTDI1OSwyNDUuNiBBMCwwIDAgMCAwIDI1OSwyNDUuNiIgZmlsbD0iI0ZGRkZGRiIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxOyIvPjxwYXRoIGQ9Ik0zODcuMDAwMSwyNDUuNiBMMzg3LjAwMDEsMjU1LjYgTDM5Ny4wMDAxLDI1NS42IEwzODcuMDAwMSwyNDUuNiIgZmlsbD0iI0ZGRkZGRiIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxOyIvPjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJWZXJkYW5hIiBmb250LXNpemU9IjEzIiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9Ijc4LjAwMDEiIHg9IjI2NSIgeT0iMjYyLjY2NjkiPiYjMTIzNzE7JiMxMjM5ODsmIzI2MTc4OyYjMjg4NTc7JiMxMjM5MTsmIzEyMzk5OzwvdGV4dD48dGV4dCBmaWxsPSIjMDAwMDAwIiBmb250LWZhbWlseT0iVmVyZGFuYSIgZm9udC1zaXplPSIxMyIgbGVuZ3RoQWRqdXN0PSJzcGFjaW5nIiB0ZXh0TGVuZ3RoPSIxMTcuMDAwMSIgeD0iMjY1IiB5PSIyNzcuNzk5NyI+JiMyMTEwMzsmIzIwMzE2OyYjMjk5OTI7JiMxMjM5OTsmIzMwMzMwOyYjMjk5ODM7JiMxMjM3NTsmIzEyMzk0OyYjMTIzNTY7PC90ZXh0PjwvZz48IS0tbGluayBjcmVhdGUgdG8gYXN5bmNWYWwtLT48ZyBjbGFzcz0ibGluayIgZGF0YS1lbnRpdHktMT0iY3JlYXRlIiBkYXRhLWVudGl0eS0yPSJhc3luY1ZhbCIgZGF0YS1zb3VyY2UtbGluZT0iOSIgZGF0YS11aWQ9ImxuazciIGlkPSJsaW5rX2NyZWF0ZV9hc3luY1ZhbCI+PHBhdGggZD0iTTE0OSw2OS41NiBDMTQ5LDg4LjE5IDE0OSwxMjEuMDMgMTQ5LDEzOS44MiIgZmlsbD0ibm9uZSIgaWQ9ImNyZWF0ZS10by1hc3luY1ZhbCIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxOyIvPjxwb2x5Z29uIGZpbGw9IiMwMDAwMDAiIHBvaW50cz0iMTQ5LDE0NS44MiwxNTMsMTM2LjgyLDE0OSwxNDAuODIsMTQ1LDEzNi44MiwxNDksMTQ1LjgyIiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE7Ii8+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9IlZlcmRhbmEiIGZvbnQtc2l6ZT0iMTMiIGxlbmd0aEFkanVzdD0ic3BhY2luZyIgdGV4dExlbmd0aD0iNjUuMDAwMSIgeD0iMTUwIiB5PSIxMTIuMzY2OSI+JiMzNTM1MjsmIzM2ODQ4OyYjMTI0MzQ7JiMyMDMxNjsmIzI1MTA0OzwvdGV4dD48L2c+PCEtLWxpbmsgYXN5bmNWYWwgdG8gcnVuLS0+PGcgY2xhc3M9ImxpbmsiIGRhdGEtZW50aXR5LTE9ImFzeW5jVmFsIiBkYXRhLWVudGl0eS0yPSJydW4iIGRhdGEtc291cmNlLWxpbmU9IjEwIiBkYXRhLXVpZD0ibG5rOCIgaWQ9ImxpbmtfYXN5bmNWYWxfcnVuIj48cGF0aCBkPSJNMTQ2LjcxLDE2OS4wMyBDMTQyLjMsMTg5LjQgMTMzLjk0OTIsMjI3Ljk5NTggMTI5LjU0OTIsMjQ4LjMyNTgiIGZpbGw9Im5vbmUiIGlkPSJhc3luY1ZhbC10by1ydW4iIHN0eWxlPSJzdHJva2U6IzAwMDAwMDtzdHJva2Utd2lkdGg6MTsiLz48cG9seWdvbiBmaWxsPSIjMDAwMDAwIiBwb2ludHM9IjEyOC4yOCwyNTQuMTksMTM0LjA5MzMsMjQ2LjIzOTgsMTI5LjMzNzcsMjQ5LjMwMzEsMTI2LjI3NDMsMjQ0LjU0NzUsMTI4LjI4LDI1NC4xOSIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxOyIvPjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJWZXJkYW5hIiBmb250LXNpemU9IjEzIiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjY1LjAwMDEiIHg9IjE0MS4yNCIgeT0iMjExLjY2NjkiPiYjMjM0NTU7JiMzNDg5MjsmIzEyNDM0OyYjMjUzNTE7JiMzMTAzNDs8L3RleHQ+PC9nPjwhLS1saW5rIHJ1biB0byBlZmZlY3QtLT48ZyBjbGFzcz0ibGluayIgZGF0YS1lbnRpdHktMT0icnVuIiBkYXRhLWVudGl0eS0yPSJlZmZlY3QiIGRhdGEtc291cmNlLWxpbmU9IjExIiBkYXRhLXVpZD0ibG5rOSIgaWQ9ImxpbmtfcnVuX2VmZmVjdCI+PHBhdGggZD0iTTEyNiwyNzcuMzEgQzEyNiwyOTcuNjggMTI2LDMzNi4xNCAxMjYsMzU2LjQ4IiBmaWxsPSJub25lIiBpZD0icnVuLXRvLWVmZmVjdCIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxOyIvPjxwb2x5Z29uIGZpbGw9IiMwMDAwMDAiIHBvaW50cz0iMTI2LDM2Mi40OCwxMzAsMzUzLjQ4LDEyNiwzNTcuNDgsMTIyLDM1My40OCwxMjYsMzYyLjQ4IiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE7Ii8+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9IlZlcmRhbmEiIGZvbnQtc2l6ZT0iMTMiIGxlbmd0aEFkanVzdD0ic3BhY2luZyIgdGV4dExlbmd0aD0iNjUuMDAwMSIgeD0iMTI3IiB5PSIzMjguOTI2OSI+JiMyMzQ1NTsmIzM4NTU1OyYjMTIzOTU7JiMyMzQ1NTsmIzM0ODkyOzwvdGV4dD48L2c+PCEtLVNSQz1bSlAzRElpRDA1NFJ0eW5KTlI1bXIzbzFJeTFLS3Q4X2ZuMGhmSEZBcEFBTlczMEtMaXYzUWViTVgyME1CR2tGNlhITmZtem1jNHpfMm9JSktoV1JjZEZqelRzT2RRaENFV3RFRmRkNTIwa1A0Yjl6dzNBbzNpQ2lUR0I1T1Z1X0x2bTM1b2U4VVNNWkcwZWlRcldGUmpnNWwwR3QxMkhZRE04dER3RnVrUks5c0NKRk8zMW5KUnJrbTNzRC1mQ3pzdTdDXzNoc2tDT0VPcnI5c2RRdl9kakxlWllCOTVqRlk5SzRuSGZjV2wzNGNTcnN6Qkk1TERKR1FwS3FEeDQ0blZvWE03b1k3RVlFX2tZS1JMN2d3SDJqcmcxcGNvUU1RQktidk16OGdrMTktN3Z6R2w1U2N3SEYyVkxycnVhVUh0bTdWX055TllabHpMVmI0QWxjNXVYTDVJaFJzSnpMYWdLUEo1RlNldGIwQzJFQ2pBQUYtMDAwMF0tLT48L2c+PC9zdmc+" class="uml" alt="uml diagram" title="" /></p>
+<h3 id="83">8.3 サイコロを振る例<a class="headerlink" href="#83" title="Permanent link">&para;</a></h3>
+<p><strong>ソースファイル</strong>: <code>app/fsharp/src/Ch08/AsyncIO.fs</code></p>
+<h4 id="_1">不純な関数（副作用あり）<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="k">open</span><span class="w"> </span><span class="nn">System</span>
+
+<span class="k">let</span><span class="w"> </span><span class="nv">castTheDieImpure</span><span class="w"> </span><span class="bp">()</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">int</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="k">let</span><span class="w"> </span><span class="nv">random</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Random</span><span class="bp">()</span>
+<span class="w">    </span><span class="n">random</span><span class="o">.</span><span class="n">Next</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span><span class="w"> </span><span class="mi">7</span><span class="o">)</span>
+
+<span class="c1">// 呼び出すたびに異なる値が返る</span>
+<span class="n">printfn</span><span class="w"> </span><span class="s">&quot;%d&quot;</span><span class="w"> </span><span class="o">(</span><span class="n">castTheDieImpure</span><span class="w"> </span><span class="bp">()</span><span class="o">)</span><span class="w">  </span><span class="c1">// 3</span>
+<span class="n">printfn</span><span class="w"> </span><span class="s">&quot;%d&quot;</span><span class="w"> </span><span class="o">(</span><span class="n">castTheDieImpure</span><span class="w"> </span><span class="bp">()</span><span class="o">)</span><span class="w">  </span><span class="c1">// 5</span>
+<span class="n">printfn</span><span class="w"> </span><span class="s">&quot;%d&quot;</span><span class="w"> </span><span class="o">(</span><span class="n">castTheDieImpure</span><span class="w"> </span><span class="bp">()</span><span class="o">)</span><span class="w">  </span><span class="c1">// 1</span>
+</code></pre></div>
+<h4 id="async">Async を使った純粋な記述<a class="headerlink" href="#async" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="k">let</span><span class="w"> </span><span class="nv">castTheDie</span><span class="w"> </span><span class="bp">()</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">Async</span><span class="o">&lt;</span><span class="n">int</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">async</span><span class="w"> </span><span class="o">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">castTheDieImpure</span><span class="w"> </span><span class="bp">()</span><span class="w"> </span><span class="o">}</span>
+
+<span class="c1">// Async 値を作成（この時点では実行されない）</span>
+<span class="k">let</span><span class="w"> </span><span class="nv">dieCast</span><span class="o">:</span><span class="w"> </span><span class="n">Async</span><span class="o">&lt;</span><span class="n">int</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">castTheDie</span><span class="w"> </span><span class="bp">()</span>
+<span class="n">printfn</span><span class="w"> </span><span class="s">&quot;%A&quot;</span><span class="w"> </span><span class="n">dieCast</span><span class="w">  </span><span class="c1">// Async&lt;int&gt; - まだ実行されていない</span>
+
+<span class="c1">// 実際に実行</span>
+<span class="n">printfn</span><span class="w"> </span><span class="s">&quot;%d&quot;</span><span class="w"> </span><span class="o">(</span><span class="nn">Async</span><span class="p">.</span><span class="n">RunSynchronously</span><span class="w"> </span><span class="n">dieCast</span><span class="o">)</span><span class="w">  </span><span class="c1">// 4</span>
+</code></pre></div>
+<h3 id="84-async">8.4 Async の作成方法<a class="headerlink" href="#84-async" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>用途</th>
+<th>例</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>async { return expr }</code></td>
+<td>副作用のある式をラップ</td>
+<td><code>async { return castTheDieImpure () }</code></td>
+</tr>
+<tr>
+<td><code>async { return value }</code></td>
+<td>既存の値をラップ（副作用なし）</td>
+<td><code>async { return 42 }</code></td>
+</tr>
+<tr>
+<td><code>async { return () }</code></td>
+<td>何もしない Async</td>
+<td><code>async { return () }</code></td>
+</tr>
+</tbody>
+</table>
+<div class="highlight"><pre><span></span><code><span class="c1">// 副作用を遅延実行</span>
+<span class="k">let</span><span class="w"> </span><span class="nv">delayedPrint</span><span class="o">:</span><span class="w"> </span><span class="n">Async</span><span class="o">&lt;</span><span class="kt">unit</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">async</span><span class="w"> </span><span class="o">{</span>
+<span class="w">    </span><span class="n">printfn</span><span class="w"> </span><span class="s">&quot;Hello&quot;</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="bp">()</span>
+<span class="o">}</span>
+<span class="c1">// println はまだ実行されていない</span>
+
+<span class="c1">// 既存の値をラップ</span>
+<span class="k">let</span><span class="w"> </span><span class="nv">pureValue</span><span class="o">:</span><span class="w"> </span><span class="n">Async</span><span class="o">&lt;</span><span class="n">int</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">async</span><span class="w"> </span><span class="o">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="mi">42</span><span class="w"> </span><span class="o">}</span>
+<span class="c1">// 副作用なし、即座に 42 が確定</span>
+</code></pre></div>
+<h3 id="85-async">8.5 Async の合成<a class="headerlink" href="#85-async" title="Permanent link">&para;</a></h3>
+<p>Async 値は <code>let!</code> を使って合成できます。</p>
+<div class="highlight"><pre><span></span><code><span class="k">let</span><span class="w"> </span><span class="nv">castTheDieTwice</span><span class="w"> </span><span class="bp">()</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">Async</span><span class="o">&lt;</span><span class="n">int</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">async</span><span class="w"> </span><span class="o">{</span>
+<span class="w">        </span><span class="k">let!</span><span class="w"> </span><span class="nv">firstCast</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">castTheDie</span><span class="w"> </span><span class="bp">()</span>
+<span class="w">        </span><span class="k">let!</span><span class="w"> </span><span class="nv">secondCast</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">castTheDie</span><span class="w"> </span><span class="bp">()</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">firstCast</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">secondCast</span>
+<span class="w">    </span><span class="o">}</span>
+
+<span class="c1">// まだ実行されていない</span>
+<span class="k">let</span><span class="w"> </span><span class="nv">program</span><span class="o">:</span><span class="w"> </span><span class="n">Async</span><span class="o">&lt;</span><span class="n">int</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">castTheDieTwice</span><span class="w"> </span><span class="bp">()</span>
+
+<span class="c1">// 実行</span>
+<span class="k">let</span><span class="w"> </span><span class="nv">result</span><span class="o">:</span><span class="w"> </span><span class="n">int</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nn">Async</span><span class="p">.</span><span class="n">RunSynchronously</span><span class="w"> </span><span class="n">program</span>
+</code></pre></div>
+<p><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiBjb250ZW50U3R5bGVUeXBlPSJ0ZXh0L2NzcyIgZGF0YS1kaWFncmFtLXR5cGU9IkRFU0NSSVBUSU9OIiBoZWlnaHQ9IjI3OHB4IiBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSJub25lIiBzdHlsZT0id2lkdGg6MzA0cHg7aGVpZ2h0OjI3OHB4O2JhY2tncm91bmQ6I0ZGRkZGRjsiIHZlcnNpb249IjEuMSIgdmlld0JveD0iMCAwIDMwNCAyNzgiIHdpZHRoPSIzMDRweCIgem9vbUFuZFBhbj0ibWFnbmlmeSI+PGRlZnMvPjxnPjwhLS1jbHVzdGVyIEFzeW5jID8/Py0tPjxnIGNsYXNzPSJjbHVzdGVyIiBkYXRhLWVudGl0eT0iQXN5bmMgLi4uIiBkYXRhLXNvdXJjZS1saW5lPSIzIiBkYXRhLXVpZD0iZW50MDAwMiIgaWQ9ImNsdXN0ZXJfQXN5bmMgLi4uIj48cmVjdCBmaWxsPSIjRkZGRkZGIiBoZWlnaHQ9IjE3Mi41OSIgcng9IjIuNSIgcnk9IjIuNSIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxOyIgd2lkdGg9IjI4NiIgeD0iMTIiIHk9IjEyIi8+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9IlZlcmRhbmEiIGZvbnQtc2l6ZT0iMTQiIGZvbnQtd2VpZ2h0PSJib2xkIiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjkzLjQzMzQiIHg9IjEwOC4yODMzIiB5PSIyNi45OTUxIj5Bc3luYyAmIzEyMzk4OyYjMjE1MTI7JiMyNTEwNDs8L3RleHQ+PC9nPjwhLS1lbnRpdHkgY2FzdDEtLT48ZyBjbGFzcz0iZW50aXR5IiBkYXRhLWVudGl0eT0iY2FzdDEiIGRhdGEtc291cmNlLWxpbmU9IjQiIGRhdGEtdWlkPSJlbnQwMDAzIiBpZD0iZW50aXR5X2Nhc3QxIj48cmVjdCBmaWxsPSIjRkZGRkZGIiBoZWlnaHQ9IjIyLjI5NjkiIHJ4PSIyLjUiIHJ5PSIyLjUiIHN0eWxlPSJzdHJva2U6IzAwMDAwMDtzdHJva2Utd2lkdGg6MTsiIHdpZHRoPSIxMDkuMzA0NyIgeD0iMjguMzUiIHk9IjQ3Ii8+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9IlZlcmRhbmEiIGZvbnQtc2l6ZT0iMTQiIGxlbmd0aEFkanVzdD0ic3BhY2luZyIgdGV4dExlbmd0aD0iODkuMzA0NyIgeD0iMzguMzUiIHk9IjYyLjk5NTEiPmNhc3RUaGVEaWUoKTwvdGV4dD48L2c+PCEtLWVudGl0eSBjYXN0Mi0tPjxnIGNsYXNzPSJlbnRpdHkiIGRhdGEtZW50aXR5PSJjYXN0MiIgZGF0YS1zb3VyY2UtbGluZT0iNSIgZGF0YS11aWQ9ImVudDAwMDQiIGlkPSJlbnRpdHlfY2FzdDIiPjxyZWN0IGZpbGw9IiNGRkZGRkYiIGhlaWdodD0iMjIuMjk2OSIgcng9IjIuNSIgcnk9IjIuNSIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxOyIgd2lkdGg9IjEwOS4zMDQ3IiB4PSIxNzIuMzUiIHk9IjQ3Ii8+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9IlZlcmRhbmEiIGZvbnQtc2l6ZT0iMTQiIGxlbmd0aEFkanVzdD0ic3BhY2luZyIgdGV4dExlbmd0aD0iODkuMzA0NyIgeD0iMTgyLjM1IiB5PSI2Mi45OTUxIj5jYXN0VGhlRGllKCk8L3RleHQ+PC9nPjwhLS1lbnRpdHkgY29tYmluZS0tPjxnIGNsYXNzPSJlbnRpdHkiIGRhdGEtZW50aXR5PSJjb21iaW5lIiBkYXRhLXNvdXJjZS1saW5lPSI2IiBkYXRhLXVpZD0iZW50MDAwNSIgaWQ9ImVudGl0eV9jb21iaW5lIj48cmVjdCBmaWxsPSIjRkZGRkZGIiBoZWlnaHQ9IjIyLjI5NjkiIHJ4PSIyLjUiIHJ5PSIyLjUiIHN0eWxlPSJzdHJva2U6IzAwMDAwMDtzdHJva2Utd2lkdGg6MTsiIHdpZHRoPSIxODAuMTkzNCIgeD0iNjEuOSIgeT0iMTQ2LjMiLz48dGV4dCBmaWxsPSIjMDAwMDAwIiBmb250LWZhbWlseT0iVmVyZGFuYSIgZm9udC1zaXplPSIxNCIgbGVuZ3RoQWRqdXN0PSJzcGFjaW5nIiB0ZXh0TGVuZ3RoPSIxNjAuMTkzNCIgeD0iNzEuOSIgeT0iMTYyLjI5NTEiPmZpcnN0Q2FzdCArIHNlY29uZENhc3Q8L3RleHQ+PC9nPjxnIGNsYXNzPSJlbnRpdHkiIGRhdGEtZW50aXR5PSJHTU44IiBkYXRhLXNvdXJjZS1saW5lPSIxMyIgZGF0YS11aWQ9ImVudDAwMDkiIGlkPSJlbnRpdHlfR01OOCI+PHBhdGggZD0iTTk2LDIzMS41OSBMOTYsMjcxLjg1NTYgQTAsMCAwIDAgMCA5NiwyNzEuODU1NiBMMjA4LjAwMDEsMjcxLjg1NTYgQTAsMCAwIDAgMCAyMDguMDAwMSwyNzEuODU1NiBMMjA4LjAwMDEsMjQxLjU5IEwxOTguMDAwMSwyMzEuNTkgTDE1NiwyMzEuNTkgTDE1MiwxNjkuMDMgTDE0OCwyMzEuNTkgTDk2LDIzMS41OSBBMCwwIDAgMCAwIDk2LDIzMS41OSIgZmlsbD0iI0ZGRkZGRiIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxOyIvPjxwYXRoIGQ9Ik0xOTguMDAwMSwyMzEuNTkgTDE5OC4wMDAxLDI0MS41OSBMMjA4LjAwMDEsMjQxLjU5IEwxOTguMDAwMSwyMzEuNTkiIGZpbGw9IiNGRkZGRkYiIHN0eWxlPSJzdHJva2U6IzAwMDAwMDtzdHJva2Utd2lkdGg6MTsiLz48dGV4dCBmaWxsPSIjMDAwMDAwIiBmb250LWZhbWlseT0iVmVyZGFuYSIgZm9udC1zaXplPSIxMyIgbGVuZ3RoQWRqdXN0PSJzcGFjaW5nIiB0ZXh0TGVuZ3RoPSI3OS43NTgzIiB4PSIxMDIiIHk9IjI0OC42NTY5Ij5hc3luYyB7IH0gJiMxMjM5MTs8L3RleHQ+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9IlZlcmRhbmEiIGZvbnQtc2l6ZT0iMTMiIGxlbmd0aEFkanVzdD0ic3BhY2luZyIgdGV4dExlbmd0aD0iOTEuMDAwMSIgeD0iMTAyIiB5PSIyNjMuNzg5NyI+JiMzODkxODsmIzI0MjA3OyYjMjAxODQ7JiMxMjM2OTsmIzEyMzkwOyYjMjE1MTI7JiMyNTEwNDs8L3RleHQ+PC9nPjwhLS1saW5rIGNhc3QxIHRvIGNvbWJpbmUtLT48ZyBjbGFzcz0ibGluayIgZGF0YS1lbnRpdHktMT0iY2FzdDEiIGRhdGEtZW50aXR5LTI9ImNvbWJpbmUiIGRhdGEtc291cmNlLWxpbmU9IjgiIGRhdGEtdWlkPSJsbms2IiBpZD0ibGlua19jYXN0MV9jb21iaW5lIj48cGF0aCBkPSJNOTAuMzgsNjkuNTYgQzEwMy42LDg4LjE5IDEyNy42Njg5LDEyMi4xMzYgMTQwLjk4ODksMTQwLjkxNiIgZmlsbD0ibm9uZSIgaWQ9ImNhc3QxLXRvLWNvbWJpbmUiIHN0eWxlPSJzdHJva2U6IzAwMDAwMDtzdHJva2Utd2lkdGg6MTsiLz48cG9seWdvbiBmaWxsPSIjMDAwMDAwIiBwb2ludHM9IjE0NC40NiwxNDUuODEsMTQyLjUxNiwxMzYuMTU0OSwxNDEuNTY3NCwxNDEuNzMxNywxMzUuOTkwNiwxNDAuNzgzMSwxNDQuNDYsMTQ1LjgxIiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE7Ii8+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9IlZlcmRhbmEiIGZvbnQtc2l6ZT0iMTMiIGxlbmd0aEFkanVzdD0ic3BhY2luZyIgdGV4dExlbmd0aD0iMjEuOTE4NSIgeD0iMTIyLjYzIiB5PSIxMTIuMzY2OSI+bGV0ITwvdGV4dD48L2c+PCEtLWxpbmsgY2FzdDIgdG8gY29tYmluZS0tPjxnIGNsYXNzPSJsaW5rIiBkYXRhLWVudGl0eS0xPSJjYXN0MiIgZGF0YS1lbnRpdHktMj0iY29tYmluZSIgZGF0YS1zb3VyY2UtbGluZT0iOSIgZGF0YS11aWQ9ImxuazciIGlkPSJsaW5rX2Nhc3QyX2NvbWJpbmUiPjxwYXRoIGQ9Ik0yMTguOTcsNjkuNTYgQzIwNC42MSw4OC4xOSAxNzguMzQzNiwxMjIuMjc4NCAxNjMuODYzNiwxNDEuMDU4NCIgZmlsbD0ibm9uZSIgaWQ9ImNhc3QyLXRvLWNvbWJpbmUiIHN0eWxlPSJzdHJva2U6IzAwMDAwMDtzdHJva2Utd2lkdGg6MTsiLz48cG9seWdvbiBmaWxsPSIjMDAwMDAwIiBwb2ludHM9IjE2MC4yLDE0NS44MSwxNjguODYzMiwxNDEuMTI1LDE2My4yNTMsMTQxLjg1MDMsMTYyLjUyNzcsMTM2LjI0MDIsMTYwLjIsMTQ1LjgxIiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE7Ii8+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9IlZlcmRhbmEiIGZvbnQtc2l6ZT0iMTMiIGxlbmd0aEFkanVzdD0ic3BhY2luZyIgdGV4dExlbmd0aD0iMjEuOTE4NSIgeD0iMTk0Ljk5IiB5PSIxMTIuMzY2OSI+bGV0ITwvdGV4dD48L2c+PCEtLVNSQz1bS29wOUlDckRMSVo4SVNwQ3UtOGdJYXFrSVNuQnBxYkxLNzhpaGluQkxkWlNrRXhmWDh2ZDdIRUs1QWd2YVhFQktYSUthWEVCSXE4b0ticW9LcEtxYkhHSVluTDAwZVJ1OThzV2FjY1BIU0ticGEwMTFNczV1akphX0JtSzQwVVlCM3l0QUpDbGJPaUJSOVkyaGd1VEo0WjFJWTRkaktHSEI2NjRKUUFNWW9pbGxvSEw4SWNfZjJHX2JvaUh4RXZnWExnV3N2VHBsTHBHemRITl92RlRDbnV0SmRwU2swcFk1d3hLbDFHNWExdTBdLS0+PC9nPjwvc3ZnPg==" class="uml" alt="uml diagram" title="" /></p>
+<h3 id="86">8.6 ミーティングスケジューリングの例<a class="headerlink" href="#86" title="Permanent link">&para;</a></h3>
+<p><strong>ソースファイル</strong>: <code>app/fsharp/src/Ch08/AsyncIO.fs</code></p>
+<p>より実践的な例として、ミーティングのスケジューリングを見てみましょう。</p>
+<div class="highlight"><pre><span></span><code><span class="k">type</span><span class="w"> </span><span class="nc">MeetingTime</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">{</span><span class="w"> </span><span class="n">StartHour</span><span class="o">:</span><span class="w"> </span><span class="n">int</span><span class="o">;</span><span class="w"> </span><span class="n">EndHour</span><span class="o">:</span><span class="w"> </span><span class="n">int</span><span class="w"> </span><span class="o">}</span>
+
+<span class="c1">// 副作用のある API 呼び出しを Async でラップ</span>
+<span class="k">let</span><span class="w"> </span><span class="nv">calendarEntries</span><span class="w"> </span><span class="o">(</span><span class="n">name</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="o">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">Async</span><span class="o">&lt;</span><span class="n">MeetingTime</span><span class="w"> </span><span class="kt">list</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">async</span><span class="w"> </span><span class="o">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">calendarEntriesApiCall</span><span class="w"> </span><span class="n">name</span><span class="w"> </span><span class="o">}</span>
+
+<span class="k">let</span><span class="w"> </span><span class="nv">createMeeting</span><span class="w"> </span><span class="o">(</span><span class="n">names</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="w"> </span><span class="kt">list</span><span class="o">)</span><span class="w"> </span><span class="o">(</span><span class="n">meeting</span><span class="o">:</span><span class="w"> </span><span class="n">MeetingTime</span><span class="o">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">Async</span><span class="o">&lt;</span><span class="kt">unit</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">async</span><span class="w"> </span><span class="o">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">createMeetingApiCall</span><span class="w"> </span><span class="n">names</span><span class="w"> </span><span class="n">meeting</span><span class="w"> </span><span class="o">}</span>
+</code></pre></div>
+<h4 id="_2">予定の取得<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="k">let</span><span class="w"> </span><span class="nv">scheduledMeetings</span><span class="w"> </span><span class="o">(</span><span class="n">person1</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="o">)</span><span class="w"> </span><span class="o">(</span><span class="n">person2</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="o">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">Async</span><span class="o">&lt;</span><span class="n">MeetingTime</span><span class="w"> </span><span class="kt">list</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">async</span><span class="w"> </span><span class="o">{</span>
+<span class="w">        </span><span class="k">let!</span><span class="w"> </span><span class="nv">entries1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">calendarEntries</span><span class="w"> </span><span class="n">person1</span>
+<span class="w">        </span><span class="k">let!</span><span class="w"> </span><span class="nv">entries2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">calendarEntries</span><span class="w"> </span><span class="n">person2</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">entries1</span><span class="w"> </span><span class="o">@</span><span class="w"> </span><span class="n">entries2</span>
+<span class="w">    </span><span class="o">}</span>
+</code></pre></div>
+<h4 id="_3">空き時間の計算（純粋関数）<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="k">let</span><span class="w"> </span><span class="nv">possibleMeetings</span>
+<span class="w">    </span><span class="o">(</span><span class="n">existingMeetings</span><span class="o">:</span><span class="w"> </span><span class="n">MeetingTime</span><span class="w"> </span><span class="kt">list</span><span class="o">)</span>
+<span class="w">    </span><span class="o">(</span><span class="n">startHour</span><span class="o">:</span><span class="w"> </span><span class="n">int</span><span class="o">)</span>
+<span class="w">    </span><span class="o">(</span><span class="n">endHour</span><span class="o">:</span><span class="w"> </span><span class="n">int</span><span class="o">)</span>
+<span class="w">    </span><span class="o">(</span><span class="n">lengthHours</span><span class="o">:</span><span class="w"> </span><span class="n">int</span><span class="o">)</span>
+<span class="w">    </span><span class="o">:</span><span class="w"> </span><span class="n">MeetingTime</span><span class="w"> </span><span class="kt">list</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="o">[</span><span class="w"> </span><span class="n">startHour</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="o">(</span><span class="n">endHour</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">lengthHours</span><span class="o">)</span><span class="w"> </span><span class="o">]</span>
+<span class="w">    </span><span class="o">|&gt;</span><span class="w"> </span><span class="nn">List</span><span class="p">.</span><span class="n">map</span><span class="w"> </span><span class="o">(</span><span class="k">fun</span><span class="w"> </span><span class="n">start</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="o">{</span><span class="w"> </span><span class="n">StartHour</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">start</span><span class="o">;</span><span class="w"> </span><span class="n">EndHour</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">start</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">lengthHours</span><span class="w"> </span><span class="o">})</span>
+<span class="w">    </span><span class="o">|&gt;</span><span class="w"> </span><span class="nn">List</span><span class="p">.</span><span class="n">filter</span><span class="w"> </span><span class="o">(</span><span class="k">fun</span><span class="w"> </span><span class="n">slot</span><span class="w"> </span><span class="o">-&gt;</span>
+<span class="w">        </span><span class="n">existingMeetings</span><span class="w"> </span><span class="o">|&gt;</span><span class="w"> </span><span class="nn">List</span><span class="p">.</span><span class="n">forall</span><span class="w"> </span><span class="o">(</span><span class="k">fun</span><span class="w"> </span><span class="n">meeting</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="o">(</span><span class="n">meetingsOverlap</span><span class="w"> </span><span class="n">meeting</span><span class="w"> </span><span class="n">slot</span><span class="o">)))</span>
+</code></pre></div>
+<h3 id="87-orelse">8.7 orElse によるエラーハンドリング<a class="headerlink" href="#87-orelse" title="Permanent link">&para;</a></h3>
+<p>失敗時のフォールバックを指定できます。</p>
+<div class="highlight"><pre><span></span><code><span class="k">let</span><span class="w"> </span><span class="nv">orElse</span><span class="w"> </span><span class="o">(</span><span class="n">fallback</span><span class="o">:</span><span class="w"> </span><span class="n">Async</span><span class="o">&lt;</span><span class="k">&#39;</span><span class="n">a</span><span class="o">&gt;)</span><span class="w"> </span><span class="o">(</span><span class="n">primary</span><span class="o">:</span><span class="w"> </span><span class="n">Async</span><span class="o">&lt;</span><span class="k">&#39;</span><span class="n">a</span><span class="o">&gt;)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">Async</span><span class="o">&lt;</span><span class="k">&#39;</span><span class="n">a</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">async</span><span class="w"> </span><span class="o">{</span>
+<span class="w">        </span><span class="k">try</span>
+<span class="w">            </span><span class="k">return</span><span class="o">!</span><span class="w"> </span><span class="n">primary</span>
+<span class="w">        </span><span class="k">with</span><span class="w"> </span><span class="o">_</span><span class="w"> </span><span class="o">-&gt;</span>
+<span class="w">            </span><span class="k">return</span><span class="o">!</span><span class="w"> </span><span class="n">fallback</span>
+<span class="w">    </span><span class="o">}</span>
+
+<span class="k">let</span><span class="w"> </span><span class="nv">year</span><span class="o">:</span><span class="w"> </span><span class="n">Async</span><span class="o">&lt;</span><span class="n">int</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">async</span><span class="w"> </span><span class="o">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="mi">996</span><span class="w"> </span><span class="o">}</span>
+<span class="k">let</span><span class="w"> </span><span class="nv">noYear</span><span class="o">:</span><span class="w"> </span><span class="n">Async</span><span class="o">&lt;</span><span class="n">int</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">async</span><span class="w"> </span><span class="o">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">failwith</span><span class="w"> </span><span class="s">&quot;no year&quot;</span><span class="w"> </span><span class="o">}</span>
+
+<span class="n">year</span><span class="w"> </span><span class="o">|&gt;</span><span class="w"> </span><span class="n">orElse</span><span class="w"> </span><span class="o">(</span><span class="n">async</span><span class="w"> </span><span class="o">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="mi">2020</span><span class="w"> </span><span class="o">})</span><span class="w"> </span><span class="o">|&gt;</span><span class="w"> </span><span class="nn">Async</span><span class="p">.</span><span class="n">RunSynchronously</span><span class="w">    </span><span class="c1">// 996</span>
+<span class="n">noYear</span><span class="w"> </span><span class="o">|&gt;</span><span class="w"> </span><span class="n">orElse</span><span class="w"> </span><span class="o">(</span><span class="n">async</span><span class="w"> </span><span class="o">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="mi">2020</span><span class="w"> </span><span class="o">})</span><span class="w"> </span><span class="o">|&gt;</span><span class="w"> </span><span class="nn">Async</span><span class="p">.</span><span class="n">RunSynchronously</span><span class="w">  </span><span class="c1">// 2020</span>
+</code></pre></div>
+<p><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiBjb250ZW50U3R5bGVUeXBlPSJ0ZXh0L2NzcyIgZGF0YS1kaWFncmFtLXR5cGU9IkRFU0NSSVBUSU9OIiBoZWlnaHQ9IjI3M3B4IiBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSJub25lIiBzdHlsZT0id2lkdGg6MzI1cHg7aGVpZ2h0OjI3M3B4O2JhY2tncm91bmQ6I0ZGRkZGRjsiIHZlcnNpb249IjEuMSIgdmlld0JveD0iMCAwIDMyNSAyNzMiIHdpZHRoPSIzMjVweCIgem9vbUFuZFBhbj0ibWFnbmlmeSI+PGRlZnMvPjxnPjwhLS1jbHVzdGVyIG9yRWxzZSA/Pz8tLT48ZyBjbGFzcz0iY2x1c3RlciIgZGF0YS1lbnRpdHk9Im9yRWxzZSAuLi4iIGRhdGEtc291cmNlLWxpbmU9IjMiIGRhdGEtdWlkPSJlbnQwMDAyIiBpZD0iY2x1c3Rlcl9vckVsc2UgLi4uIj48cmVjdCBmaWxsPSIjRkZGRkZGIiBoZWlnaHQ9IjI1NS44OSIgcng9IjIuNSIgcnk9IjIuNSIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxOyIgd2lkdGg9IjMwNyIgeD0iMTIiIHk9IjEyIi8+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9IlZlcmRhbmEiIGZvbnQtc2l6ZT0iMTQiIGZvbnQtd2VpZ2h0PSJib2xkIiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9Ijk1LjU4NjciIHg9IjExNy43MDY2IiB5PSIyNi45OTUxIj5vckVsc2UgJiMxMjM5ODsmIzIxMjA1OyYjMjAzMTY7PC90ZXh0PjwvZz48IS0tZW50aXR5IG1haW4tLT48ZyBjbGFzcz0iZW50aXR5IiBkYXRhLWVudGl0eT0ibWFpbiIgZGF0YS1zb3VyY2UtbGluZT0iNCIgZGF0YS11aWQ9ImVudDAwMDMiIGlkPSJlbnRpdHlfbWFpbiI+PHJlY3QgZmlsbD0iI0ZGRkZGRiIgaGVpZ2h0PSIyMi4yOTY5IiByeD0iMi41IiByeT0iMi41IiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE7IiB3aWR0aD0iMTIyLjE3NjUiIHg9IjE0Ny45MSIgeT0iNDciLz48dGV4dCBmaWxsPSIjMDAwMDAwIiBmb250LWZhbWlseT0iVmVyZGFuYSIgZm9udC1zaXplPSIxNCIgbGVuZ3RoQWRqdXN0PSJzcGFjaW5nIiB0ZXh0TGVuZ3RoPSIxMDIuMTc2NSIgeD0iMTU3LjkxIiB5PSI2Mi45OTUxIj4mIzEyNTEzOyYjMTI0NTI7JiMxMjUzMTsmIzEyMzk4OyBBc3luYzwvdGV4dD48L2c+PCEtLWVudGl0eSBmYWxsYmFjay0tPjxnIGNsYXNzPSJlbnRpdHkiIGRhdGEtZW50aXR5PSJmYWxsYmFjayIgZGF0YS1zb3VyY2UtbGluZT0iNSIgZGF0YS11aWQ9ImVudDAwMDQiIGlkPSJlbnRpdHlfZmFsbGJhY2siPjxyZWN0IGZpbGw9IiNGRkZGRkYiIGhlaWdodD0iMjIuMjk2OSIgcng9IjIuNSIgcnk9IjIuNSIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxOyIgd2lkdGg9IjE2NC4xNzYzIiB4PSIyNy45MSIgeT0iMTQ2LjMiLz48dGV4dCBmaWxsPSIjMDAwMDAwIiBmb250LWZhbWlseT0iVmVyZGFuYSIgZm9udC1zaXplPSIxNCIgbGVuZ3RoQWRqdXN0PSJzcGFjaW5nIiB0ZXh0TGVuZ3RoPSIxNDQuMTc2MyIgeD0iMzcuOTEiIHk9IjE2Mi4yOTUxIj4mIzEyNTAxOyYjMTI0NTc7JiMxMjU0MDsmIzEyNTIzOyYjMTI0OTY7JiMxMjQ4MzsmIzEyNDYzOyBBc3luYzwvdGV4dD48L2c+PCEtLWVudGl0eSByZXN1bHQtLT48ZyBjbGFzcz0iZW50aXR5IiBkYXRhLWVudGl0eT0icmVzdWx0IiBkYXRhLXNvdXJjZS1saW5lPSI2IiBkYXRhLXVpZD0iZW50MDAwNSIgaWQ9ImVudGl0eV9yZXN1bHQiPjxyZWN0IGZpbGw9IiNGRkZGRkYiIGhlaWdodD0iMjIuMjk2OSIgcng9IjIuNSIgcnk9IjIuNSIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxOyIgd2lkdGg9IjQ3Ljk5OTkiIHg9IjE2MiIgeT0iMjI5LjU5Ii8+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9IlZlcmRhbmEiIGZvbnQtc2l6ZT0iMTQiIGxlbmd0aEFkanVzdD0ic3BhY2luZyIgdGV4dExlbmd0aD0iMjcuOTk5OSIgeD0iMTcyIiB5PSIyNDUuNTg1MSI+JiMzMjA4MDsmIzI2NTI0OzwvdGV4dD48L2c+PCEtLWxpbmsgbWFpbiB0byByZXN1bHQtLT48ZyBjbGFzcz0ibGluayIgZGF0YS1lbnRpdHktMT0ibWFpbiIgZGF0YS1lbnRpdHktMj0icmVzdWx0IiBkYXRhLXNvdXJjZS1saW5lPSI4IiBkYXRhLXVpZD0ibG5rNiIgaWQ9ImxpbmtfbWFpbl9yZXN1bHQiPjxwYXRoIGQ9Ik0yMTAuNjcsNjkuNjggQzIxMS44Nyw3Ny43NiAyMTMuMzcsODkuMiAyMTQsOTkuMyBDMjE1LjkxLDEzMC4wOSAyMTYuMTUsMTM4LjM2IDIxMCwxNjguNTkgQzIwNS40OCwxOTAuODIgMTk4LjI4MjQsMjEwLjE0NyAxOTIuNjkyNCwyMjMuODA3IiBmaWxsPSJub25lIiBpZD0ibWFpbi10by1yZXN1bHQiIHN0eWxlPSJzdHJva2U6IzAwMDAwMDtzdHJva2Utd2lkdGg6MTsiLz48cG9seWdvbiBmaWxsPSIjMDAwMDAwIiBwb2ludHM9IjE5MC40MiwyMjkuMzYsMTk3LjUzMDcsMjIyLjU0NTQsMTkyLjMxMzcsMjI0LjczMjUsMTkwLjEyNjYsMjE5LjUxNTUsMTkwLjQyLDIyOS4zNiIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxOyIvPjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJWZXJkYW5hIiBmb250LXNpemU9IjEzIiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjM5IiB4PSIyMTQuODUiIHk9IjE2Mi4wMDY5Ij4mIzI1MTA0OyYjMjExNTE7JiMyNjE3ODs8L3RleHQ+PC9nPjwhLS1saW5rIG1haW4gdG8gZmFsbGJhY2stLT48ZyBjbGFzcz0ibGluayIgZGF0YS1lbnRpdHktMT0ibWFpbiIgZGF0YS1lbnRpdHktMj0iZmFsbGJhY2siIGRhdGEtc291cmNlLWxpbmU9IjkiIGRhdGEtdWlkPSJsbms3IiBpZD0ibGlua19tYWluX2ZhbGxiYWNrIj48cGF0aCBkPSJNMTk4LjQxLDY5LjU2IEMxNzkuNDUsODguMTkgMTQ0LjIwOTQsMTIyLjgyNDUgMTI1LjA5OTQsMTQxLjYwNDUiIGZpbGw9Im5vbmUiIGlkPSJtYWluLXRvLWZhbGxiYWNrIiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE7Ii8+PHBvbHlnb24gZmlsbD0iIzAwMDAwMCIgcG9pbnRzPSIxMjAuODIsMTQ1LjgxLDEzMC4wNDI4LDE0Mi4zNTQ3LDEyNC4zODYyLDE0Mi4zMDU0LDEyNC40MzU1LDEzNi42NDg4LDEyMC44MiwxNDUuODEiIHN0eWxlPSJzdHJva2U6IzAwMDAwMDtzdHJva2Utd2lkdGg6MTsiLz48dGV4dCBmaWxsPSIjMDAwMDAwIiBmb250LWZhbWlseT0iVmVyZGFuYSIgZm9udC1zaXplPSIxMyIgbGVuZ3RoQWRqdXN0PSJzcGFjaW5nIiB0ZXh0TGVuZ3RoPSIzOSIgeD0iMTY2LjQzIiB5PSIxMTIuMzY2OSI+JiMyMjgzMzsmIzI1OTQzOyYjMjYxNzg7PC90ZXh0PjwvZz48IS0tbGluayBmYWxsYmFjayB0byByZXN1bHQtLT48ZyBjbGFzcz0ibGluayIgZGF0YS1lbnRpdHktMT0iZmFsbGJhY2siIGRhdGEtZW50aXR5LTI9InJlc3VsdCIgZGF0YS1zb3VyY2UtbGluZT0iMTAiIGRhdGEtdWlkPSJsbms4IiBpZD0ibGlua19mYWxsYmFja19yZXN1bHQiPjxwYXRoIGQ9Ik0xMTkuOTQsMTY5LjA3IEMxMzQuNSwxODQuNjUgMTU3LjQwMzMsMjA5LjE0NjMgMTcxLjk2MzMsMjI0LjcyNjMiIGZpbGw9Im5vbmUiIGlkPSJmYWxsYmFjay10by1yZXN1bHQiIHN0eWxlPSJzdHJva2U6IzAwMDAwMDtzdHJva2Utd2lkdGg6MTsiLz48cG9seWdvbiBmaWxsPSIjMDAwMDAwIiBwb2ludHM9IjE3Ni4wNiwyMjkuMTEsMTcyLjgzNzQsMjE5LjgwMzMsMTcyLjY0NjEsMjI1LjQ1NjksMTY2Ljk5MjUsMjI1LjI2NTYsMTc2LjA2LDIyOS4xMSIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxOyIvPjwvZz48IS0tU1JDPVtLb3A5SUNyRExJWjhJU3BDdS04Z0lhcWtJU25CcHFiTEtDZWxTaXFmSmJMdXRCWmtRVlZLOXRsZEEyYktTb0tkNWdLZUEzcmtObFl1UVNkWnZpcjBFR043dWlneVAyTTVuNkE1TjkwOUMxTEo3cFVqVkRveXZ0N3B3aVZENG51dERwemtNZS1hRDJxbjlvU2ZDSmFSZ2xwdnJXZEZ2aXExb25JYjVmVmNiNzFuV0duSnFETXJXbWVlTTJheXd2Wm1qNmwtaXZiRDIzY09DSzNQZnFpc0ZmaXc3SUdCNXFKZXZnZTUwMDAwXS0tPjwvZz48L3N2Zz4=" class="uml" alt="uml diagram" title="" /></p>
+<h4 id="_4">リトライ戦略<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="c1">// API 呼び出しを3回までリトライ</span>
+<span class="n">calendarEntries</span><span class="w"> </span><span class="s">&quot;Alice&quot;</span>
+<span class="o">|&gt;</span><span class="w"> </span><span class="n">orElse</span><span class="w"> </span><span class="o">(</span><span class="n">calendarEntries</span><span class="w"> </span><span class="s">&quot;Alice&quot;</span><span class="o">)</span>
+<span class="o">|&gt;</span><span class="w"> </span><span class="n">orElse</span><span class="w"> </span><span class="o">(</span><span class="n">calendarEntries</span><span class="w"> </span><span class="s">&quot;Alice&quot;</span><span class="o">)</span>
+<span class="o">|&gt;</span><span class="w"> </span><span class="n">orElse</span><span class="w"> </span><span class="o">(</span><span class="n">async</span><span class="w"> </span><span class="o">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="bp">[]</span><span class="w"> </span><span class="o">})</span><span class="w">  </span><span class="c1">// 全部失敗したら空リスト</span>
+</code></pre></div>
+<h4 id="_5">汎用リトライ関数<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="k">let</span><span class="w"> </span><span class="nv">retry</span><span class="w"> </span><span class="o">(</span><span class="n">maxRetries</span><span class="o">:</span><span class="w"> </span><span class="n">int</span><span class="o">)</span><span class="w"> </span><span class="o">(</span><span class="n">action</span><span class="o">:</span><span class="w"> </span><span class="n">Async</span><span class="o">&lt;</span><span class="k">&#39;</span><span class="n">a</span><span class="o">&gt;)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">Async</span><span class="o">&lt;</span><span class="k">&#39;</span><span class="n">a</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="k">let</span><span class="w"> </span><span class="nv">rec</span><span class="w"> </span><span class="n">loop</span><span class="w"> </span><span class="n">remaining</span><span class="w"> </span><span class="o">=</span>
+<span class="w">        </span><span class="n">async</span><span class="w"> </span><span class="o">{</span>
+<span class="w">            </span><span class="k">try</span>
+<span class="w">                </span><span class="k">return</span><span class="o">!</span><span class="w"> </span><span class="n">action</span>
+<span class="w">            </span><span class="k">with</span><span class="w"> </span><span class="n">ex</span><span class="w"> </span><span class="o">-&gt;</span>
+<span class="w">                </span><span class="k">if</span><span class="w"> </span><span class="n">remaining</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="k">then</span>
+<span class="w">                    </span><span class="k">return</span><span class="o">!</span><span class="w"> </span><span class="n">loop</span><span class="w"> </span><span class="o">(</span><span class="n">remaining</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="o">)</span>
+<span class="w">                </span><span class="k">else</span>
+<span class="w">                    </span><span class="k">return</span><span class="w"> </span><span class="n">raise</span><span class="w"> </span><span class="n">ex</span>
+<span class="w">        </span><span class="o">}</span>
+<span class="w">    </span><span class="n">loop</span><span class="w"> </span><span class="n">maxRetries</span>
+
+<span class="c1">// 使用例</span>
+<span class="n">retry</span><span class="w"> </span><span class="mi">10</span><span class="w"> </span><span class="o">(</span><span class="n">calendarEntries</span><span class="w"> </span><span class="s">&quot;Alice&quot;</span><span class="o">)</span>
+</code></pre></div>
+<h3 id="88-sequence-async">8.8 sequence による Async のリスト処理<a class="headerlink" href="#88-sequence-async" title="Permanent link">&para;</a></h3>
+<p><code>Async&lt;'a&gt; list</code> を <code>Async&lt;'a list&gt;</code> に変換するには sequence を使います。</p>
+<div class="highlight"><pre><span></span><code><span class="k">let</span><span class="w"> </span><span class="nv">sequence</span><span class="w"> </span><span class="o">(</span><span class="n">asyncList</span><span class="o">:</span><span class="w"> </span><span class="n">Async</span><span class="o">&lt;</span><span class="k">&#39;</span><span class="n">a</span><span class="o">&gt;</span><span class="w"> </span><span class="kt">list</span><span class="o">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">Async</span><span class="o">&lt;</span><span class="k">&#39;</span><span class="n">a</span><span class="w"> </span><span class="kt">list</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">async</span><span class="w"> </span><span class="o">{</span>
+<span class="w">        </span><span class="k">let!</span><span class="w"> </span><span class="nv">results</span><span class="w"> </span><span class="o">=</span>
+<span class="w">            </span><span class="n">asyncList</span>
+<span class="w">            </span><span class="o">|&gt;</span><span class="w"> </span><span class="nn">List</span><span class="p">.</span><span class="n">map</span><span class="w"> </span><span class="o">(</span><span class="k">fun</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">async</span><span class="w"> </span><span class="o">{</span>
+<span class="w">                </span><span class="k">let!</span><span class="w"> </span><span class="nv">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">a</span>
+<span class="w">                </span><span class="k">return</span><span class="w"> </span><span class="n">result</span>
+<span class="w">            </span><span class="o">})</span>
+<span class="w">            </span><span class="o">|&gt;</span><span class="w"> </span><span class="nn">Async</span><span class="p">.</span><span class="n">Sequential</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">results</span><span class="w"> </span><span class="o">|&gt;</span><span class="w"> </span><span class="nn">Array</span><span class="p">.</span><span class="n">toList</span>
+<span class="w">    </span><span class="o">}</span>
+
+<span class="k">let</span><span class="w"> </span><span class="nv">actions</span><span class="o">:</span><span class="w"> </span><span class="n">Async</span><span class="o">&lt;</span><span class="n">int</span><span class="o">&gt;</span><span class="w"> </span><span class="kt">list</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">[</span><span class="w"> </span><span class="n">async</span><span class="w"> </span><span class="o">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="o">};</span><span class="w"> </span><span class="n">async</span><span class="w"> </span><span class="o">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="o">};</span><span class="w"> </span><span class="n">async</span><span class="w"> </span><span class="o">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="o">}</span><span class="w"> </span><span class="o">]</span>
+<span class="k">let</span><span class="w"> </span><span class="nv">combined</span><span class="o">:</span><span class="w"> </span><span class="n">Async</span><span class="o">&lt;</span><span class="n">int</span><span class="w"> </span><span class="kt">list</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">sequence</span><span class="w"> </span><span class="n">actions</span>
+
+<span class="nn">Async</span><span class="p">.</span><span class="n">RunSynchronously</span><span class="w"> </span><span class="n">combined</span><span class="w">  </span><span class="c1">// [1; 2; 3]</span>
+</code></pre></div>
+<h4 id="_6">複数人の予定を取得<a class="headerlink" href="#_6" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="k">let</span><span class="w"> </span><span class="nv">scheduledMeetingsMultiple</span><span class="w"> </span><span class="o">(</span><span class="n">attendees</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="w"> </span><span class="kt">list</span><span class="o">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">Async</span><span class="o">&lt;</span><span class="n">MeetingTime</span><span class="w"> </span><span class="kt">list</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">async</span><span class="w"> </span><span class="o">{</span>
+<span class="w">        </span><span class="k">let!</span><span class="w"> </span><span class="nv">allMeetings</span><span class="w"> </span><span class="o">=</span>
+<span class="w">            </span><span class="n">attendees</span>
+<span class="w">            </span><span class="o">|&gt;</span><span class="w"> </span><span class="nn">List</span><span class="p">.</span><span class="n">map</span><span class="w"> </span><span class="o">(</span><span class="k">fun</span><span class="w"> </span><span class="n">name</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">retry</span><span class="w"> </span><span class="mi">10</span><span class="w"> </span><span class="o">(</span><span class="n">calendarEntries</span><span class="w"> </span><span class="n">name</span><span class="o">))</span>
+<span class="w">            </span><span class="o">|&gt;</span><span class="w"> </span><span class="n">sequence</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">allMeetings</span><span class="w"> </span><span class="o">|&gt;</span><span class="w"> </span><span class="nn">List</span><span class="p">.</span><span class="n">concat</span>
+<span class="w">    </span><span class="o">}</span>
+</code></pre></div>
+<h3 id="89">8.9 並列実行<a class="headerlink" href="#89" title="Permanent link">&para;</a></h3>
+<p>F# では <code>Async.Parallel</code> で複数の Async を並列実行できます。</p>
+<div class="highlight"><pre><span></span><code><span class="k">let</span><span class="w"> </span><span class="nv">parallelAll</span><span class="w"> </span><span class="o">(</span><span class="n">asyncList</span><span class="o">:</span><span class="w"> </span><span class="n">Async</span><span class="o">&lt;</span><span class="k">&#39;</span><span class="n">a</span><span class="o">&gt;</span><span class="w"> </span><span class="kt">list</span><span class="o">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">Async</span><span class="o">&lt;</span><span class="k">&#39;</span><span class="n">a</span><span class="w"> </span><span class="kt">list</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">async</span><span class="w"> </span><span class="o">{</span>
+<span class="w">        </span><span class="k">let!</span><span class="w"> </span><span class="nv">results</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nn">Async</span><span class="p">.</span><span class="n">Parallel</span><span class="w"> </span><span class="n">asyncList</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">results</span><span class="w"> </span><span class="o">|&gt;</span><span class="w"> </span><span class="nn">Array</span><span class="p">.</span><span class="n">toList</span>
+<span class="w">    </span><span class="o">}</span>
+
+<span class="c1">// 使用例</span>
+<span class="k">let</span><span class="w"> </span><span class="nv">tasks</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">[</span><span class="w"> </span><span class="n">calendarEntries</span><span class="w"> </span><span class="s">&quot;Alice&quot;</span><span class="o">;</span><span class="w"> </span><span class="n">calendarEntries</span><span class="w"> </span><span class="s">&quot;Bob&quot;</span><span class="o">;</span><span class="w"> </span><span class="n">calendarEntries</span><span class="w"> </span><span class="s">&quot;Charlie&quot;</span><span class="w"> </span><span class="o">]</span>
+<span class="k">let</span><span class="w"> </span><span class="nv">allResults</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">parallelAll</span><span class="w"> </span><span class="n">tasks</span><span class="w"> </span><span class="o">|&gt;</span><span class="w"> </span><span class="nn">Async</span><span class="p">.</span><span class="n">RunSynchronously</span>
+</code></pre></div>
+<hr />
+<h2 id="9">第9章: ストリーム処理<a class="headerlink" href="#9" title="Permanent link">&para;</a></h2>
+<h3 id="91-seq">9.1 Seq（シーケンス）とは<a class="headerlink" href="#91-seq" title="Permanent link">&para;</a></h3>
+<p><strong>Seq</strong>（シーケンス）は、要素の（潜在的に無限の）シーケンスを表します。</p>
+<p><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiBjb250ZW50U3R5bGVUeXBlPSJ0ZXh0L2NzcyIgZGF0YS1kaWFncmFtLXR5cGU9IkRFU0NSSVBUSU9OIiBoZWlnaHQ9IjI0MHB4IiBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSJub25lIiBzdHlsZT0id2lkdGg6NjgycHg7aGVpZ2h0OjI0MHB4O2JhY2tncm91bmQ6I0ZGRkZGRjsiIHZlcnNpb249IjEuMSIgdmlld0JveD0iMCAwIDY4MiAyNDAiIHdpZHRoPSI2ODJweCIgem9vbUFuZFBhbj0ibWFnbmlmeSI+PGRlZnMvPjxnPjwhLS1jbHVzdGVyIExpc3QgdnMgU2VxLS0+PGcgY2xhc3M9ImNsdXN0ZXIiIGRhdGEtZW50aXR5PSJMaXN0IHZzIFNlcSIgZGF0YS1zb3VyY2UtbGluZT0iMyIgZGF0YS11aWQ9ImVudDAwMDIiIGlkPSJjbHVzdGVyX0xpc3QgdnMgU2VxIj48cmVjdCBmaWxsPSIjRkZGRkZGIiBoZWlnaHQ9IjIyMi41OSIgcng9IjIuNSIgcnk9IjIuNSIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxOyIgd2lkdGg9IjY2NCIgeD0iMTIiIHk9IjEyIi8+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9IlZlcmRhbmEiIGZvbnQtc2l6ZT0iMTQiIGZvbnQtd2VpZ2h0PSJib2xkIiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9Ijg1LjU1MTgiIHg9IjMwMS4yMjQxIiB5PSIyNi45OTUxIj5MaXN0IHZzIFNlcTwvdGV4dD48L2c+PCEtLWNsdXN0ZXIgbGlzdC0tPjxnIGNsYXNzPSJjbHVzdGVyIiBkYXRhLWVudGl0eT0ibGlzdCIgZGF0YS1zb3VyY2UtbGluZT0iNCIgZGF0YS11aWQ9ImVudDAwMDMiIGlkPSJjbHVzdGVyX2xpc3QiPjxyZWN0IGZpbGw9IiNGRkZGRkYiIGhlaWdodD0iMTU1LjU5IiByeD0iMi41IiByeT0iMi41IiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE7IiB3aWR0aD0iMjc1IiB4PSIzNiIgeT0iNTUiLz48dGV4dCBmaWxsPSIjMDAwMDAwIiBmb250LWZhbWlseT0iVmVyZGFuYSIgZm9udC1zaXplPSIxNCIgZm9udC13ZWlnaHQ9ImJvbGQiIGxlbmd0aEFkanVzdD0ic3BhY2luZyIgdGV4dExlbmd0aD0iMjguNzQ1MSIgeD0iMTU5LjEyNzQiIHk9IjY5Ljk5NTEiPkxpc3Q8L3RleHQ+PC9nPjwhLS1jbHVzdGVyIHN0cmVhbS0tPjxnIGNsYXNzPSJjbHVzdGVyIiBkYXRhLWVudGl0eT0ic3RyZWFtIiBkYXRhLXNvdXJjZS1saW5lPSIxMCIgZGF0YS11aWQ9ImVudDAwMDciIGlkPSJjbHVzdGVyX3N0cmVhbSI+PHJlY3QgZmlsbD0iI0ZGRkZGRiIgaGVpZ2h0PSIxNTUuNTkiIHJ4PSIyLjUiIHJ5PSIyLjUiIHN0eWxlPSJzdHJva2U6IzAwMDAwMDtzdHJva2Utd2lkdGg6MTsiIHdpZHRoPSIzMTciIHg9IjMzNSIgeT0iNTUiLz48dGV4dCBmaWxsPSIjMDAwMDAwIiBmb250LWZhbWlseT0iVmVyZGFuYSIgZm9udC1zaXplPSIxNCIgZm9udC13ZWlnaHQ9ImJvbGQiIGxlbmd0aEFkanVzdD0ic3BhY2luZyIgdGV4dExlbmd0aD0iMjkuNTk5NiIgeD0iNDc4LjcwMDIiIHk9IjY5Ljk5NTEiPlNlcTwvdGV4dD48L2c+PCEtLWVudGl0eSA/Pz8/Pz8/Pz8/LS0+PGcgY2xhc3M9ImVudGl0eSIgZGF0YS1lbnRpdHk9Ii4uLi4uLi4uLi4iIGRhdGEtc291cmNlLWxpbmU9IjUiIGRhdGEtdWlkPSJlbnQwMDA0IiBpZD0iZW50aXR5Xy4uLi4uLi4uLi4iPjxyZWN0IGZpbGw9IiNGRkZGRkYiIGhlaWdodD0iMjIuMjk2OSIgcng9IjIuNSIgcnk9IjIuNSIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxOyIgd2lkdGg9IjE1OS45OTk0IiB4PSI1MiIgeT0iOTAiLz48dGV4dCBmaWxsPSIjMDAwMDAwIiBmb250LWZhbWlseT0iVmVyZGFuYSIgZm9udC1zaXplPSIxNCIgbGVuZ3RoQWRqdXN0PSJzcGFjaW5nIiB0ZXh0TGVuZ3RoPSIxMzkuOTk5NCIgeD0iNjIiIHk9IjEwNS45OTUxIj4mIzIwODQwOyYjMzUyMDE7JiMzMjAzMjsmIzEyMzY0OyYjMTI1MTM7JiMxMjUxNDsmIzEyNTIyOyYjMTIzOTU7JiMyMzM4NDsmIzIyMzEyOzwvdGV4dD48L2c+PCEtLWVudGl0eSA/Py0tPjxnIGNsYXNzPSJlbnRpdHkiIGRhdGEtZW50aXR5PSIuLiIgZGF0YS1zb3VyY2UtbGluZT0iNiIgZGF0YS11aWQ9ImVudDAwMDUiIGlkPSJlbnRpdHlfLi4iPjxyZWN0IGZpbGw9IiNGRkZGRkYiIGhlaWdodD0iMjIuMjk2OSIgcng9IjIuNSIgcnk9IjIuNSIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxOyIgd2lkdGg9IjQ3Ljk5OTkiIHg9IjI0NyIgeT0iOTAiLz48dGV4dCBmaWxsPSIjMDAwMDAwIiBmb250LWZhbWlseT0iVmVyZGFuYSIgZm9udC1zaXplPSIxNCIgbGVuZ3RoQWRqdXN0PSJzcGFjaW5nIiB0ZXh0TGVuZ3RoPSIyNy45OTk5IiB4PSIyNTciIHk9IjEwNS45OTUxIj4mIzI2Mzc3OyYjMzg0ODA7PC90ZXh0PjwvZz48IS0tZW50aXR5ID8/Pz8/LS0+PGcgY2xhc3M9ImVudGl0eSIgZGF0YS1lbnRpdHk9Ii4uLi4uIiBkYXRhLXNvdXJjZS1saW5lPSI3IiBkYXRhLXVpZD0iZW50MDAwNiIgaWQ9ImVudGl0eV8uLi4uLiI+PHJlY3QgZmlsbD0iI0ZGRkZGRiIgaGVpZ2h0PSIyMi4yOTY5IiByeD0iMi41IiByeT0iMi41IiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE7IiB3aWR0aD0iODkuOTk5NyIgeD0iODciIHk9IjE3Mi4yOSIvPjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJWZXJkYW5hIiBmb250LXNpemU9IjE0IiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjY5Ljk5OTciIHg9Ijk3IiB5PSIxODguMjg1MSI+JiMyMTM2MzsmIzI0MjMxOyYjMTIzOTU7JiMzNTQxMzsmIzIwMzg1OzwvdGV4dD48L2c+PCEtLWVudGl0eSA/Pz8/Pz8/Pz8/LS0+PGcgY2xhc3M9ImVudGl0eSIgZGF0YS1lbnRpdHk9Ii4uLi4uLi4uLi4iIGRhdGEtc291cmNlLWxpbmU9IjExIiBkYXRhLXVpZD0iZW50MDAwOCIgaWQ9ImVudGl0eV8uLi4uLi4uLi4uIj48cmVjdCBmaWxsPSIjRkZGRkZGIiBoZWlnaHQ9IjIyLjI5NjkiIHJ4PSIyLjUiIHJ5PSIyLjUiIHN0eWxlPSJzdHJva2U6IzAwMDAwMDtzdHJva2Utd2lkdGg6MTsiIHdpZHRoPSIxNTkuOTk5NCIgeD0iMzUxIiB5PSI5MCIvPjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJWZXJkYW5hIiBmb250LXNpemU9IjE0IiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjEzOS45OTk0IiB4PSIzNjEiIHk9IjEwNS45OTUxIj4mIzI0NTE3OyYjMzUyMDE7JiMxMjM5NDsmIzI2MTc4OyYjMTIzOTU7JiMzNTIwMTsmIzMyMDMyOyYjMTI0MzQ7JiMyOTk4MzsmIzI1MTA0OzwvdGV4dD48L2c+PCEtLWVudGl0eSA/Pz8/Py0tPjxnIGNsYXNzPSJlbnRpdHkiIGRhdGEtZW50aXR5PSIuLi4uLiIgZGF0YS1zb3VyY2UtbGluZT0iMTIiIGRhdGEtdWlkPSJlbnQwMDA5IiBpZD0iZW50aXR5Xy4uLi4uIj48cmVjdCBmaWxsPSIjRkZGRkZGIiBoZWlnaHQ9IjIyLjI5NjkiIHJ4PSIyLjUiIHJ5PSIyLjUiIHN0eWxlPSJzdHJva2U6IzAwMDAwMDtzdHJva2Utd2lkdGg6MTsiIHdpZHRoPSI4OS45OTk3IiB4PSI1NDYiIHk9IjkwIi8+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9IlZlcmRhbmEiIGZvbnQtc2l6ZT0iMTQiIGxlbmd0aEFkanVzdD0ic3BhY2luZyIgdGV4dExlbmd0aD0iNjkuOTk5NyIgeD0iNTU2IiB5PSIxMDUuOTk1MSI+JiMyODk2MTsmIzM4NDgwOyYjMTI0MTg7JiMyMTQ4NzsmIzMzMDIxOzwvdGV4dD48L2c+PCEtLWVudGl0eSA/Pz8/LS0+PGcgY2xhc3M9ImVudGl0eSIgZGF0YS1lbnRpdHk9Ii4uLi4iIGRhdGEtc291cmNlLWxpbmU9IjEzIiBkYXRhLXVpZD0iZW50MDAxMCIgaWQ9ImVudGl0eV8uLi4uIj48cmVjdCBmaWxsPSIjRkZGRkZGIiBoZWlnaHQ9IjIyLjI5NjkiIHJ4PSIyLjUiIHJ5PSIyLjUiIHN0eWxlPSJzdHJva2U6IzAwMDAwMDtzdHJva2Utd2lkdGg6MTsiIHdpZHRoPSI3NS45OTk4IiB4PSIzOTMiIHk9IjE3Mi4yOSIvPjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJWZXJkYW5hIiBmb250LXNpemU9IjE0IiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjU1Ljk5OTgiIHg9IjQwMyIgeT0iMTg4LjI4NTEiPiYjMzY5MzM7JiMyNDMxMDsmIzM1NDEzOyYjMjAzODU7PC90ZXh0PjwvZz48IS0tU1JDPVtLb3A5SUNyRExJWjhJU3BDdS04Z0lhcWtJU25CcHFiTEtGQjlCMnZIQTJqTTI0dWpMNUFlSGZUSEthV2lMaVcxQVFkY0lhdWlJYjVHVWpnd3VpTW9ua1RSNVpua3g3ZFNsRjFueXdCN3BRaVVEd3Yta2RSNnFwYWhiQTJnZGl0ZlYzYnAwZXB0ajdWcHFydEJXT2ZVaDlwd1BEejI5UXZRNTJVMGhHUlFLcm5JYjlnT1l4MWZWb2xHZmlVRGd2eERSMEJmWFRaUURFZHZiRmRGRWsxY0ZzelAyQkpmU0xGSnFfeHJCdmh0bWVIVkRoTy10UnFET0x5ajAwMDBdLS0+PC9nPjwvc3ZnPg==" class="uml" alt="uml diagram" title="" /></p>
+<h3 id="92">9.2 純粋なシーケンス<a class="headerlink" href="#92" title="Permanent link">&para;</a></h3>
+<p><strong>ソースファイル</strong>: <code>app/fsharp/src/Ch09/StreamProcessing.fs</code></p>
+<div class="highlight"><pre><span></span><code><span class="c1">// 有限シーケンス</span>
+<span class="k">let</span><span class="w"> </span><span class="nv">numbers</span><span class="o">:</span><span class="w"> </span><span class="n">int</span><span class="w"> </span><span class="n">seq</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">seq</span><span class="w"> </span><span class="o">{</span><span class="w"> </span><span class="mi">1</span><span class="o">;</span><span class="w"> </span><span class="mi">2</span><span class="o">;</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="o">}</span>
+
+<span class="c1">// List に変換</span>
+<span class="n">numbers</span><span class="w"> </span><span class="o">|&gt;</span><span class="w"> </span><span class="nn">Seq</span><span class="p">.</span><span class="n">toList</span><span class="w">  </span><span class="c1">// [1; 2; 3]</span>
+
+<span class="c1">// フィルタリング</span>
+<span class="k">let</span><span class="w"> </span><span class="nv">oddNumbers</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">numbers</span><span class="w"> </span><span class="o">|&gt;</span><span class="w"> </span><span class="nn">Seq</span><span class="p">.</span><span class="n">filter</span><span class="w"> </span><span class="o">(</span><span class="k">fun</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">%</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="o">&lt;&gt;</span><span class="w"> </span><span class="mi">0</span><span class="o">)</span>
+<span class="n">oddNumbers</span><span class="w"> </span><span class="o">|&gt;</span><span class="w"> </span><span class="nn">Seq</span><span class="p">.</span><span class="n">toList</span><span class="w">  </span><span class="c1">// [1; 3]</span>
+</code></pre></div>
+<h3 id="93">9.3 無限シーケンス<a class="headerlink" href="#93" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="c1">// repeat で無限に繰り返し</span>
+<span class="k">let</span><span class="w"> </span><span class="nv">repeat</span><span class="w"> </span><span class="o">(</span><span class="n">elements</span><span class="o">:</span><span class="w"> </span><span class="k">&#39;</span><span class="n">a</span><span class="w"> </span><span class="n">seq</span><span class="o">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">&#39;</span><span class="n">a</span><span class="w"> </span><span class="n">seq</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">seq</span><span class="w"> </span><span class="o">{</span>
+<span class="w">        </span><span class="k">while</span><span class="w"> </span><span class="k">true</span><span class="w"> </span><span class="k">do</span>
+<span class="w">            </span><span class="k">yield</span><span class="o">!</span><span class="w"> </span><span class="n">elements</span>
+<span class="w">    </span><span class="o">}</span>
+
+<span class="k">let</span><span class="w"> </span><span class="nv">infinite123s</span><span class="o">:</span><span class="w"> </span><span class="n">int</span><span class="w"> </span><span class="n">seq</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">repeat</span><span class="w"> </span><span class="o">(</span><span class="n">seq</span><span class="w"> </span><span class="o">{</span><span class="w"> </span><span class="mi">1</span><span class="o">;</span><span class="w"> </span><span class="mi">2</span><span class="o">;</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="o">})</span>
+
+<span class="c1">// take で有限個を取得</span>
+<span class="n">infinite123s</span><span class="w"> </span><span class="o">|&gt;</span><span class="w"> </span><span class="nn">Seq</span><span class="p">.</span><span class="n">take</span><span class="w"> </span><span class="mi">8</span><span class="w"> </span><span class="o">|&gt;</span><span class="w"> </span><span class="nn">Seq</span><span class="p">.</span><span class="n">toList</span><span class="w">  </span><span class="c1">// [1; 2; 3; 1; 2; 3; 1; 2]</span>
+</code></pre></div>
+<p><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiBjb250ZW50U3R5bGVUeXBlPSJ0ZXh0L2NzcyIgZGF0YS1kaWFncmFtLXR5cGU9IkRFU0NSSVBUSU9OIiBoZWlnaHQ9IjQyM3B4IiBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSJub25lIiBzdHlsZT0id2lkdGg6MjQ0cHg7aGVpZ2h0OjQyM3B4O2JhY2tncm91bmQ6I0ZGRkZGRjsiIHZlcnNpb249IjEuMSIgdmlld0JveD0iMCAwIDI0NCA0MjMiIHdpZHRoPSIyNDRweCIgem9vbUFuZFBhbj0ibWFnbmlmeSI+PGRlZnMvPjxnPjwhLS1jbHVzdGVyID8/Pz8/Pz8tLT48ZyBjbGFzcz0iY2x1c3RlciIgZGF0YS1lbnRpdHk9Ii4uLi4uLi4iIGRhdGEtc291cmNlLWxpbmU9IjMiIGRhdGEtdWlkPSJlbnQwMDAyIiBpZD0iY2x1c3Rlcl8uLi4uLi4uIj48cmVjdCBmaWxsPSIjRkZGRkZGIiBoZWlnaHQ9IjMyMC4xOCIgcng9IjIuNSIgcnk9IjIuNSIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxOyIgd2lkdGg9IjIyNiIgeD0iMTIiIHk9IjEyIi8+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9IlZlcmRhbmEiIGZvbnQtc2l6ZT0iMTQiIGZvbnQtd2VpZ2h0PSJib2xkIiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9Ijk3Ljk5OTYiIHg9Ijc2LjAwMDIiIHk9IjI2Ljk5NTEiPiYjMjg5NjE7JiMzODQ4MDsmIzEyNDcxOyYjMTI1NDA7JiMxMjQ2NTsmIzEyNTMxOyYjMTI0NzM7PC90ZXh0PjwvZz48IS0tZW50aXR5IHN0cmVhbS0tPjxnIGNsYXNzPSJlbnRpdHkiIGRhdGEtZW50aXR5PSJzdHJlYW0iIGRhdGEtc291cmNlLWxpbmU9IjQiIGRhdGEtdWlkPSJlbnQwMDAzIiBpZD0iZW50aXR5X3N0cmVhbSI+PHJlY3QgZmlsbD0iI0ZGRkZGRiIgaGVpZ2h0PSIyMi4yOTY5IiByeD0iMi41IiByeT0iMi41IiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE7IiB3aWR0aD0iMTgyLjMyNjIiIHg9IjMzLjg0IiB5PSI0NyIvPjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJWZXJkYW5hIiBmb250LXNpemU9IjE0IiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjE2Mi4zMjYyIiB4PSI0My44NCIgeT0iNjIuOTk1MSI+cmVwZWF0IChzZXEgeyAxOyAyOyAzIH0pPC90ZXh0PjwvZz48IS0tZW50aXR5IGluZmluaXRlLS0+PGcgY2xhc3M9ImVudGl0eSIgZGF0YS1lbnRpdHk9ImluZmluaXRlIiBkYXRhLXNvdXJjZS1saW5lPSI1IiBkYXRhLXVpZD0iZW50MDAwNCIgaWQ9ImVudGl0eV9pbmZpbml0ZSI+PHJlY3QgZmlsbD0iI0ZGRkZGRiIgaGVpZ2h0PSIyMi4yOTY5IiByeD0iMi41IiByeT0iMi41IiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE7IiB3aWR0aD0iMTkzLjYxOTEiIHg9IjI4LjE5IiB5PSIxMjkuMjkiLz48dGV4dCBmaWxsPSIjMDAwMDAwIiBmb250LWZhbWlseT0iVmVyZGFuYSIgZm9udC1zaXplPSIxNCIgbGVuZ3RoQWRqdXN0PSJzcGFjaW5nIiB0ZXh0TGVuZ3RoPSIxNzMuNjE5MSIgeD0iMzguMTkiIHk9IjE0NS4yODUxIj4xLCAyLCAzLCAxLCAyLCAzLCAxLCAyLCAzLCAuLi48L3RleHQ+PC9nPjwhLS1lbnRpdHkgdGFrZS0tPjxnIGNsYXNzPSJlbnRpdHkiIGRhdGEtZW50aXR5PSJ0YWtlIiBkYXRhLXNvdXJjZS1saW5lPSI2IiBkYXRhLXVpZD0iZW50MDAwNSIgaWQ9ImVudGl0eV90YWtlIj48cmVjdCBmaWxsPSIjRkZGRkZGIiBoZWlnaHQ9IjIyLjI5NjkiIHJ4PSIyLjUiIHJ5PSIyLjUiIHN0eWxlPSJzdHJva2U6IzAwMDAwMDtzdHJva2Utd2lkdGg6MTsiIHdpZHRoPSI5NC45ODM0IiB4PSI3Ny41MSIgeT0iMjExLjU5Ii8+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9IlZlcmRhbmEiIGZvbnQtc2l6ZT0iMTQiIGxlbmd0aEFkanVzdD0ic3BhY2luZyIgdGV4dExlbmd0aD0iNzQuOTgzNCIgeD0iODcuNTEiIHk9IjIyNy41ODUxIj5TZXEudGFrZSA4PC90ZXh0PjwvZz48IS0tZW50aXR5IHJlc3VsdC0tPjxnIGNsYXNzPSJlbnRpdHkiIGRhdGEtZW50aXR5PSJyZXN1bHQiIGRhdGEtc291cmNlLWxpbmU9IjciIGRhdGEtdWlkPSJlbnQwMDA2IiBpZD0iZW50aXR5X3Jlc3VsdCI+PHJlY3QgZmlsbD0iI0ZGRkZGRiIgaGVpZ2h0PSIyMi4yOTY5IiByeD0iMi41IiByeT0iMi41IiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE7IiB3aWR0aD0iMTY2LjM1MDYiIHg9IjQxLjgyIiB5PSIyOTMuODkiLz48dGV4dCBmaWxsPSIjMDAwMDAwIiBmb250LWZhbWlseT0iVmVyZGFuYSIgZm9udC1zaXplPSIxNCIgbGVuZ3RoQWRqdXN0PSJzcGFjaW5nIiB0ZXh0TGVuZ3RoPSIxNDYuMzUwNiIgeD0iNTEuODIiIHk9IjMwOS44ODUxIj5bMTsgMjsgMzsgMTsgMjsgMzsgMTsgMl08L3RleHQ+PC9nPjxnIGNsYXNzPSJlbnRpdHkiIGRhdGEtZW50aXR5PSJHTU4xMCIgZGF0YS1zb3VyY2UtbGluZT0iMTUiIGRhdGEtdWlkPSJlbnQwMDExIiBpZD0iZW50aXR5X0dNTjEwIj48cGF0aCBkPSJNNDkuNSwzNzYuMTggTDQ5LjUsNDE2LjQ0NTYgQTAsMCAwIDAgMCA0OS41LDQxNi40NDU2IEwyMDAuNTAwMiw0MTYuNDQ1NiBBMCwwIDAgMCAwIDIwMC41MDAyLDQxNi40NDU2IEwyMDAuNTAwMiwzODYuMTggTDE5MC41MDAyLDM3Ni4xOCBMMTI5LDM3Ni4xOCBMMTI1LDMxNi42MyBMMTIxLDM3Ni4xOCBMNDkuNSwzNzYuMTggQTAsMCAwIDAgMCA0OS41LDM3Ni4xOCIgZmlsbD0iI0ZGRkZGRiIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxOyIvPjxwYXRoIGQ9Ik0xOTAuNTAwMiwzNzYuMTggTDE5MC41MDAyLDM4Ni4xOCBMMjAwLjUwMDIsMzg2LjE4IEwxOTAuNTAwMiwzNzYuMTgiIGZpbGw9IiNGRkZGRkYiIHN0eWxlPSJzdHJva2U6IzAwMDAwMDtzdHJva2Utd2lkdGg6MTsiLz48dGV4dCBmaWxsPSIjMDAwMDAwIiBmb250LWZhbWlseT0iVmVyZGFuYSIgZm9udC1zaXplPSIxMyIgbGVuZ3RoQWRqdXN0PSJzcGFjaW5nIiB0ZXh0TGVuZ3RoPSIxMzAuMDAwMiIgeD0iNTUuNSIgeT0iMzkzLjI0NjkiPiYjMjg5NjE7JiMzODQ4MDsmIzEyMzk4OyYjMTI0NzE7JiMxMjU0MDsmIzEyNDY1OyYjMTI1MzE7JiMxMjQ3MzsmIzEyMzYzOyYjMTI0MjU7PC90ZXh0Pjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJWZXJkYW5hIiBmb250LXNpemU9IjEzIiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjEwNC4wMDAxIiB4PSI1NS41IiB5PSI0MDguMzc5NyI+JiMyNDUxNzsmIzM1MjAxOyYjMTIzOTQ7JiMyMDk5ODsmIzEyMzg0OyYjMTIzNjk7JiMyMTQ2MjsmIzI0NDcxOzwvdGV4dD48L2c+PCEtLWxpbmsgc3RyZWFtIHRvIGluZmluaXRlLS0+PGcgY2xhc3M9ImxpbmsiIGRhdGEtZW50aXR5LTE9InN0cmVhbSIgZGF0YS1lbnRpdHktMj0iaW5maW5pdGUiIGRhdGEtc291cmNlLWxpbmU9IjkiIGRhdGEtdWlkPSJsbms3IiBpZD0ibGlua19zdHJlYW1faW5maW5pdGUiPjxwYXRoIGQ9Ik0xMjUsNjkuNjQgQzEyNSw4NS4wMyAxMjUsMTA3LjU1IDEyNSwxMjIuOTQiIGZpbGw9Im5vbmUiIGlkPSJzdHJlYW0tdG8taW5maW5pdGUiIHN0eWxlPSJzdHJva2U6IzAwMDAwMDtzdHJva2Utd2lkdGg6MTsiLz48cG9seWdvbiBmaWxsPSIjMDAwMDAwIiBwb2ludHM9IjEyNSwxMjguOTQsMTI5LDExOS45NCwxMjUsMTIzLjk0LDEyMSwxMTkuOTQsMTI1LDEyOC45NCIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxOyIvPjwvZz48IS0tbGluayBpbmZpbml0ZSB0byB0YWtlLS0+PGcgY2xhc3M9ImxpbmsiIGRhdGEtZW50aXR5LTE9ImluZmluaXRlIiBkYXRhLWVudGl0eS0yPSJ0YWtlIiBkYXRhLXNvdXJjZS1saW5lPSIxMCIgZGF0YS11aWQ9ImxuazgiIGlkPSJsaW5rX2luZmluaXRlX3Rha2UiPjxwYXRoIGQ9Ik0xMjUsMTUxLjk0IEMxMjUsMTY3LjMzIDEyNSwxODkuODUgMTI1LDIwNS4yNCIgZmlsbD0ibm9uZSIgaWQ9ImluZmluaXRlLXRvLXRha2UiIHN0eWxlPSJzdHJva2U6IzAwMDAwMDtzdHJva2Utd2lkdGg6MTsiLz48cG9seWdvbiBmaWxsPSIjMDAwMDAwIiBwb2ludHM9IjEyNSwyMTEuMjQsMTI5LDIwMi4yNCwxMjUsMjA2LjI0LDEyMSwyMDIuMjQsMTI1LDIxMS4yNCIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxOyIvPjwvZz48IS0tbGluayB0YWtlIHRvIHJlc3VsdC0tPjxnIGNsYXNzPSJsaW5rIiBkYXRhLWVudGl0eS0xPSJ0YWtlIiBkYXRhLWVudGl0eS0yPSJyZXN1bHQiIGRhdGEtc291cmNlLWxpbmU9IjExIiBkYXRhLXVpZD0ibG5rOSIgaWQ9ImxpbmtfdGFrZV9yZXN1bHQiPjxwYXRoIGQ9Ik0xMjUsMjM0LjI0IEMxMjUsMjQ5LjYzIDEyNSwyNzIuMTUgMTI1LDI4Ny41NCIgZmlsbD0ibm9uZSIgaWQ9InRha2UtdG8tcmVzdWx0IiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE7Ii8+PHBvbHlnb24gZmlsbD0iIzAwMDAwMCIgcG9pbnRzPSIxMjUsMjkzLjU0LDEyOSwyODQuNTQsMTI1LDI4OC41NCwxMjEsMjg0LjU0LDEyNSwyOTMuNTQiIHN0eWxlPSJzdHJva2U6IzAwMDAwMDtzdHJva2Utd2lkdGg6MTsiLz48L2c+PCEtLVNSQz1bUEwyeklpSDA0RXhkQUp2SkFVRzJUelM4MExfMktZcE1rcjYzb1VQa2lyUjc1UGpKS0lwS0hoN0puaTkyNDBpSDNkc084UVhsZUxiTkhFcy1jVS1GY0dNeHBHTFpiQWpDNG5hVU1BTXRTYVJxa2RWelZkYWd6UUZDdmJCVm8tbjF3Z1M4NG5lZUNxSGFVQ0pBT2g3WUNJUmVma1lidzZFdzU0NUxnQW5YTEdIYkRxT2xIWl82VnYwYVlUVGRVWkZKY1VOV01FTG5PaktFT3pjcEJHcENNWVhBeUdraVV2dFhRWlV0SDVfanc3SE1WZUFfV1Rfd0c1X0dKaTRzOVRCYmZzMlpqQk9pQTlwbHhsdnlHRG9ucjRWS2xFb190Slhuanl0WFdSV2hTTVZEb05kcFY0NmlYc1hwRlcwMF0tLT48L2c+PC9zdmc+" class="uml" alt="uml diagram" title="" /></p>
+<h3 id="94">9.4 サイコロを振るストリーム<a class="headerlink" href="#94" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="k">let</span><span class="w"> </span><span class="nv">private</span><span class="w"> </span><span class="n">random</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Random</span><span class="bp">()</span>
+
+<span class="k">let</span><span class="w"> </span><span class="nv">private</span><span class="w"> </span><span class="n">castTheDieImpure</span><span class="w"> </span><span class="bp">()</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">int</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">random</span><span class="o">.</span><span class="n">Next</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span><span class="w"> </span><span class="mi">7</span><span class="o">)</span>
+
+<span class="c1">// サイコロを無限に振るストリーム</span>
+<span class="k">let</span><span class="w"> </span><span class="nv">infiniteDieCasts</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">int</span><span class="w"> </span><span class="n">seq</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">seq</span><span class="w"> </span><span class="o">{</span>
+<span class="w">        </span><span class="k">while</span><span class="w"> </span><span class="k">true</span><span class="w"> </span><span class="k">do</span>
+<span class="w">            </span><span class="k">yield</span><span class="w"> </span><span class="n">castTheDieImpure</span><span class="w"> </span><span class="bp">()</span>
+<span class="w">    </span><span class="o">}</span>
+
+<span class="c1">// 最初の3回を取得</span>
+<span class="n">infiniteDieCasts</span><span class="w"> </span><span class="o">|&gt;</span><span class="w"> </span><span class="nn">Seq</span><span class="p">.</span><span class="n">take</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="o">|&gt;</span><span class="w"> </span><span class="nn">Seq</span><span class="p">.</span><span class="n">toList</span><span class="w">  </span><span class="c1">// [4; 2; 6]</span>
+
+<span class="c1">// 6 が出るまで振り続ける</span>
+<span class="k">let</span><span class="w"> </span><span class="nv">castUntil</span><span class="w"> </span><span class="o">(</span><span class="n">target</span><span class="o">:</span><span class="w"> </span><span class="n">int</span><span class="o">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">int</span><span class="w"> </span><span class="n">seq</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">infiniteDieCasts</span>
+<span class="w">    </span><span class="o">|&gt;</span><span class="w"> </span><span class="nn">Seq</span><span class="p">.</span><span class="n">takeWhile</span><span class="w"> </span><span class="o">(</span><span class="k">fun</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">&lt;&gt;</span><span class="w"> </span><span class="n">target</span><span class="o">)</span>
+<span class="w">    </span><span class="o">|&gt;</span><span class="w"> </span><span class="nn">Seq</span><span class="p">.</span><span class="n">append</span><span class="w"> </span><span class="o">(</span><span class="nn">Seq</span><span class="p">.</span><span class="n">singleton</span><span class="w"> </span><span class="n">target</span><span class="o">)</span>
+</code></pre></div>
+<h3 id="95">9.5 シーケンスの主要操作<a class="headerlink" href="#95" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>操作</th>
+<th>説明</th>
+<th>例</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Seq.take n</code></td>
+<td>最初の n 要素を取得</td>
+<td><code>seq \|&gt; Seq.take 3</code></td>
+</tr>
+<tr>
+<td><code>Seq.filter p</code></td>
+<td>条件を満たす要素のみ</td>
+<td><code>seq \|&gt; Seq.filter (fun x -&gt; x &gt; 0)</code></td>
+</tr>
+<tr>
+<td><code>Seq.map f</code></td>
+<td>各要素を変換</td>
+<td><code>seq \|&gt; Seq.map (fun x -&gt; x * 2)</code></td>
+</tr>
+<tr>
+<td><code>Seq.append s1 s2</code></td>
+<td>2つのシーケンスを結合</td>
+<td><code>Seq.append s1 s2</code></td>
+</tr>
+<tr>
+<td><code>Seq.windowed n</code></td>
+<td>スライディングウィンドウ</td>
+<td><code>seq \|&gt; Seq.windowed 3</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="96">9.6 通貨交換レートの例<a class="headerlink" href="#96" title="Permanent link">&para;</a></h3>
+<p><strong>ソースファイル</strong>: <code>app/fsharp/src/Ch09/StreamProcessing.fs</code></p>
+<p>為替レートを監視して、上昇トレンドを検出する例です。</p>
+<h4 id="_7">トレンド判定（純粋関数）<a class="headerlink" href="#_7" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="k">let</span><span class="w"> </span><span class="nv">trending</span><span class="w"> </span><span class="o">(</span><span class="n">rates</span><span class="o">:</span><span class="w"> </span><span class="kt">decimal</span><span class="w"> </span><span class="kt">list</span><span class="o">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">rates</span><span class="o">.</span><span class="n">Length</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="o">&amp;&amp;</span>
+<span class="w">    </span><span class="n">rates</span>
+<span class="w">    </span><span class="o">|&gt;</span><span class="w"> </span><span class="nn">List</span><span class="p">.</span><span class="n">pairwise</span>
+<span class="w">    </span><span class="o">|&gt;</span><span class="w"> </span><span class="nn">List</span><span class="p">.</span><span class="n">forall</span><span class="w"> </span><span class="o">(</span><span class="k">fun</span><span class="w"> </span><span class="o">(</span><span class="n">prev</span><span class="o">,</span><span class="w"> </span><span class="n">curr</span><span class="o">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">curr</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="n">prev</span><span class="o">)</span>
+
+<span class="n">trending</span><span class="w"> </span><span class="o">[</span><span class="mi">0</span><span class="o">.</span><span class="mi">81m</span><span class="o">;</span><span class="w"> </span><span class="mi">0</span><span class="o">.</span><span class="mi">82m</span><span class="o">;</span><span class="w"> </span><span class="mi">0</span><span class="o">.</span><span class="mi">83m</span><span class="o">]</span><span class="w">  </span><span class="c1">// true (上昇トレンド)</span>
+<span class="n">trending</span><span class="w"> </span><span class="o">[</span><span class="mi">0</span><span class="o">.</span><span class="mi">81m</span><span class="o">;</span><span class="w"> </span><span class="mi">0</span><span class="o">.</span><span class="mi">84m</span><span class="o">;</span><span class="w"> </span><span class="mi">0</span><span class="o">.</span><span class="mi">83m</span><span class="o">]</span><span class="w">  </span><span class="c1">// false</span>
+</code></pre></div>
+<h4 id="_8">レートのストリーム<a class="headerlink" href="#_8" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="k">type</span><span class="w"> </span><span class="nc">Currency</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">USD</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">EUR</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">GBP</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">JPY</span>
+
+<span class="k">let</span><span class="w"> </span><span class="nv">rates</span><span class="w"> </span><span class="o">(</span><span class="n">from</span><span class="o">:</span><span class="w"> </span><span class="n">Currency</span><span class="o">)</span><span class="w"> </span><span class="o">(</span><span class="n">toC</span><span class="o">:</span><span class="w"> </span><span class="n">Currency</span><span class="o">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">decimal</span><span class="w"> </span><span class="n">seq</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">seq</span><span class="w"> </span><span class="o">{</span>
+<span class="w">        </span><span class="k">while</span><span class="w"> </span><span class="k">true</span><span class="w"> </span><span class="k">do</span>
+<span class="w">            </span><span class="k">yield</span><span class="w"> </span><span class="n">getExchangeRate</span><span class="w"> </span><span class="n">from</span><span class="w"> </span><span class="n">toC</span>
+<span class="w">    </span><span class="o">}</span>
+</code></pre></div>
+<h3 id="97">9.7 スライディングウィンドウ<a class="headerlink" href="#97" title="Permanent link">&para;</a></h3>
+<p><code>Seq.windowed</code> で連続する要素をグループ化できます。</p>
+<div class="highlight"><pre><span></span><code><span class="k">let</span><span class="w"> </span><span class="nv">stream</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">seq</span><span class="w"> </span><span class="o">{</span><span class="w"> </span><span class="mi">1</span><span class="o">;</span><span class="w"> </span><span class="mi">2</span><span class="o">;</span><span class="w"> </span><span class="mi">3</span><span class="o">;</span><span class="w"> </span><span class="mi">4</span><span class="o">;</span><span class="w"> </span><span class="mi">5</span><span class="w"> </span><span class="o">}</span>
+
+<span class="n">stream</span><span class="w"> </span><span class="o">|&gt;</span><span class="w"> </span><span class="nn">Seq</span><span class="p">.</span><span class="n">windowed</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="o">|&gt;</span><span class="w"> </span><span class="nn">Seq</span><span class="p">.</span><span class="n">toList</span>
+<span class="c1">// [[|1; 2; 3|]; [|2; 3; 4|]; [|3; 4; 5|]]</span>
+</code></pre></div>
+<p><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiBjb250ZW50U3R5bGVUeXBlPSJ0ZXh0L2NzcyIgZGF0YS1kaWFncmFtLXR5cGU9IkRFU0NSSVBUSU9OIiBoZWlnaHQ9IjE3M3B4IiBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSJub25lIiBzdHlsZT0id2lkdGg6MzQ4cHg7aGVpZ2h0OjE3M3B4O2JhY2tncm91bmQ6I0ZGRkZGRjsiIHZlcnNpb249IjEuMSIgdmlld0JveD0iMCAwIDM0OCAxNzMiIHdpZHRoPSIzNDhweCIgem9vbUFuZFBhbj0ibWFnbmlmeSI+PGRlZnMvPjxnPjwhLS1jbHVzdGVyIFNlcS53aW5kb3dlZCAzID8/Py0tPjxnIGNsYXNzPSJjbHVzdGVyIiBkYXRhLWVudGl0eT0iU2VxLndpbmRvd2VkIDMgLi4uIiBkYXRhLXNvdXJjZS1saW5lPSIzIiBkYXRhLXVpZD0iZW50MDAwMiIgaWQ9ImNsdXN0ZXJfU2VxLndpbmRvd2VkIDMgLi4uIj48cmVjdCBmaWxsPSIjRkZGRkZGIiBoZWlnaHQ9IjE1NS41OSIgcng9IjIuNSIgcnk9IjIuNSIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxOyIgd2lkdGg9IjMzMCIgeD0iMTIiIHk9IjEyIi8+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9IlZlcmRhbmEiIGZvbnQtc2l6ZT0iMTQiIGZvbnQtd2VpZ2h0PSJib2xkIiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjE3Ni4xOTYxIiB4PSI4OC45MDE5IiB5PSIyNi45OTUxIj5TZXEud2luZG93ZWQgMyAmIzEyMzk4OyYjMjEyMDU7JiMyMDMxNjs8L3RleHQ+PC9nPjwhLS1lbnRpdHkgaW5wdXQtLT48ZyBjbGFzcz0iZW50aXR5IiBkYXRhLWVudGl0eT0iaW5wdXQiIGRhdGEtc291cmNlLWxpbmU9IjQiIGRhdGEtdWlkPSJlbnQwMDAzIiBpZD0iZW50aXR5X2lucHV0Ij48cmVjdCBmaWxsPSIjRkZGRkZGIiBoZWlnaHQ9IjIyLjI5NjkiIHJ4PSIyLjUiIHJ5PSIyLjUiIHN0eWxlPSJzdHJva2U6IzAwMDAwMDtzdHJva2Utd2lkdGg6MTsiIHdpZHRoPSIxMTIuMTI3OSIgeD0iMTIwLjk0IiB5PSI0NyIvPjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJWZXJkYW5hIiBmb250LXNpemU9IjE0IiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjkyLjEyNzkiIHg9IjEzMC45NCIgeT0iNjIuOTk1MSI+WzE7IDI7IDM7IDQ7IDVdPC90ZXh0PjwvZz48IS0tZW50aXR5IHcxLS0+PGcgY2xhc3M9ImVudGl0eSIgZGF0YS1lbnRpdHk9IncxIiBkYXRhLXNvdXJjZS1saW5lPSI1IiBkYXRhLXVpZD0iZW50MDAwNCIgaWQ9ImVudGl0eV93MSI+PHJlY3QgZmlsbD0iI0ZGRkZGRiIgaGVpZ2h0PSIyMi4yOTY5IiByeD0iMi41IiByeT0iMi41IiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE7IiB3aWR0aD0iNzUuOTc5NSIgeD0iMjguMDEiIHk9IjEyOS4yOSIvPjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJWZXJkYW5hIiBmb250LXNpemU9IjE0IiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjU1Ljk3OTUiIHg9IjM4LjAxIiB5PSIxNDUuMjg1MSI+WzE7IDI7IDNdPC90ZXh0PjwvZz48IS0tZW50aXR5IHcyLS0+PGcgY2xhc3M9ImVudGl0eSIgZGF0YS1lbnRpdHk9IncyIiBkYXRhLXNvdXJjZS1saW5lPSI2IiBkYXRhLXVpZD0iZW50MDAwNSIgaWQ9ImVudGl0eV93MiI+PHJlY3QgZmlsbD0iI0ZGRkZGRiIgaGVpZ2h0PSIyMi4yOTY5IiByeD0iMi41IiByeT0iMi41IiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE7IiB3aWR0aD0iNzUuOTc5NSIgeD0iMTM5LjAxIiB5PSIxMjkuMjkiLz48dGV4dCBmaWxsPSIjMDAwMDAwIiBmb250LWZhbWlseT0iVmVyZGFuYSIgZm9udC1zaXplPSIxNCIgbGVuZ3RoQWRqdXN0PSJzcGFjaW5nIiB0ZXh0TGVuZ3RoPSI1NS45Nzk1IiB4PSIxNDkuMDEiIHk9IjE0NS4yODUxIj5bMjsgMzsgNF08L3RleHQ+PC9nPjwhLS1lbnRpdHkgdzMtLT48ZyBjbGFzcz0iZW50aXR5IiBkYXRhLWVudGl0eT0idzMiIGRhdGEtc291cmNlLWxpbmU9IjciIGRhdGEtdWlkPSJlbnQwMDA2IiBpZD0iZW50aXR5X3czIj48cmVjdCBmaWxsPSIjRkZGRkZGIiBoZWlnaHQ9IjIyLjI5NjkiIHJ4PSIyLjUiIHJ5PSIyLjUiIHN0eWxlPSJzdHJva2U6IzAwMDAwMDtzdHJva2Utd2lkdGg6MTsiIHdpZHRoPSI3NS45Nzk1IiB4PSIyNTAuMDEiIHk9IjEyOS4yOSIvPjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJWZXJkYW5hIiBmb250LXNpemU9IjE0IiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjU1Ljk3OTUiIHg9IjI2MC4wMSIgeT0iMTQ1LjI4NTEiPlszOyA0OyA1XTwvdGV4dD48L2c+PCEtLWxpbmsgaW5wdXQgdG8gdzEtLT48ZyBjbGFzcz0ibGluayIgZGF0YS1lbnRpdHktMT0iaW5wdXQiIGRhdGEtZW50aXR5LTI9IncxIiBkYXRhLXNvdXJjZS1saW5lPSI5IiBkYXRhLXVpZD0ibG5rNyIgaWQ9ImxpbmtfaW5wdXRfdzEiPjxwYXRoIGQ9Ik0xNjIuNDksNjkuNjQgQzE0MS4yMiw4NS4wMyAxMDYuNjUxOCwxMTAuMDMzOSA4NS4zNzE4LDEyNS40MjM5IiBmaWxsPSJub25lIiBpZD0iaW5wdXQtdG8tdzEiIHN0eWxlPSJzdHJva2U6IzAwMDAwMDtzdHJva2Utd2lkdGg6MTsiLz48cG9seWdvbiBmaWxsPSIjMDAwMDAwIiBwb2ludHM9IjgwLjUxLDEyOC45NCw5MC4xNDY4LDEyNi45MDcsODQuNTYxNSwxMjYuMDA5OSw4NS40NTg2LDEyMC40MjQ2LDgwLjUxLDEyOC45NCIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxOyIvPjwvZz48IS0tbGluayBpbnB1dCB0byB3Mi0tPjxnIGNsYXNzPSJsaW5rIiBkYXRhLWVudGl0eS0xPSJpbnB1dCIgZGF0YS1lbnRpdHktMj0idzIiIGRhdGEtc291cmNlLWxpbmU9IjEwIiBkYXRhLXVpZD0ibG5rOCIgaWQ9ImxpbmtfaW5wdXRfdzIiPjxwYXRoIGQ9Ik0xNzcsNjkuNjQgQzE3Nyw4NS4wMyAxNzcsMTA3LjU1IDE3NywxMjIuOTQiIGZpbGw9Im5vbmUiIGlkPSJpbnB1dC10by13MiIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxOyIvPjxwb2x5Z29uIGZpbGw9IiMwMDAwMDAiIHBvaW50cz0iMTc3LDEyOC45NCwxODEsMTE5Ljk0LDE3NywxMjMuOTQsMTczLDExOS45NCwxNzcsMTI4Ljk0IiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE7Ii8+PC9nPjwhLS1saW5rIGlucHV0IHRvIHczLS0+PGcgY2xhc3M9ImxpbmsiIGRhdGEtZW50aXR5LTE9ImlucHV0IiBkYXRhLWVudGl0eS0yPSJ3MyIgZGF0YS1zb3VyY2UtbGluZT0iMTEiIGRhdGEtdWlkPSJsbms5IiBpZD0ibGlua19pbnB1dF93MyI+PHBhdGggZD0iTTE5MS41MSw2OS42NCBDMjEyLjc4LDg1LjAzIDI0Ny4zNDgyLDExMC4wMzM5IDI2OC42MjgyLDEyNS40MjM5IiBmaWxsPSJub25lIiBpZD0iaW5wdXQtdG8tdzMiIHN0eWxlPSJzdHJva2U6IzAwMDAwMDtzdHJva2Utd2lkdGg6MTsiLz48cG9seWdvbiBmaWxsPSIjMDAwMDAwIiBwb2ludHM9IjI3My40OSwxMjguOTQsMjY4LjU0MTQsMTIwLjQyNDYsMjY5LjQzODUsMTI2LjAwOTksMjYzLjg1MzIsMTI2LjkwNywyNzMuNDksMTI4Ljk0IiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE7Ii8+PC9nPjwhLS1TUkM9W0tvcDlJQ3JETElaOElTcEN1LThnSWFxa0lTbkJwcWJMSzBmRUJUR2hweW5Cb0l6RkpMNG1MZFpTa0V2Znp6R2RVLVNlQUxIcDlJU01mSVdlSEhqUUFuWFBBblhSQXZYT0F2WjZBWWFhNVlqYXZYTUtiZzM5R3NKQTNNNzJLM3JHT0lFT0M4ZXZ2U1BTTjYycDU3SHJ4SzF3YUpYNm8xblpoYmUwXS0tPjwvZz48L3N2Zz4=" class="uml" alt="uml diagram" title="" /></p>
+<h4 id="_9">トレンドを検出して交換<a class="headerlink" href="#_9" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="k">let</span><span class="w"> </span><span class="nv">exchangeIfTrending</span>
+<span class="w">    </span><span class="o">(</span><span class="n">amount</span><span class="o">:</span><span class="w"> </span><span class="kt">decimal</span><span class="o">)</span>
+<span class="w">    </span><span class="o">(</span><span class="n">from</span><span class="o">:</span><span class="w"> </span><span class="n">Currency</span><span class="o">)</span>
+<span class="w">    </span><span class="o">(</span><span class="n">toC</span><span class="o">:</span><span class="w"> </span><span class="n">Currency</span><span class="o">)</span>
+<span class="w">    </span><span class="o">(</span><span class="n">windowSize</span><span class="o">:</span><span class="w"> </span><span class="n">int</span><span class="o">)</span>
+<span class="w">    </span><span class="o">:</span><span class="w"> </span><span class="kt">decimal</span><span class="w"> </span><span class="n">option</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">rates</span><span class="w"> </span><span class="n">from</span><span class="w"> </span><span class="n">toC</span>
+<span class="w">    </span><span class="o">|&gt;</span><span class="w"> </span><span class="nn">Seq</span><span class="p">.</span><span class="n">windowed</span><span class="w"> </span><span class="n">windowSize</span>
+<span class="w">    </span><span class="o">|&gt;</span><span class="w"> </span><span class="nn">Seq</span><span class="p">.</span><span class="n">map</span><span class="w"> </span><span class="nn">Array</span><span class="p">.</span><span class="n">toList</span>
+<span class="w">    </span><span class="o">|&gt;</span><span class="w"> </span><span class="nn">Seq</span><span class="p">.</span><span class="n">tryFind</span><span class="w"> </span><span class="n">trending</span>
+<span class="w">    </span><span class="o">|&gt;</span><span class="w"> </span><span class="nn">Option</span><span class="p">.</span><span class="n">map</span><span class="w"> </span><span class="o">(</span><span class="k">fun</span><span class="w"> </span><span class="n">rateWindow</span><span class="w"> </span><span class="o">-&gt;</span>
+<span class="w">        </span><span class="k">let</span><span class="w"> </span><span class="nv">lastRate</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rateWindow</span><span class="w"> </span><span class="o">|&gt;</span><span class="w"> </span><span class="nn">List</span><span class="p">.</span><span class="n">last</span>
+<span class="w">        </span><span class="n">amount</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">lastRate</span><span class="o">)</span>
+</code></pre></div>
+<h3 id="98">9.8 シーケンスの結合<a class="headerlink" href="#98" title="Permanent link">&para;</a></h3>
+<p>2つのシーケンスを <code>Seq.zip</code> で結合できます。</p>
+<div class="highlight"><pre><span></span><code><span class="k">let</span><span class="w"> </span><span class="nv">s1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">seq</span><span class="w"> </span><span class="o">{</span><span class="w"> </span><span class="mi">1</span><span class="o">;</span><span class="w"> </span><span class="mi">2</span><span class="o">;</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="o">}</span>
+<span class="k">let</span><span class="w"> </span><span class="nv">s2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">seq</span><span class="w"> </span><span class="o">{</span><span class="w"> </span><span class="s">&quot;a&quot;</span><span class="o">;</span><span class="w"> </span><span class="s">&quot;b&quot;</span><span class="o">;</span><span class="w"> </span><span class="s">&quot;c&quot;</span><span class="w"> </span><span class="o">}</span>
+
+<span class="nn">Seq</span><span class="p">.</span><span class="n">zip</span><span class="w"> </span><span class="n">s1</span><span class="w"> </span><span class="n">s2</span><span class="w"> </span><span class="o">|&gt;</span><span class="w"> </span><span class="nn">Seq</span><span class="p">.</span><span class="n">toList</span><span class="w">  </span><span class="c1">// [(1, &quot;a&quot;); (2, &quot;b&quot;); (3, &quot;c&quot;)]</span>
+
+<span class="c1">// 左側の値のみを返す</span>
+<span class="k">let</span><span class="w"> </span><span class="nv">zipLeft</span><span class="w"> </span><span class="o">(</span><span class="n">stream1</span><span class="o">:</span><span class="w"> </span><span class="k">&#39;</span><span class="n">a</span><span class="w"> </span><span class="n">seq</span><span class="o">)</span><span class="w"> </span><span class="o">(</span><span class="n">stream2</span><span class="o">:</span><span class="w"> </span><span class="k">&#39;</span><span class="n">b</span><span class="w"> </span><span class="n">seq</span><span class="o">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">&#39;</span><span class="n">a</span><span class="w"> </span><span class="n">seq</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="nn">Seq</span><span class="p">.</span><span class="n">zip</span><span class="w"> </span><span class="n">stream1</span><span class="w"> </span><span class="n">stream2</span>
+<span class="w">    </span><span class="o">|&gt;</span><span class="w"> </span><span class="nn">Seq</span><span class="p">.</span><span class="n">map</span><span class="w"> </span><span class="n">fst</span>
+</code></pre></div>
+<p><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiBjb250ZW50U3R5bGVUeXBlPSJ0ZXh0L2NzcyIgZGF0YS1kaWFncmFtLXR5cGU9IkRFU0NSSVBUSU9OIiBoZWlnaHQ9IjI1NXB4IiBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSJub25lIiBzdHlsZT0id2lkdGg6MzMxcHg7aGVpZ2h0OjI1NXB4O2JhY2tncm91bmQ6I0ZGRkZGRjsiIHZlcnNpb249IjEuMSIgdmlld0JveD0iMCAwIDMzMSAyNTUiIHdpZHRoPSIzMzFweCIgem9vbUFuZFBhbj0ibWFnbmlmeSI+PGRlZnMvPjxnPjwhLS1jbHVzdGVyIFNlcS56aXAgPz8/LS0+PGcgY2xhc3M9ImNsdXN0ZXIiIGRhdGEtZW50aXR5PSJTZXEuemlwIC4uLiIgZGF0YS1zb3VyY2UtbGluZT0iMyIgZGF0YS11aWQ9ImVudDAwMDIiIGlkPSJjbHVzdGVyX1NlcS56aXAgLi4uIj48cmVjdCBmaWxsPSIjRkZGRkZGIiBoZWlnaHQ9IjIzNy44OSIgcng9IjIuNSIgcnk9IjIuNSIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxOyIgd2lkdGg9IjMxMyIgeD0iMTIiIHk9IjEyIi8+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9IlZlcmRhbmEiIGZvbnQtc2l6ZT0iMTQiIGZvbnQtd2VpZ2h0PSJib2xkIiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjEwNC43NjA2IiB4PSIxMTYuMTE5NyIgeT0iMjYuOTk1MSI+U2VxLnppcCAmIzEyMzk4OyYjMjEyMDU7JiMyMDMxNjs8L3RleHQ+PC9nPjwhLS1lbnRpdHkgczEtLT48ZyBjbGFzcz0iZW50aXR5IiBkYXRhLWVudGl0eT0iczEiIGRhdGEtc291cmNlLWxpbmU9IjQiIGRhdGEtdWlkPSJlbnQwMDAzIiBpZD0iZW50aXR5X3MxIj48cmVjdCBmaWxsPSIjRkZGRkZGIiBoZWlnaHQ9IjIyLjI5NjkiIHJ4PSIyLjUiIHJ5PSIyLjUiIHN0eWxlPSJzdHJva2U6IzAwMDAwMDtzdHJva2Utd2lkdGg6MTsiIHdpZHRoPSIxMjMuODY1MiIgeD0iMjguMDciIHk9IjQ3Ii8+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9IlZlcmRhbmEiIGZvbnQtc2l6ZT0iMTQiIGxlbmd0aEFkanVzdD0ic3BhY2luZyIgdGV4dExlbmd0aD0iMTAzLjg2NTIiIHg9IjM4LjA3IiB5PSI2Mi45OTUxIj5zMTogWzE7IDI7IDM7IC4uLl08L3RleHQ+PC9nPjwhLS1lbnRpdHkgczItLT48ZyBjbGFzcz0iZW50aXR5IiBkYXRhLWVudGl0eT0iczIiIGRhdGEtc291cmNlLWxpbmU9IjUiIGRhdGEtdWlkPSJlbnQwMDA0IiBpZD0iZW50aXR5X3MyIj48cmVjdCBmaWxsPSIjRkZGRkZGIiBoZWlnaHQ9IjIyLjI5NjkiIHJ4PSIyLjUiIHJ5PSIyLjUiIHN0eWxlPSJzdHJva2U6IzAwMDAwMDtzdHJva2Utd2lkdGg6MTsiIHdpZHRoPSIxMjIuMzA2NiIgeD0iMTg2Ljg1IiB5PSI0NyIvPjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJWZXJkYW5hIiBmb250LXNpemU9IjE0IiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjEwMi4zMDY2IiB4PSIxOTYuODUiIHk9IjYyLjk5NTEiPnMyOiBbYTsgYjsgYzsgLi4uXTwvdGV4dD48L2c+PCEtLWVudGl0eSB6aXAtLT48ZyBjbGFzcz0iZW50aXR5IiBkYXRhLWVudGl0eT0iemlwIiBkYXRhLXNvdXJjZS1saW5lPSI2IiBkYXRhLXVpZD0iZW50MDAwNSIgaWQ9ImVudGl0eV96aXAiPjxyZWN0IGZpbGw9IiNGRkZGRkYiIGhlaWdodD0iMjIuMjk2OSIgcng9IjIuNSIgcnk9IjIuNSIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxOyIgd2lkdGg9IjcwLjk2MTkiIHg9IjEzMi41MiIgeT0iMTI5LjMiLz48dGV4dCBmaWxsPSIjMDAwMDAwIiBmb250LWZhbWlseT0iVmVyZGFuYSIgZm9udC1zaXplPSIxNCIgbGVuZ3RoQWRqdXN0PSJzcGFjaW5nIiB0ZXh0TGVuZ3RoPSI1MC45NjE5IiB4PSIxNDIuNTIiIHk9IjE0NS4yOTUxIj5TZXEuemlwPC90ZXh0PjwvZz48IS0tZW50aXR5IHJlc3VsdC0tPjxnIGNsYXNzPSJlbnRpdHkiIGRhdGEtZW50aXR5PSJyZXN1bHQiIGRhdGEtc291cmNlLWxpbmU9IjciIGRhdGEtdWlkPSJlbnQwMDA2IiBpZD0iZW50aXR5X3Jlc3VsdCI+PHJlY3QgZmlsbD0iI0ZGRkZGRiIgaGVpZ2h0PSIyMi4yOTY5IiByeD0iMi41IiByeT0iMi41IiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE7IiB3aWR0aD0iMTY5Ljc4MjIiIHg9IjgzLjExIiB5PSIyMTEuNTkiLz48dGV4dCBmaWxsPSIjMDAwMDAwIiBmb250LWZhbWlseT0iVmVyZGFuYSIgZm9udC1zaXplPSIxNCIgbGVuZ3RoQWRqdXN0PSJzcGFjaW5nIiB0ZXh0TGVuZ3RoPSIxNDkuNzgyMiIgeD0iOTMuMTEiIHk9IjIyNy41ODUxIj5bKDEsYSk7ICgyLGIpOyAoMyxjKTsgLi4uXTwvdGV4dD48L2c+PCEtLWxpbmsgczEgdG8gemlwLS0+PGcgY2xhc3M9ImxpbmsiIGRhdGEtZW50aXR5LTE9InMxIiBkYXRhLWVudGl0eS0yPSJ6aXAiIGRhdGEtc291cmNlLWxpbmU9IjkiIGRhdGEtdWlkPSJsbms3IiBpZD0ibGlua19zMV96aXAiPjxwYXRoIGQ9Ik0xMDAuMiw2OS42NSBDMTE1LjE1LDg1LjAzIDEzOC42NjkzLDEwOS4yNDYzIDE1My42MTkzLDEyNC42MzYzIiBmaWxsPSJub25lIiBpZD0iczEtdG8temlwIiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE7Ii8+PHBvbHlnb24gZmlsbD0iIzAwMDAwMCIgcG9pbnRzPSIxNTcuOCwxMjguOTQsMTU0LjM5ODEsMTE5LjY5NzMsMTU0LjMxNjEsMTI1LjM1MzYsMTQ4LjY1OTgsMTI1LjI3MTUsMTU3LjgsMTI4Ljk0IiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE7Ii8+PC9nPjwhLS1saW5rIHMyIHRvIHppcC0tPjxnIGNsYXNzPSJsaW5rIiBkYXRhLWVudGl0eS0xPSJzMiIgZGF0YS1lbnRpdHktMj0iemlwIiBkYXRhLXNvdXJjZS1saW5lPSIxMCIgZGF0YS11aWQ9ImxuazgiIGlkPSJsaW5rX3MyX3ppcCI+PHBhdGggZD0iTTIzNy41NCw2OS42NSBDMjIyLjIxLDg1LjAzIDE5OC4wMjQzLDEwOS4yOTkxIDE4Mi42OTQzLDEyNC42ODkxIiBmaWxsPSJub25lIiBpZD0iczItdG8temlwIiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE7Ii8+PHBvbHlnb24gZmlsbD0iIzAwMDAwMCIgcG9pbnRzPSIxNzguNDYsMTI4Ljk0LDE4Ny42NDU1LDEyNS4zODY1LDE4MS45ODg2LDEyNS4zOTc2LDE4MS45Nzc2LDExOS43NDA3LDE3OC40NiwxMjguOTQiIHN0eWxlPSJzdHJva2U6IzAwMDAwMDtzdHJva2Utd2lkdGg6MTsiLz48L2c+PCEtLWxpbmsgemlwIHRvIHJlc3VsdC0tPjxnIGNsYXNzPSJsaW5rIiBkYXRhLWVudGl0eS0xPSJ6aXAiIGRhdGEtZW50aXR5LTI9InJlc3VsdCIgZGF0YS1zb3VyY2UtbGluZT0iMTEiIGRhdGEtdWlkPSJsbms5IiBpZD0ibGlua196aXBfcmVzdWx0Ij48cGF0aCBkPSJNMTY4LDE1MS45NCBDMTY4LDE2Ny4zMyAxNjgsMTg5Ljg1IDE2OCwyMDUuMjQiIGZpbGw9Im5vbmUiIGlkPSJ6aXAtdG8tcmVzdWx0IiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE7Ii8+PHBvbHlnb24gZmlsbD0iIzAwMDAwMCIgcG9pbnRzPSIxNjgsMjExLjI0LDE3MiwyMDIuMjQsMTY4LDIwNi4yNCwxNjQsMjAyLjI0LDE2OCwyMTEuMjQiIHN0eWxlPSJzdHJva2U6IzAwMDAwMDtzdHJva2Utd2lkdGg6MTsiLz48L2c+PCEtLVNSQz1bS29wOUlDckRMSVo4SVNwQ3UtOGdJYXFrSVNuQnBxYkxLMGZFQlRJaG9ZbkdVRG91eGNkdHIyVHh2b1dmTDdDYjluUWJBMldMNnJlZkgxalFBblhQQW5YUkEtWmZ3U0tnQUlHTUFuR1Jta0lEV0ZBOXJXZjlyV2g5b0Y5Nks3Y2VxTTExODBxTFpUT21yNGRLajVSR0NEOTkwYjc2RWljUUlCZ0JLZWpCU3FndWs4ZUQ1TkhyeFMzd1lldFdKOTFCR01vZWdiZTBdLS0+PC9nPjwvc3ZnPg==" class="uml" alt="uml diagram" title="" /></p>
+<h3 id="99">9.9 実用的なストリーム操作<a class="headerlink" href="#99" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="c1">// 累積和</span>
+<span class="k">let</span><span class="w"> </span><span class="nv">runningSum</span><span class="w"> </span><span class="o">(</span><span class="n">stream</span><span class="o">:</span><span class="w"> </span><span class="n">int</span><span class="w"> </span><span class="n">seq</span><span class="o">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">int</span><span class="w"> </span><span class="n">seq</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">stream</span><span class="w"> </span><span class="o">|&gt;</span><span class="w"> </span><span class="nn">Seq</span><span class="p">.</span><span class="n">scan</span><span class="w"> </span><span class="o">(+)</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="o">|&gt;</span><span class="w"> </span><span class="nn">Seq</span><span class="p">.</span><span class="n">skip</span><span class="w"> </span><span class="mi">1</span>
+
+<span class="n">runningSum</span><span class="w"> </span><span class="o">(</span><span class="n">seq</span><span class="w"> </span><span class="o">{</span><span class="w"> </span><span class="mi">1</span><span class="o">;</span><span class="w"> </span><span class="mi">2</span><span class="o">;</span><span class="w"> </span><span class="mi">3</span><span class="o">;</span><span class="w"> </span><span class="mi">4</span><span class="o">;</span><span class="w"> </span><span class="mi">5</span><span class="w"> </span><span class="o">})</span><span class="w"> </span><span class="o">|&gt;</span><span class="w"> </span><span class="nn">Seq</span><span class="p">.</span><span class="n">toList</span><span class="w">  </span><span class="c1">// [1; 3; 6; 10; 15]</span>
+
+<span class="c1">// 移動平均</span>
+<span class="k">let</span><span class="w"> </span><span class="nv">movingAverage</span><span class="w"> </span><span class="o">(</span><span class="n">windowSize</span><span class="o">:</span><span class="w"> </span><span class="n">int</span><span class="o">)</span><span class="w"> </span><span class="o">(</span><span class="n">stream</span><span class="o">:</span><span class="w"> </span><span class="kt">decimal</span><span class="w"> </span><span class="n">seq</span><span class="o">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">decimal</span><span class="w"> </span><span class="n">seq</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">stream</span>
+<span class="w">    </span><span class="o">|&gt;</span><span class="w"> </span><span class="nn">Seq</span><span class="p">.</span><span class="n">windowed</span><span class="w"> </span><span class="n">windowSize</span>
+<span class="w">    </span><span class="o">|&gt;</span><span class="w"> </span><span class="nn">Seq</span><span class="p">.</span><span class="n">map</span><span class="w"> </span><span class="o">(</span><span class="k">fun</span><span class="w"> </span><span class="n">window</span><span class="w"> </span><span class="o">-&gt;</span>
+<span class="w">        </span><span class="n">window</span><span class="w"> </span><span class="o">|&gt;</span><span class="w"> </span><span class="nn">Array</span><span class="p">.</span><span class="n">sum</span><span class="w"> </span><span class="o">|&gt;</span><span class="w"> </span><span class="k">fun</span><span class="w"> </span><span class="n">s</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">s</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="kt">decimal</span><span class="w"> </span><span class="n">windowSize</span><span class="o">)</span>
+
+<span class="c1">// 連続する重複を除去</span>
+<span class="k">let</span><span class="w"> </span><span class="nv">distinctConsecutive</span><span class="w"> </span><span class="o">(</span><span class="n">stream</span><span class="o">:</span><span class="w"> </span><span class="k">&#39;</span><span class="n">a</span><span class="w"> </span><span class="n">seq</span><span class="o">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">&#39;</span><span class="n">a</span><span class="w"> </span><span class="n">seq</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">seq</span><span class="w"> </span><span class="o">{</span>
+<span class="w">        </span><span class="k">let</span><span class="w"> </span><span class="nv">mutable</span><span class="w"> </span><span class="n">prev</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">None</span>
+<span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="n">item</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">stream</span><span class="w"> </span><span class="k">do</span>
+<span class="w">            </span><span class="k">match</span><span class="w"> </span><span class="n">prev</span><span class="w"> </span><span class="k">with</span>
+<span class="w">            </span><span class="o">|</span><span class="w"> </span><span class="n">Some</span><span class="w"> </span><span class="n">p</span><span class="w"> </span><span class="k">when</span><span class="w"> </span><span class="n">p</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">item</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="bp">()</span>
+<span class="w">            </span><span class="o">|</span><span class="w"> </span><span class="o">_</span><span class="w"> </span><span class="o">-&gt;</span>
+<span class="w">                </span><span class="k">yield</span><span class="w"> </span><span class="n">item</span>
+<span class="w">                </span><span class="n">prev</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">Some</span><span class="w"> </span><span class="n">item</span>
+<span class="w">    </span><span class="o">}</span>
+</code></pre></div>
+<hr />
+<h2 id="scala">Scala との比較<a class="headerlink" href="#scala" title="Permanent link">&para;</a></h2>
+<h3 id="io-async">IO と Async の比較<a class="headerlink" href="#io-async" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Scala (Cats Effect)</th>
+<th>F#</th>
+<th>説明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>IO[A]</code></td>
+<td><code>Async&lt;'a&gt;</code></td>
+<td>副作用を記述する型</td>
+</tr>
+<tr>
+<td><code>IO.delay(expr)</code></td>
+<td><code>async { return expr }</code></td>
+<td>副作用をラップ</td>
+</tr>
+<tr>
+<td><code>IO.pure(value)</code></td>
+<td><code>async { return value }</code></td>
+<td>純粋な値をラップ</td>
+</tr>
+<tr>
+<td><code>for { a &lt;- io1; b &lt;- io2 } yield ...</code></td>
+<td><code>async { let! a = io1; let! b = io2; return ... }</code></td>
+<td>合成</td>
+</tr>
+<tr>
+<td><code>io.unsafeRunSync()</code></td>
+<td><code>Async.RunSynchronously io</code></td>
+<td>同期実行</td>
+</tr>
+<tr>
+<td><code>io1.orElse(io2)</code></td>
+<td><code>io1 \|&gt; orElse io2</code></td>
+<td>フォールバック</td>
+</tr>
+<tr>
+<td><code>ios.sequence</code></td>
+<td><code>sequence ios</code></td>
+<td>リストの変換</td>
+</tr>
+</tbody>
+</table>
+<h3 id="stream-seq">Stream と Seq の比較<a class="headerlink" href="#stream-seq" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Scala (fs2)</th>
+<th>F#</th>
+<th>説明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Stream[Pure, A]</code></td>
+<td><code>'a seq</code></td>
+<td>純粋なストリーム</td>
+</tr>
+<tr>
+<td><code>Stream.eval(io)</code></td>
+<td><code>async { ... }</code> + 変換</td>
+<td>IO を含むストリーム</td>
+</tr>
+<tr>
+<td><code>stream.repeat</code></td>
+<td><code>repeat stream</code></td>
+<td>無限繰り返し</td>
+</tr>
+<tr>
+<td><code>stream.take(n)</code></td>
+<td><code>Seq.take n stream</code></td>
+<td>最初の n 要素</td>
+</tr>
+<tr>
+<td><code>stream.filter(p)</code></td>
+<td><code>Seq.filter p stream</code></td>
+<td>フィルタリング</td>
+</tr>
+<tr>
+<td><code>stream.sliding(n)</code></td>
+<td><code>Seq.windowed n stream</code></td>
+<td>スライディングウィンドウ</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="_10">まとめ<a class="headerlink" href="#_10" title="Permanent link">&para;</a></h2>
+<h3 id="part-iv_1">Part IV で学んだこと<a class="headerlink" href="#part-iv_1" title="Permanent link">&para;</a></h3>
+<p><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiBjb250ZW50U3R5bGVUeXBlPSJ0ZXh0L2NzcyIgZGF0YS1kaWFncmFtLXR5cGU9IkRFU0NSSVBUSU9OIiBoZWlnaHQ9IjM2MXB4IiBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSJub25lIiBzdHlsZT0id2lkdGg6MTExMHB4O2hlaWdodDozNjFweDtiYWNrZ3JvdW5kOiNGRkZGRkY7IiB2ZXJzaW9uPSIxLjEiIHZpZXdCb3g9IjAgMCAxMTEwIDM2MSIgd2lkdGg9IjExMTBweCIgem9vbUFuZFBhbj0ibWFnbmlmeSI+PGRlZnMvPjxnPjwhLS1jbHVzdGVyIFBhcnQgSVY6ID8/Pz8/Pz8/Pz8/LS0+PGcgY2xhc3M9ImNsdXN0ZXIiIGRhdGEtZW50aXR5PSJQYXJ0IElWLiAuLi4uLi4uLi4uLiIgZGF0YS1zb3VyY2UtbGluZT0iMyIgZGF0YS11aWQ9ImVudDAwMDIiIGlkPSJjbHVzdGVyX1BhcnQgSVYuIC4uLi4uLi4uLi4uIj48cmVjdCBmaWxsPSIjRkZGRkZGIiBoZWlnaHQ9IjM0My44OSIgcng9IjIuNSIgcnk9IjIuNSIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxOyIgd2lkdGg9IjEwOTIiIHg9IjEyIiB5PSIxMiIvPjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJWZXJkYW5hIiBmb250LXNpemU9IjE0IiBmb250LXdlaWdodD0iYm9sZCIgbGVuZ3RoQWRqdXN0PSJzcGFjaW5nIiB0ZXh0TGVuZ3RoPSIyMTguNjk0NiIgeD0iNDQ4LjY1MjciIHk9IjI2Ljk5NTEiPlBhcnQgSVY6ICYjMzg3NTA7JiMyMTUxNjsmIzI2Mzk5OyYjMjA5NjY7JiMyOTcwMjsmIzEyMzkyOyYjMTI0NzM7JiMxMjQ4ODsmIzEyNTIyOyYjMTI1NDA7JiMxMjUxMjs8L3RleHQ+PC9nPjwhLS1jbHVzdGVyIGNoOC0tPjxnIGNsYXNzPSJjbHVzdGVyIiBkYXRhLWVudGl0eT0iY2g4IiBkYXRhLXNvdXJjZS1saW5lPSI0IiBkYXRhLXVpZD0iZW50MDAwMyIgaWQ9ImNsdXN0ZXJfY2g4Ij48cmVjdCBmaWxsPSIjRkZGRkZGIiBoZWlnaHQ9IjI2MC44OSIgcng9IjIuNSIgcnk9IjIuNSIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxOyIgd2lkdGg9IjQzMCIgeD0iNDQiIHk9IjYzIi8+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9IlZlcmRhbmEiIGZvbnQtc2l6ZT0iMTQiIGZvbnQtd2VpZ2h0PSJib2xkIiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjM3Ljc0MTEiIHg9IjI0MC4xMjk1IiB5PSI3Ny45OTUxIj4mIzMxNTMyOzgmIzMxNDU2OzwvdGV4dD48L2c+PCEtLWNsdXN0ZXIgY2g5LS0+PGcgY2xhc3M9ImNsdXN0ZXIiIGRhdGEtZW50aXR5PSJjaDkiIGRhdGEtc291cmNlLWxpbmU9IjE0IiBkYXRhLXVpZD0iZW50MDAxMSIgaWQ9ImNsdXN0ZXJfY2g5Ij48cmVjdCBmaWxsPSIjRkZGRkZGIiBoZWlnaHQ9IjE3MS41OSIgcng9IjIuNSIgcnk9IjIuNSIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxOyIgd2lkdGg9IjU1OCIgeD0iNTE0IiB5PSIxNTIuMyIvPjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJWZXJkYW5hIiBmb250LXNpemU9IjE0IiBmb250LXdlaWdodD0iYm9sZCIgbGVuZ3RoQWRqdXN0PSJzcGFjaW5nIiB0ZXh0TGVuZ3RoPSIzNy43NDExIiB4PSI3NzQuMTI5NSIgeT0iMTY3LjI5NTEiPiYjMzE1MzI7OSYjMzE0NTY7PC90ZXh0PjwvZz48IS0tZW50aXR5IEFzeW5jPCdhPi0tPjxnIGNsYXNzPSJlbnRpdHkiIGRhdGEtZW50aXR5PSJBc3luYy4uYS4iIGRhdGEtc291cmNlLWxpbmU9IjUiIGRhdGEtdWlkPSJlbnQwMDA0IiBpZD0iZW50aXR5X0FzeW5jLi5hLiI+PHJlY3QgZmlsbD0iI0ZGRkZGRiIgaGVpZ2h0PSIyMi4yOTY5IiByeD0iMi41IiByeT0iMi41IiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE7IiB3aWR0aD0iOTcuNjE1MiIgeD0iNjguMTkiIHk9IjEwNiIvPjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJWZXJkYW5hIiBmb250LXNpemU9IjE0IiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9Ijc3LjYxNTIiIHg9Ijc4LjE5IiB5PSIxMjEuOTk1MSI+QXN5bmMmbHQ7J2EmZ3Q7PC90ZXh0PjwvZz48IS0tZW50aXR5IGFzeW5jIHsgLi4uIH0tLT48ZyBjbGFzcz0iZW50aXR5IiBkYXRhLWVudGl0eT0iYXN5bmMgLiAuLi4gLiIgZGF0YS1zb3VyY2UtbGluZT0iNiIgZGF0YS11aWQ9ImVudDAwMDUiIGlkPSJlbnRpdHlfYXN5bmMgLiAuLi4gLiI+PHJlY3QgZmlsbD0iI0ZGRkZGRiIgaGVpZ2h0PSIyMi4yOTY5IiByeD0iMi41IiByeT0iMi41IiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE7IiB3aWR0aD0iMTA1LjI0NDEiIHg9IjIwMC4zOCIgeT0iMTA2Ii8+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9IlZlcmRhbmEiIGZvbnQtc2l6ZT0iMTQiIGxlbmd0aEFkanVzdD0ic3BhY2luZyIgdGV4dExlbmd0aD0iODUuMjQ0MSIgeD0iMjEwLjM4IiB5PSIxMjEuOTk1MSI+YXN5bmMgeyAuLi4gfTwvdGV4dD48L2c+PCEtLWVudGl0eSBsZXQhID8/Py0tPjxnIGNsYXNzPSJlbnRpdHkiIGRhdGEtZW50aXR5PSJsZXQuIC4uLiIgZGF0YS1zb3VyY2UtbGluZT0iNyIgZGF0YS11aWQ9ImVudDAwMDYiIGlkPSJlbnRpdHlfbGV0LiAuLi4iPjxyZWN0IGZpbGw9IiNGRkZGRkYiIGhlaWdodD0iMjIuMjk2OSIgcng9IjIuNSIgcnk9IjIuNSIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxOyIgd2lkdGg9IjkwLjA1NDUiIHg9IjM0MC45NyIgeT0iMTA2Ii8+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9IlZlcmRhbmEiIGZvbnQtc2l6ZT0iMTQiIGxlbmd0aEFkanVzdD0ic3BhY2luZyIgdGV4dExlbmd0aD0iNzAuMDU0NSIgeD0iMzUwLjk3IiB5PSIxMjEuOTk1MSI+bGV0ISAmIzEyMzkxOyYjMjE1MTI7JiMyNTEwNDs8L3RleHQ+PC9nPjwhLS1lbnRpdHkgb3JFbHNlLS0+PGcgY2xhc3M9ImVudGl0eSIgZGF0YS1lbnRpdHk9Im9yRWxzZSIgZGF0YS1zb3VyY2UtbGluZT0iOCIgZGF0YS11aWQ9ImVudDAwMDciIGlkPSJlbnRpdHlfb3JFbHNlIj48cmVjdCBmaWxsPSIjRkZGRkZGIiBoZWlnaHQ9IjIyLjI5NjkiIHJ4PSIyLjUiIHJ5PSIyLjUiIHN0eWxlPSJzdHJva2U6IzAwMDAwMDtzdHJva2Utd2lkdGg6MTsiIHdpZHRoPSI2Mi45NjM5IiB4PSI5MC41MiIgeT0iMTk1LjMiLz48dGV4dCBmaWxsPSIjMDAwMDAwIiBmb250LWZhbWlseT0iVmVyZGFuYSIgZm9udC1zaXplPSIxNCIgbGVuZ3RoQWRqdXN0PSJzcGFjaW5nIiB0ZXh0TGVuZ3RoPSI0Mi45NjM5IiB4PSIxMDAuNTIiIHk9IjIxMS4yOTUxIj5vckVsc2U8L3RleHQ+PC9nPjwhLS1lbnRpdHkgcmV0cnktLT48ZyBjbGFzcz0iZW50aXR5IiBkYXRhLWVudGl0eT0icmV0cnkiIGRhdGEtc291cmNlLWxpbmU9IjkiIGRhdGEtdWlkPSJlbnQwMDA4IiBpZD0iZW50aXR5X3JldHJ5Ij48cmVjdCBmaWxsPSIjRkZGRkZGIiBoZWlnaHQ9IjIyLjI5NjkiIHJ4PSIyLjUiIHJ5PSIyLjUiIHN0eWxlPSJzdHJva2U6IzAwMDAwMDtzdHJva2Utd2lkdGg6MTsiIHdpZHRoPSI1My44OTk0IiB4PSIxODguMDUiIHk9IjE5NS4zIi8+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9IlZlcmRhbmEiIGZvbnQtc2l6ZT0iMTQiIGxlbmd0aEFkanVzdD0ic3BhY2luZyIgdGV4dExlbmd0aD0iMzMuODk5NCIgeD0iMTk4LjA1IiB5PSIyMTEuMjk1MSI+cmV0cnk8L3RleHQ+PC9nPjwhLS1lbnRpdHkgc2VxdWVuY2UtLT48ZyBjbGFzcz0iZW50aXR5IiBkYXRhLWVudGl0eT0ic2VxdWVuY2UiIGRhdGEtc291cmNlLWxpbmU9IjEwIiBkYXRhLXVpZD0iZW50MDAwOSIgaWQ9ImVudGl0eV9zZXF1ZW5jZSI+PHJlY3QgZmlsbD0iI0ZGRkZGRiIgaGVpZ2h0PSIyMi4yOTY5IiByeD0iMi41IiByeT0iMi41IiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE7IiB3aWR0aD0iODcuNDYzOSIgeD0iMjc3LjI3IiB5PSIxOTUuMyIvPjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJWZXJkYW5hIiBmb250LXNpemU9IjE0IiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjY3LjQ2MzkiIHg9IjI4Ny4yNyIgeT0iMjExLjI5NTEiPnNlcXVlbmNlPC90ZXh0PjwvZz48IS0tZW50aXR5IEFzeW5jLlBhcmFsbGVsLS0+PGcgY2xhc3M9ImVudGl0eSIgZGF0YS1lbnRpdHk9IkFzeW5jLlBhcmFsbGVsIiBkYXRhLXNvdXJjZS1saW5lPSIxMSIgZGF0YS11aWQ9ImVudDAwMTAiIGlkPSJlbnRpdHlfQXN5bmMuUGFyYWxsZWwiPjxyZWN0IGZpbGw9IiNGRkZGRkYiIGhlaWdodD0iMjIuMjk2OSIgcng9IjIuNSIgcnk9IjIuNSIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxOyIgd2lkdGg9IjExNy44MTU0IiB4PSI2OC4wOSIgeT0iMjc3LjU5Ii8+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9IlZlcmRhbmEiIGZvbnQtc2l6ZT0iMTQiIGxlbmd0aEFkanVzdD0ic3BhY2luZyIgdGV4dExlbmd0aD0iOTcuODE1NCIgeD0iNzguMDkiIHk9IjI5My41ODUxIj5Bc3luYy5QYXJhbGxlbDwvdGV4dD48L2c+PCEtLWVudGl0eSBTZXE/Pz8/Pz8/LS0+PGcgY2xhc3M9ImVudGl0eSIgZGF0YS1lbnRpdHk9IlNlcS4uLi4uLi4iIGRhdGEtc291cmNlLWxpbmU9IjE1IiBkYXRhLXVpZD0iZW50MDAxMiIgaWQ9ImVudGl0eV9TZXEuLi4uLi4uIj48cmVjdCBmaWxsPSIjRkZGRkZGIiBoZWlnaHQ9IjIyLjI5NjkiIHJ4PSIyLjUiIHJ5PSIyLjUiIHN0eWxlPSJzdHJva2U6IzAwMDAwMDtzdHJva2Utd2lkdGg6MTsiIHdpZHRoPSIxNDQuMzg2MyIgeD0iNTM3LjgxIiB5PSIxOTUuMyIvPjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJWZXJkYW5hIiBmb250LXNpemU9IjE0IiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjEyNC4zODYzIiB4PSI1NDcuODEiIHk9IjIxMS4yOTUxIj5TZXEmIzY1Mjg4OyYjMTI0NzE7JiMxMjU0MDsmIzEyNDY1OyYjMTI1MzE7JiMxMjQ3MzsmIzY1Mjg5OzwvdGV4dD48L2c+PCEtLWVudGl0eSA/Pz8/Pz8/LS0+PGcgY2xhc3M9ImVudGl0eSIgZGF0YS1lbnRpdHk9Ii4uLi4uLi4iIGRhdGEtc291cmNlLWxpbmU9IjE2IiBkYXRhLXVpZD0iZW50MDAxMyIgaWQ9ImVudGl0eV8uLi4uLi4uIj48cmVjdCBmaWxsPSIjRkZGRkZGIiBoZWlnaHQ9IjIyLjI5NjkiIHJ4PSIyLjUiIHJ5PSIyLjUiIHN0eWxlPSJzdHJva2U6IzAwMDAwMDtzdHJva2Utd2lkdGg6MTsiIHdpZHRoPSIxMTcuOTk5NiIgeD0iNzE3IiB5PSIxOTUuMyIvPjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJWZXJkYW5hIiBmb250LXNpemU9IjE0IiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9Ijk3Ljk5OTYiIHg9IjcyNyIgeT0iMjExLjI5NTEiPiYjMjg5NjE7JiMzODQ4MDsmIzEyNDcxOyYjMTI1NDA7JiMxMjQ2NTsmIzEyNTMxOyYjMTI0NzM7PC90ZXh0PjwvZz48IS0tZW50aXR5IFNlcS50YWtlIC8gU2VxLmZpbHRlci0tPjxnIGNsYXNzPSJlbnRpdHkiIGRhdGEtZW50aXR5PSJTZXEudGFrZSAuIFNlcS5maWx0ZXIiIGRhdGEtc291cmNlLWxpbmU9IjE3IiBkYXRhLXVpZD0iZW50MDAxNCIgaWQ9ImVudGl0eV9TZXEudGFrZSAuIFNlcS5maWx0ZXIiPjxyZWN0IGZpbGw9IiNGRkZGRkYiIGhlaWdodD0iMjIuMjk2OSIgcng9IjIuNSIgcnk9IjIuNSIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxOyIgd2lkdGg9IjE1OC42NDY1IiB4PSI4NjkuNjgiIHk9IjE5NS4zIi8+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9IlZlcmRhbmEiIGZvbnQtc2l6ZT0iMTQiIGxlbmd0aEFkanVzdD0ic3BhY2luZyIgdGV4dExlbmd0aD0iMTM4LjY0NjUiIHg9Ijg3OS42OCIgeT0iMjExLjI5NTEiPlNlcS50YWtlIC8gU2VxLmZpbHRlcjwvdGV4dD48L2c+PCEtLWVudGl0eSBTZXEud2luZG93ZWQtLT48ZyBjbGFzcz0iZW50aXR5IiBkYXRhLWVudGl0eT0iU2VxLndpbmRvd2VkIiBkYXRhLXNvdXJjZS1saW5lPSIxOCIgZGF0YS11aWQ9ImVudDAwMTUiIGlkPSJlbnRpdHlfU2VxLndpbmRvd2VkIj48cmVjdCBmaWxsPSIjRkZGRkZGIiBoZWlnaHQ9IjIyLjI5NjkiIHJ4PSIyLjUiIHJ5PSIyLjUiIHN0eWxlPSJzdHJva2U6IzAwMDAwMDtzdHJva2Utd2lkdGg6MTsiIHdpZHRoPSIxMjEuNDUyMSIgeD0iNTQ5LjI3IiB5PSIyNzcuNTkiLz48dGV4dCBmaWxsPSIjMDAwMDAwIiBmb250LWZhbWlseT0iVmVyZGFuYSIgZm9udC1zaXplPSIxNCIgbGVuZ3RoQWRqdXN0PSJzcGFjaW5nIiB0ZXh0TGVuZ3RoPSIxMDEuNDUyMSIgeD0iNTU5LjI3IiB5PSIyOTMuNTg1MSI+U2VxLndpbmRvd2VkPC90ZXh0PjwvZz48IS0tZW50aXR5IFNlcS56aXAtLT48ZyBjbGFzcz0iZW50aXR5IiBkYXRhLWVudGl0eT0iU2VxLnppcCIgZGF0YS1zb3VyY2UtbGluZT0iMTkiIGRhdGEtdWlkPSJlbnQwMDE2IiBpZD0iZW50aXR5X1NlcS56aXAiPjxyZWN0IGZpbGw9IiNGRkZGRkYiIGhlaWdodD0iMjIuMjk2OSIgcng9IjIuNSIgcnk9IjIuNSIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxOyIgd2lkdGg9IjcwLjk2MTkiIHg9IjcwNS41MiIgeT0iMjc3LjU5Ii8+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9IlZlcmRhbmEiIGZvbnQtc2l6ZT0iMTQiIGxlbmd0aEFkanVzdD0ic3BhY2luZyIgdGV4dExlbmd0aD0iNTAuOTYxOSIgeD0iNzE1LjUyIiB5PSIyOTMuNTg1MSI+U2VxLnppcDwvdGV4dD48L2c+PCEtLWxpbmsgY2g4IHRvIGNoOS0tPjxnIGNsYXNzPSJsaW5rIiBkYXRhLWVudGl0eS0xPSJjaDgiIGRhdGEtZW50aXR5LTI9ImNoOSIgZGF0YS1zb3VyY2UtbGluZT0iMjMiIGRhdGEtdWlkPSJsbmsxNyIgaWQ9ImxpbmtfY2g4X2NoOSI+PHBhdGggZD0iTTQ3NC41NzE3LDExOC4xMzI3IEM0NzQuODY0NywxMTguMTMyMyA0NzUuMTY0OCwxMTguMTMxOCA0NzUuNDcxOSwxMTguMTMxNCBDNDc2LjA4NjEsMTE4LjEzMDUgNDc2LjcyODUsMTE4LjEyOTcgNDc3LjM5ODYsMTE4LjEyODkgQzQ3OC43Mzg3LDExOC4xMjcyIDQ4MC4xODk1LDExOC4xMjU3IDQ4MS43NDcsMTE4LjEyNDMgQzQ4NC44NjE5LDExOC4xMjE2IDQ4OC40MDM0LDExOC4xMTk2IDQ5Mi4zMzkzLDExOC4xMTkgQzUwOC4wODMsMTE4LjExNjYgNTMwLjEzNzIsMTE4LjEzNjYgNTU2LjQ0MTksMTE4LjIyMjcgQzYwOS4wNTEzLDExOC4zOTQ3IDY3OC42NjI1LDExOC44MzA2IDc0OC43OTUsMTE5Ljg3ODcgQzg4OS4wNiwxMjEuOTc1IDEwMzEuNDEsMTI2LjUyIDEwNDQsMTM2LjMgQzEwNDcuMDYsMTM4LjY3NjIgMTA0OS42NzIyLDE0MS40OTA5IDEwNTEuOTAwMSwxNDQuNjAzIEMxMDUzLjAxNDEsMTQ2LjE1OTEgMTA1NC4wMzIsMTQ3Ljc4OTUgMTA1NC45NjE4LDE0OS40NzY2IEMxMDU1LjQyNjcsMTUwLjMyMDEgMTA1My4yNTEyLDE0NS43Nzk0IDEwNTMuNjczLDE0Ni42NDkxIiBmaWxsPSJub25lIiBpZD0iY2g4LXRvLWNoOSIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxOyIvPjxwb2x5Z29uIGZpbGw9IiMwMDAwMDAiIHBvaW50cz0iMTA1Ni4yOTE0LDE1Mi4wNDc2LDEwNTUuOTYyOCwxNDIuMjA0MiwxMDU0LjEwOTQsMTQ3LjU0ODgsMTA0OC43NjQ4LDE0NS42OTU1LDEwNTYuMjkxNCwxNTIuMDQ3NiIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxOyIvPjwvZz48IS0tU1JDPVtLb3A5SUNyRExJWjhJU3BDdS04Z0lhcWtJU25CcHFiTEswZjhCMmZIeTBvcEtkV3ZUenhKMkp0RnZpbl9zaHhpLU9Jc251cWg3WlZqVkRwU3lSWHZyVUZjRk8tUjVvV2ZMMkRoVkJ2Y1pTTnBySzNIbjZBNXYwbUJlNkhvT2I2QVdmOVpTTUxVaWVyd2VmcUlMMjBIOUExR2hRMmRmd1RHMm5GQ0lJckhMN1pTa0ZwZlg4dmQ3SERXZWxiNWhaZDVnSjFVS01mOUtJTUNLdm5RTTlnUWJtb04xNWtaMXRIek9hdkVRZXVJTG9xTmNrQ2k0T3dwWDNpa0VCTm1fUHdFbnF0UkdMdmdzbFl1VUpGR2EtX3RUQzlDVlR3b3lFTkMyTVpvSVdaRFVZTTlzUWFBLVdlV1BiZmNKYWJnNFI5YVVNUFVJZHZ2UVdnb001TGMwU1huR0VVMTBhYk5ybXhhN1cwMF0tLT48L2c+PC9zdmc+" class="uml" alt="uml diagram" title="" /></p>
+<h3 id="async-seq">Async と Seq の比較<a class="headerlink" href="#async-seq" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>特性</th>
+<th>Async&lt;'a&gt;</th>
+<th>'a seq</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>要素数</td>
+<td>1つ</td>
+<td>0個以上（無限も可）</td>
+</tr>
+<tr>
+<td>実行</td>
+<td><code>Async.RunSynchronously</code></td>
+<td><code>Seq.toList</code></td>
+</tr>
+<tr>
+<td>用途</td>
+<td>単一の副作用</td>
+<td>連続した要素の処理</td>
+</tr>
+</tbody>
+</table>
+<h3 id="_11">キーポイント<a class="headerlink" href="#_11" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>Async</strong>: 副作用を「記述」として扱い、実行を遅延させる</li>
+<li><strong>async { return ... }</strong>: 副作用のある式を Async にラップ</li>
+<li><strong>let!</strong>: Async を合成（Scala の flatMap 相当）</li>
+<li><strong>orElse</strong>: 失敗時のフォールバックを指定</li>
+<li><strong>sequence</strong>: <code>Async&lt;'a&gt; list</code> → <code>Async&lt;'a list&gt;</code></li>
+<li><strong>Seq</strong>: 潜在的に無限のシーケンスを遅延評価で処理</li>
+<li><strong>Seq.windowed</strong>: 連続する要素をグループ化してパターンを検出</li>
+</ol>
+<h3 id="_12">次のステップ<a class="headerlink" href="#_12" title="Permanent link">&para;</a></h3>
+<p>Part V では、以下のトピックを学びます:</p>
+<ul>
+<li>並行・並列処理</li>
+<li>Agent（MailboxProcessor）による軽量並行処理</li>
+<li>共有状態の管理</li>
+</ul>
+<hr />
+<h2 id="_13">演習問題<a class="headerlink" href="#_13" title="Permanent link">&para;</a></h2>
+<h3 id="1-async">問題 1: Async の基本<a class="headerlink" href="#1-async" title="Permanent link">&para;</a></h3>
+<p>以下の関数を実装してください。</p>
+<div class="highlight"><pre><span></span><code><span class="k">let</span><span class="w"> </span><span class="nv">printAndReturn</span><span class="w"> </span><span class="o">(</span><span class="n">message</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="o">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">Async</span><span class="o">&lt;</span><span class="kt">string</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">???</span>
+
+<span class="c1">// 期待される動作</span>
+<span class="c1">// printAndReturn &quot;Hello&quot; |&gt; Async.RunSynchronously は</span>
+<span class="c1">// &quot;Hello&quot; をコンソールに出力し、&quot;Hello&quot; を返す</span>
+</code></pre></div>
+<details>
+<summary>解答</summary>
+
+<div class="highlight"><pre><span></span><code><span class="k">let</span><span class="w"> </span><span class="nv">printAndReturn</span><span class="w"> </span><span class="o">(</span><span class="n">message</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="o">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">Async</span><span class="o">&lt;</span><span class="kt">string</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">async</span><span class="w"> </span><span class="o">{</span>
+<span class="w">        </span><span class="n">printfn</span><span class="w"> </span><span class="s">&quot;%s&quot;</span><span class="w"> </span><span class="n">message</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">message</span>
+<span class="w">    </span><span class="o">}</span>
+</code></pre></div>
+
+</details>
+
+<h3 id="2-async">問題 2: Async の合成<a class="headerlink" href="#2-async" title="Permanent link">&para;</a></h3>
+<p>以下の関数を実装してください。2つの Async を順番に実行し、結果を結合します。</p>
+<div class="highlight"><pre><span></span><code><span class="k">let</span><span class="w"> </span><span class="nv">combineAsync</span><span class="w"> </span><span class="o">(</span><span class="n">async1</span><span class="o">:</span><span class="w"> </span><span class="n">Async</span><span class="o">&lt;</span><span class="k">&#39;</span><span class="n">a</span><span class="o">&gt;)</span><span class="w"> </span><span class="o">(</span><span class="n">async2</span><span class="o">:</span><span class="w"> </span><span class="n">Async</span><span class="o">&lt;</span><span class="k">&#39;</span><span class="n">b</span><span class="o">&gt;)</span><span class="w"> </span><span class="o">(</span><span class="n">f</span><span class="o">:</span><span class="w"> </span><span class="k">&#39;</span><span class="n">a</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="k">&#39;</span><span class="n">b</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="k">&#39;</span><span class="n">c</span><span class="o">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">Async</span><span class="o">&lt;</span><span class="k">&#39;</span><span class="n">c</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">???</span>
+
+<span class="c1">// 期待される動作</span>
+<span class="k">let</span><span class="w"> </span><span class="nv">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">combineAsync</span><span class="w"> </span><span class="o">(</span><span class="n">async</span><span class="w"> </span><span class="o">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="o">})</span><span class="w"> </span><span class="o">(</span><span class="n">async</span><span class="w"> </span><span class="o">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="o">})</span><span class="w"> </span><span class="o">(+)</span>
+<span class="nn">Async</span><span class="p">.</span><span class="n">RunSynchronously</span><span class="w"> </span><span class="n">result</span><span class="w">  </span><span class="c1">// 3</span>
+</code></pre></div>
+<details>
+<summary>解答</summary>
+
+<div class="highlight"><pre><span></span><code><span class="k">let</span><span class="w"> </span><span class="nv">combineAsync</span><span class="w"> </span><span class="o">(</span><span class="n">async1</span><span class="o">:</span><span class="w"> </span><span class="n">Async</span><span class="o">&lt;</span><span class="k">&#39;</span><span class="n">a</span><span class="o">&gt;)</span><span class="w"> </span><span class="o">(</span><span class="n">async2</span><span class="o">:</span><span class="w"> </span><span class="n">Async</span><span class="o">&lt;</span><span class="k">&#39;</span><span class="n">b</span><span class="o">&gt;)</span><span class="w"> </span><span class="o">(</span><span class="n">f</span><span class="o">:</span><span class="w"> </span><span class="k">&#39;</span><span class="n">a</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="k">&#39;</span><span class="n">b</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="k">&#39;</span><span class="n">c</span><span class="o">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">Async</span><span class="o">&lt;</span><span class="k">&#39;</span><span class="n">c</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">async</span><span class="w"> </span><span class="o">{</span>
+<span class="w">        </span><span class="k">let!</span><span class="w"> </span><span class="nv">a</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">async1</span>
+<span class="w">        </span><span class="k">let!</span><span class="w"> </span><span class="nv">b</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">async2</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">f</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">b</span>
+<span class="w">    </span><span class="o">}</span>
+</code></pre></div>
+
+</details>
+
+<h3 id="3">問題 3: リトライ<a class="headerlink" href="#3" title="Permanent link">&para;</a></h3>
+<p>以下の関数を実装してください。指定回数リトライし、全部失敗したらデフォルト値を返します。</p>
+<div class="highlight"><pre><span></span><code><span class="k">let</span><span class="w"> </span><span class="nv">retryWithDefault</span><span class="w"> </span><span class="o">(</span><span class="n">maxRetries</span><span class="o">:</span><span class="w"> </span><span class="n">int</span><span class="o">)</span><span class="w"> </span><span class="o">(</span><span class="n">defaultValue</span><span class="o">:</span><span class="w"> </span><span class="k">&#39;</span><span class="n">a</span><span class="o">)</span><span class="w"> </span><span class="o">(</span><span class="n">action</span><span class="o">:</span><span class="w"> </span><span class="n">Async</span><span class="o">&lt;</span><span class="k">&#39;</span><span class="n">a</span><span class="o">&gt;)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">Async</span><span class="o">&lt;</span><span class="k">&#39;</span><span class="n">a</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">???</span>
+</code></pre></div>
+<details>
+<summary>解答</summary>
+
+<div class="highlight"><pre><span></span><code><span class="k">let</span><span class="w"> </span><span class="nv">retryWithDefault</span><span class="w"> </span><span class="o">(</span><span class="n">maxRetries</span><span class="o">:</span><span class="w"> </span><span class="n">int</span><span class="o">)</span><span class="w"> </span><span class="o">(</span><span class="n">defaultValue</span><span class="o">:</span><span class="w"> </span><span class="k">&#39;</span><span class="n">a</span><span class="o">)</span><span class="w"> </span><span class="o">(</span><span class="n">action</span><span class="o">:</span><span class="w"> </span><span class="n">Async</span><span class="o">&lt;</span><span class="k">&#39;</span><span class="n">a</span><span class="o">&gt;)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">Async</span><span class="o">&lt;</span><span class="k">&#39;</span><span class="n">a</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="k">let</span><span class="w"> </span><span class="nv">rec</span><span class="w"> </span><span class="n">loop</span><span class="w"> </span><span class="n">remaining</span><span class="w"> </span><span class="o">=</span>
+<span class="w">        </span><span class="n">async</span><span class="w"> </span><span class="o">{</span>
+<span class="w">            </span><span class="k">try</span>
+<span class="w">                </span><span class="k">return</span><span class="o">!</span><span class="w"> </span><span class="n">action</span>
+<span class="w">            </span><span class="k">with</span><span class="w"> </span><span class="o">_</span><span class="w"> </span><span class="o">-&gt;</span>
+<span class="w">                </span><span class="k">if</span><span class="w"> </span><span class="n">remaining</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="k">then</span>
+<span class="w">                    </span><span class="k">return</span><span class="o">!</span><span class="w"> </span><span class="n">loop</span><span class="w"> </span><span class="o">(</span><span class="n">remaining</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="o">)</span>
+<span class="w">                </span><span class="k">else</span>
+<span class="w">                    </span><span class="k">return</span><span class="w"> </span><span class="n">defaultValue</span>
+<span class="w">        </span><span class="o">}</span>
+<span class="w">    </span><span class="n">loop</span><span class="w"> </span><span class="n">maxRetries</span>
+</code></pre></div>
+
+</details>
+
+<h3 id="4">問題 4: シーケンス操作<a class="headerlink" href="#4" title="Permanent link">&para;</a></h3>
+<p>以下のシーケンスを作成してください。</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// 1. 1から10までの偶数のシーケンス</span>
+<span class="k">let</span><span class="w"> </span><span class="nv">evens</span><span class="o">:</span><span class="w"> </span><span class="n">int</span><span class="w"> </span><span class="n">seq</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">???</span>
+
+<span class="c1">// 2. 無限に交互に true/false を返すシーケンス</span>
+<span class="k">let</span><span class="w"> </span><span class="nv">alternating</span><span class="o">:</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="n">seq</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">???</span>
+
+<span class="c1">// 3. 最初の5つの要素の合計を計算</span>
+<span class="k">let</span><span class="w"> </span><span class="nv">sum</span><span class="o">:</span><span class="w"> </span><span class="n">int</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">seq</span><span class="w"> </span><span class="o">{</span><span class="w"> </span><span class="mi">1</span><span class="o">;</span><span class="w"> </span><span class="mi">2</span><span class="o">;</span><span class="w"> </span><span class="mi">3</span><span class="o">;</span><span class="w"> </span><span class="mi">4</span><span class="o">;</span><span class="w"> </span><span class="mi">5</span><span class="o">;</span><span class="w"> </span><span class="mi">6</span><span class="o">;</span><span class="w"> </span><span class="mi">7</span><span class="o">;</span><span class="w"> </span><span class="mi">8</span><span class="o">;</span><span class="w"> </span><span class="mi">9</span><span class="o">;</span><span class="w"> </span><span class="mi">10</span><span class="w"> </span><span class="o">}</span><span class="w"> </span><span class="o">|&gt;</span><span class="w"> </span><span class="nn">Seq</span><span class="p">.</span><span class="n">take</span><span class="w"> </span><span class="mi">5</span><span class="w"> </span><span class="o">|&gt;</span><span class="w"> </span><span class="o">???</span>
+</code></pre></div>
+<details>
+<summary>解答</summary>
+
+<div class="highlight"><pre><span></span><code><span class="c1">// 1. 1から10までの偶数</span>
+<span class="k">let</span><span class="w"> </span><span class="nv">evens</span><span class="o">:</span><span class="w"> </span><span class="n">int</span><span class="w"> </span><span class="n">seq</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">seq</span><span class="w"> </span><span class="o">{</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="mi">10</span><span class="w"> </span><span class="o">}</span><span class="w"> </span><span class="o">|&gt;</span><span class="w"> </span><span class="nn">Seq</span><span class="p">.</span><span class="n">filter</span><span class="w"> </span><span class="o">(</span><span class="k">fun</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">%</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="o">)</span>
+<span class="c1">// または</span>
+<span class="k">let</span><span class="w"> </span><span class="nv">evens</span><span class="o">:</span><span class="w"> </span><span class="n">int</span><span class="w"> </span><span class="n">seq</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">seq</span><span class="w"> </span><span class="o">{</span><span class="w"> </span><span class="mi">2</span><span class="o">;</span><span class="w"> </span><span class="mi">4</span><span class="o">;</span><span class="w"> </span><span class="mi">6</span><span class="o">;</span><span class="w"> </span><span class="mi">8</span><span class="o">;</span><span class="w"> </span><span class="mi">10</span><span class="w"> </span><span class="o">}</span>
+
+<span class="c1">// 2. 無限に交互に true/false</span>
+<span class="k">let</span><span class="w"> </span><span class="nv">alternating</span><span class="o">:</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="n">seq</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">seq</span><span class="w"> </span><span class="o">{</span>
+<span class="w">        </span><span class="k">while</span><span class="w"> </span><span class="k">true</span><span class="w"> </span><span class="k">do</span>
+<span class="w">            </span><span class="k">yield</span><span class="w"> </span><span class="k">true</span>
+<span class="w">            </span><span class="k">yield</span><span class="w"> </span><span class="k">false</span>
+<span class="w">    </span><span class="o">}</span>
+
+<span class="c1">// 3. 最初の5つの要素の合計</span>
+<span class="k">let</span><span class="w"> </span><span class="nv">sum</span><span class="o">:</span><span class="w"> </span><span class="n">int</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">seq</span><span class="w"> </span><span class="o">{</span><span class="w"> </span><span class="mi">1</span><span class="o">;</span><span class="w"> </span><span class="mi">2</span><span class="o">;</span><span class="w"> </span><span class="mi">3</span><span class="o">;</span><span class="w"> </span><span class="mi">4</span><span class="o">;</span><span class="w"> </span><span class="mi">5</span><span class="o">;</span><span class="w"> </span><span class="mi">6</span><span class="o">;</span><span class="w"> </span><span class="mi">7</span><span class="o">;</span><span class="w"> </span><span class="mi">8</span><span class="o">;</span><span class="w"> </span><span class="mi">9</span><span class="o">;</span><span class="w"> </span><span class="mi">10</span><span class="w"> </span><span class="o">}</span>
+<span class="w">              </span><span class="o">|&gt;</span><span class="w"> </span><span class="nn">Seq</span><span class="p">.</span><span class="n">take</span><span class="w"> </span><span class="mi">5</span>
+<span class="w">              </span><span class="o">|&gt;</span><span class="w"> </span><span class="nn">Seq</span><span class="p">.</span><span class="n">sum</span><span class="w">  </span><span class="c1">// 15</span>
+</code></pre></div>
+
+</details>
+
+<h3 id="5">問題 5: トレンド検出<a class="headerlink" href="#5" title="Permanent link">&para;</a></h3>
+<p>以下の関数を実装してください。直近3つの値が全て同じかどうかを判定します。</p>
+<div class="highlight"><pre><span></span><code><span class="k">let</span><span class="w"> </span><span class="nv">isStable</span><span class="w"> </span><span class="o">(</span><span class="n">values</span><span class="o">:</span><span class="w"> </span><span class="n">int</span><span class="w"> </span><span class="kt">list</span><span class="o">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">???</span>
+
+<span class="c1">// 期待される動作</span>
+<span class="k">assert</span><span class="w"> </span><span class="o">(</span><span class="n">isStable</span><span class="w"> </span><span class="o">[</span><span class="mi">5</span><span class="o">;</span><span class="w"> </span><span class="mi">5</span><span class="o">;</span><span class="w"> </span><span class="mi">5</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">true</span><span class="o">)</span>
+<span class="k">assert</span><span class="w"> </span><span class="o">(</span><span class="n">isStable</span><span class="w"> </span><span class="o">[</span><span class="mi">5</span><span class="o">;</span><span class="w"> </span><span class="mi">5</span><span class="o">;</span><span class="w"> </span><span class="mi">6</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">false</span><span class="o">)</span>
+<span class="k">assert</span><span class="w"> </span><span class="o">(</span><span class="n">isStable</span><span class="w"> </span><span class="o">[</span><span class="mi">5</span><span class="o">;</span><span class="w"> </span><span class="mi">6</span><span class="o">;</span><span class="w"> </span><span class="mi">5</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">false</span><span class="o">)</span>
+<span class="k">assert</span><span class="w"> </span><span class="o">(</span><span class="n">isStable</span><span class="w"> </span><span class="o">[</span><span class="mi">5</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">false</span><span class="o">)</span><span class="w">  </span><span class="c1">// 3つ未満は false</span>
+</code></pre></div>
+<details>
+<summary>解答</summary>
+
+<div class="highlight"><pre><span></span><code><span class="k">let</span><span class="w"> </span><span class="nv">isStable</span><span class="w"> </span><span class="o">(</span><span class="n">values</span><span class="o">:</span><span class="w"> </span><span class="n">int</span><span class="w"> </span><span class="kt">list</span><span class="o">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">values</span><span class="o">.</span><span class="n">Length</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="o">&amp;&amp;</span>
+<span class="w">    </span><span class="n">values</span>
+<span class="w">    </span><span class="o">|&gt;</span><span class="w"> </span><span class="nn">List</span><span class="p">.</span><span class="n">pairwise</span>
+<span class="w">    </span><span class="o">|&gt;</span><span class="w"> </span><span class="nn">List</span><span class="p">.</span><span class="n">forall</span><span class="w"> </span><span class="o">(</span><span class="k">fun</span><span class="w"> </span><span class="o">(</span><span class="n">prev</span><span class="o">,</span><span class="w"> </span><span class="n">curr</span><span class="o">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">prev</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">curr</span><span class="o">)</span>
+
+<span class="c1">// または</span>
+<span class="k">let</span><span class="w"> </span><span class="nv">isStable</span><span class="w"> </span><span class="o">(</span><span class="n">values</span><span class="o">:</span><span class="w"> </span><span class="n">int</span><span class="w"> </span><span class="kt">list</span><span class="o">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">values</span><span class="o">.</span><span class="n">Length</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">values</span><span class="w"> </span><span class="o">|&gt;</span><span class="w"> </span><span class="nn">List</span><span class="p">.</span><span class="n">distinct</span><span class="w"> </span><span class="o">|&gt;</span><span class="w"> </span><span class="nn">List</span><span class="p">.</span><span class="n">length</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span>
+</code></pre></div>
+
+</details>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+    <a href="https://github.com/k2works" target="_blank" rel="noopener" title="GitHub Repository/claude-code-booster" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.sections", "toc.integrate", "search.suggest", "search.highlight"], "search": "../../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.e71a0d61.min.js"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+      
+        <script src="../../docs/assets/js/extra.js"></script>
+      
+    
+  </body>
+</html>
