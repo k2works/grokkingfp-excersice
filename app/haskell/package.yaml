@@ -40,6 +40,7 @@ library:
     - Ch09.StreamProcessing
     - Ch10.ConcurrentProcessing
     - Ch11.STMProcessing
+    - Ch12.TestingStrategies
   dependencies:
     - random
     - async
