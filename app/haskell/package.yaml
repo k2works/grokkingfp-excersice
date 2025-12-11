@@ -34,6 +34,8 @@ library:
     - Ch03.ImmutableValues
     - Ch04.FunctionsAsValues
     - Ch05.SequentialPrograms
+    - Ch06.MaybeHandling
+    - Ch07.EitherHandling
 
 tests:
   grokkingfp-test:
