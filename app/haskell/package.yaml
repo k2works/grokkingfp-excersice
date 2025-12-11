@@ -38,8 +38,12 @@ library:
     - Ch07.EitherHandling
     - Ch08.IOMonad
     - Ch09.StreamProcessing
+    - Ch10.ConcurrentProcessing
+    - Ch11.STMProcessing
   dependencies:
     - random
+    - async
+    - stm
 
 tests:
   grokkingfp-test:
