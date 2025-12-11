@@ -238,3 +238,19 @@ app/fsharp/tests/obj/
 *.user
 *.suo
 .vs/
+
+# C# / .NET
+app/csharp/bin/
+app/csharp/obj/
+app/csharp/src/bin/
+app/csharp/src/obj/
+app/csharp/tests/bin/
+app/csharp/tests/obj/
+
+# Haskell
+app/haskell/.stack-work/
+app/haskell/dist-newstyle/
+*.hi
+*.o
+*.dyn_hi
+*.dyn_o
