@@ -13,6 +13,36 @@
     <Compile Include="Ch02\PureFunctionsTests.fs" />
     <Compile Include="Ch02\ShoppingCartTests.fs" />
     <Compile Include="Ch02\TipCalculatorTests.fs" />
+
+    <!-- Chapter 03 Tests -->
+    <Compile Include="Ch03\ImmutableOperationsTests.fs" />
+
+    <!-- Chapter 04 Tests -->
+    <Compile Include="Ch04\HigherOrderFunctionsTests.fs" />
+
+    <!-- Chapter 05 Tests -->
+    <Compile Include="Ch05\FlatMapOperationsTests.fs" />
+
+    <!-- Chapter 06 Tests -->
+    <Compile Include="Ch06\OptionHandlingTests.fs" />
+
+    <!-- Chapter 07 Tests -->
+    <Compile Include="Ch07\ResultHandlingTests.fs" />
+
+    <!-- Chapter 08 Tests -->
+    <Compile Include="Ch08\AsyncIOTests.fs" />
+
+    <!-- Chapter 09 Tests -->
+    <Compile Include="Ch09\StreamProcessingTests.fs" />
+
+    <!-- Chapter 10 Tests -->
+    <Compile Include="Ch10\ConcurrentProcessingTests.fs" />
+
+    <!-- Chapter 11 Tests -->
+    <Compile Include="Ch11\TravelGuideTests.fs" />
+
+    <!-- Chapter 12 Tests -->
+    <Compile Include="Ch12\TravelGuideWithReportTests.fs" />
   </ItemGroup>
 
   <ItemGroup>

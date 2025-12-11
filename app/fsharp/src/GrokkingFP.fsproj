@@ -13,6 +13,36 @@
     <Compile Include="Ch02\PureFunctions.fs" />
     <Compile Include="Ch02\ShoppingCart.fs" />
     <Compile Include="Ch02\TipCalculator.fs" />
+
+    <!-- Chapter 03: Immutable Data Operations -->
+    <Compile Include="Ch03\ImmutableOperations.fs" />
+
+    <!-- Chapter 04: Higher-Order Functions -->
+    <Compile Include="Ch04\HigherOrderFunctions.fs" />
+
+    <!-- Chapter 05: FlatMap and Nested Structures -->
+    <Compile Include="Ch05\FlatMapOperations.fs" />
+
+    <!-- Chapter 06: Option Handling -->
+    <Compile Include="Ch06\OptionHandling.fs" />
+
+    <!-- Chapter 07: Result/Either Handling -->
+    <Compile Include="Ch07\ResultHandling.fs" />
+
+    <!-- Chapter 08: Async IO -->
+    <Compile Include="Ch08\AsyncIO.fs" />
+
+    <!-- Chapter 09: Stream Processing -->
+    <Compile Include="Ch09\StreamProcessing.fs" />
+
+    <!-- Chapter 10: Concurrent Processing -->
+    <Compile Include="Ch10\ConcurrentProcessing.fs" />
+
+    <!-- Chapter 11: Practical Application -->
+    <Compile Include="Ch11\TravelGuide.fs" />
+
+    <!-- Chapter 12: Testing Strategies -->
+    <Compile Include="Ch12\TravelGuideWithReport.fs" />
   </ItemGroup>
 
 </Project>
