@@ -2,7 +2,14 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/app/scala/.idea/modules/scala/grokkingfp-examples.iml" filepath="$PROJECT_DIR$/app/scala/.idea/modules/scala/grokkingfp-examples.iml" />
+      <module fileurl="file://$PROJECT_DIR$/app/scala/.idea/modules/scala/grokkingfp-examples.grokkingfp-examples-build.iml" filepath="$PROJECT_DIR$/app/scala/.idea/modules/scala/grokkingfp-examples.grokkingfp-examples-build.iml" />
+      <module fileurl="file://$PROJECT_DIR$/app/scala/.idea/modules/scala/grokkingfp-examples.main.iml" filepath="$PROJECT_DIR$/app/scala/.idea/modules/scala/grokkingfp-examples.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/app/scala/.idea/modules/scala/grokkingfp-examples.test.iml" filepath="$PROJECT_DIR$/app/scala/.idea/modules/scala/grokkingfp-examples.test.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/grokkingfp-excersice.iml" filepath="$PROJECT_DIR$/.idea/grokkingfp-excersice.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/grokkingfp-java.iml" filepath="$PROJECT_DIR$/.idea/modules/grokkingfp-java.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/grokkingfp-java.main.iml" filepath="$PROJECT_DIR$/.idea/modules/grokkingfp-java.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/grokkingfp-java.test.iml" filepath="$PROJECT_DIR$/.idea/modules/grokkingfp-java.test.iml" />
     </modules>
   </component>
 </project>
