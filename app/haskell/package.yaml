@@ -31,6 +31,9 @@ library:
   exposed-modules:
     - Ch01.IntroHaskell
     - Ch02.PureFunctions
+    - Ch03.ImmutableValues
+    - Ch04.FunctionsAsValues
+    - Ch05.SequentialPrograms
 
 tests:
   grokkingfp-test:
