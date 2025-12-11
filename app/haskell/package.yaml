@@ -36,6 +36,10 @@ library:
     - Ch05.SequentialPrograms
     - Ch06.MaybeHandling
     - Ch07.EitherHandling
+    - Ch08.IOMonad
+    - Ch09.StreamProcessing
+  dependencies:
+    - random
 
 tests:
   grokkingfp-test:
