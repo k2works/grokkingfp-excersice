@@ -13,6 +13,7 @@ authors = [
     { name = "Project Team" }
 ]
 dependencies = [
+    "result>=0.17.0",
     "returns>=0.22.0",
 ]
 
