@@ -254,3 +254,13 @@ app/haskell/dist-newstyle/
 *.o
 *.dyn_hi
 *.dyn_o
+
+# Clojure
+app/clojure/.cpcache/
+app/clojure/.lsp/
+app/clojure/.clj-kondo/
+*.class
+pom.xml
+pom.xml.asc
+*.jar
+lib/
