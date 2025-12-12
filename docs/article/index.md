@@ -1,7 +1,7 @@
 # Grokking Functional Programming
 
 「Grokking Functional Programming」（Michal Plachta 著）の学習用リポジトリです。
-Scala、Java、F#、C#、Haskell、Clojure、Elixir、Rust、Python の9言語で関数型プログラミングの実装例と日本語解説を提供します。
+Scala、Java、F#、C#、Haskell、Clojure、Elixir、Rust、Python、TypeScript の10言語で関数型プログラミングの実装例と日本語解説を提供します。
 
 ## 言語別解説
 
@@ -59,27 +59,33 @@ Python 3.11+ と returns ライブラリを使った関数型プログラミン�
 
 - [Python 解説](python/index.md)
 
+### TypeScript 版
+
+TypeScript 5.x と fp-ts を使った関数型プログラミングの実装例です。
+
+- [TypeScript 解説](typescript/index.md)
+
 ## 章構成
 
-| Part | 内容 | Scala | Java | F# | C# | Haskell | Clojure | Elixir | Rust | Python |
-|------|------|-------|------|-----|-----|---------|---------|--------|------|--------|
-| I | 関数型プログラミングの基礎 | [part-1](scala/part-1.md) | [part-1](java/part-1.md) | [part-1](fsharp/part-1.md) | [part-1](csharp/part-1.md) | [part-1](haskell/part-1.md) | [part-1](clojure/part-1.md) | [part-1](elixir/part-1.md) | [part-1](rust/part-1.md) | [part-1](python/part-1.md) |
-| II | 関数型スタイルのプログラミング | [part-2](scala/part-2.md) | [part-2](java/part-2.md) | [part-2](fsharp/part-2.md) | [part-2](csharp/part-2.md) | [part-2](haskell/part-2.md) | [part-2](clojure/part-2.md) | [part-2](elixir/part-2.md) | [part-2](rust/part-2.md) | [part-2](python/part-2.md) |
-| III | エラーハンドリング | [part-3](scala/part-3.md) | [part-3](java/part-3.md) | [part-3](fsharp/part-3.md) | [part-3](csharp/part-3.md) | [part-3](haskell/part-3.md) | [part-3](clojure/part-3.md) | [part-3](elixir/part-3.md) | [part-3](rust/part-3.md) | [part-3](python/part-3.md) |
-| IV | IO と副作用の管理 | [part-4](scala/part-4.md) | [part-4](java/part-4.md) | [part-4](fsharp/part-4.md) | [part-4](csharp/part-4.md) | [part-4](haskell/part-4.md) | [part-4](clojure/part-4.md) | [part-4](elixir/part-4.md) | [part-4](rust/part-4.md) | [part-4](python/part-4.md) |
-| V | 並行処理 | [part-5](scala/part-5.md) | [part-5](java/part-5.md) | [part-5](fsharp/part-5.md) | [part-5](csharp/part-5.md) | [part-5](haskell/part-5.md) | [part-5](clojure/part-5.md) | [part-5](elixir/part-5.md) | [part-5](rust/part-5.md) | [part-5](python/part-5.md) |
-| VI | 実践的なアプリケーション | [part-6](scala/part-6.md) | [part-6](java/part-6.md) | [part-6](fsharp/part-6.md) | [part-6](csharp/part-6.md) | [part-6](haskell/part-6.md) | [part-6](clojure/part-6.md) | [part-6](elixir/part-6.md) | [part-6](rust/part-6.md) | [part-6](python/part-6.md) |
+| Part | 内容 | Scala | Java | F# | C# | Haskell | Clojure | Elixir | Rust | Python | TypeScript |
+|------|------|-------|------|-----|-----|---------|---------|--------|------|--------|------------|
+| I | 関数型プログラミングの基礎 | [part-1](scala/part-1.md) | [part-1](java/part-1.md) | [part-1](fsharp/part-1.md) | [part-1](csharp/part-1.md) | [part-1](haskell/part-1.md) | [part-1](clojure/part-1.md) | [part-1](elixir/part-1.md) | [part-1](rust/part-1.md) | [part-1](python/part-1.md) | [part-1](typescript/part-1.md) |
+| II | 関数型スタイルのプログラミング | [part-2](scala/part-2.md) | [part-2](java/part-2.md) | [part-2](fsharp/part-2.md) | [part-2](csharp/part-2.md) | [part-2](haskell/part-2.md) | [part-2](clojure/part-2.md) | [part-2](elixir/part-2.md) | [part-2](rust/part-2.md) | [part-2](python/part-2.md) | [part-2](typescript/part-2.md) |
+| III | エラーハンドリング | [part-3](scala/part-3.md) | [part-3](java/part-3.md) | [part-3](fsharp/part-3.md) | [part-3](csharp/part-3.md) | [part-3](haskell/part-3.md) | [part-3](clojure/part-3.md) | [part-3](elixir/part-3.md) | [part-3](rust/part-3.md) | [part-3](python/part-3.md) | [part-3](typescript/part-3.md) |
+| IV | IO と副作用の管理 | [part-4](scala/part-4.md) | [part-4](java/part-4.md) | [part-4](fsharp/part-4.md) | [part-4](csharp/part-4.md) | [part-4](haskell/part-4.md) | [part-4](clojure/part-4.md) | [part-4](elixir/part-4.md) | [part-4](rust/part-4.md) | [part-4](python/part-4.md) | [part-4](typescript/part-4.md) |
+| V | 並行処理 | [part-5](scala/part-5.md) | [part-5](java/part-5.md) | [part-5](fsharp/part-5.md) | [part-5](csharp/part-5.md) | [part-5](haskell/part-5.md) | [part-5](clojure/part-5.md) | [part-5](elixir/part-5.md) | [part-5](rust/part-5.md) | [part-5](python/part-5.md) | [part-5](typescript/part-5.md) |
+| VI | 実践的なアプリケーション | [part-6](scala/part-6.md) | [part-6](java/part-6.md) | [part-6](fsharp/part-6.md) | [part-6](csharp/part-6.md) | [part-6](haskell/part-6.md) | [part-6](clojure/part-6.md) | [part-6](elixir/part-6.md) | [part-6](rust/part-6.md) | [part-6](python/part-6.md) | [part-6](typescript/part-6.md) |
 
 ## 主要トピック
 
-| Part | 主要トピック | Scala | Java | F# | C# | Haskell | Clojure | Elixir | Rust | Python |
-|------|-------------|-------|------|-----|-----|---------|---------|--------|------|--------|
-| I | 純粋関数、参照透過性 | 関数型基礎 | 関数型インターフェース | let バインディング | 式形式メソッド | 純粋関数、遅延評価 | defn, let | def, fn | fn, 所有権 | def, 型ヒント |
-| II | イミュータブル、高階関数、flatMap | List, Option | Vavr List, Option | List, パイプライン | Seq, LINQ | リスト内包表記, fold | map/filter/reduce | Enum, パイプ | Iterator, クロージャ | map/filter, ジェネレータ |
-| III | Option、Either、ADT | sealed trait | sealed interface | 判別共用体 | Option, Either | Maybe, Either, ADT | nil, some->/some->> | {:ok}/{:error} | Option, Result | Maybe, Result (returns) |
-| IV | IO モナド、Stream | cats-effect, fs2 | 独自 IO, Vavr Stream | Async, Seq | Task, IAsyncEnumerable | IO モナド, conduit | lazy-seq | Agent, Stream | async/await, Stream | IO, ジェネレータ |
-| V | Ref、Fiber、並列処理 | cats-effect Ref/Fiber | 独自 Ref, Virtual Thread | Ref, MailboxProcessor | Ref, Task並列 | STM, TVar, async | atom/ref, core.async | Task, GenServer | Arc, Mutex, tokio | asyncio, FutureResult |
-| VI | Resource、テスト | ScalaCheck | JUnit 5 プロパティテスト | use, FsCheck | Resource, Validator | bracket, QuickCheck | with-open, test.check | ExUnit, StreamData | トレイト, proptest | Protocol, Hypothesis |
+| Part | 主要トピック | Scala | Java | F# | C# | Haskell | Clojure | Elixir | Rust | Python | TypeScript |
+|------|-------------|-------|------|-----|-----|---------|---------|--------|------|--------|------------|
+| I | 純粋関数、参照透過性 | 関数型基礎 | 関数型インターフェース | let バインディング | 式形式メソッド | 純粋関数、遅延評価 | defn, let | def, fn | fn, 所有権 | def, 型ヒント | pipe, 関数合成 |
+| II | イミュータブル、高階関数、flatMap | List, Option | Vavr List, Option | List, パイプライン | Seq, LINQ | リスト内包表記, fold | map/filter/reduce | Enum, パイプ | Iterator, クロージャ | map/filter, ジェネレータ | ReadonlyArray, chain |
+| III | Option、Either、ADT | sealed trait | sealed interface | 判別共用体 | Option, Either | Maybe, Either, ADT | nil, some->/some->> | {:ok}/{:error} | Option, Result | Maybe, Result (returns) | Option, Either, fold |
+| IV | IO モナド、Stream | cats-effect, fs2 | 独自 IO, Vavr Stream | Async, Seq | Task, IAsyncEnumerable | IO モナド, conduit | lazy-seq | Agent, Stream | async/await, Stream | IO, ジェネレータ | Task, TaskEither, IO |
+| V | Ref、Fiber、並列処理 | cats-effect Ref/Fiber | 独自 Ref, Virtual Thread | Ref, MailboxProcessor | Ref, Task並列 | STM, TVar, async | atom/ref, core.async | Task, GenServer | Arc, Mutex, tokio | asyncio, FutureResult | sequenceT, traverseArray |
+| VI | Resource、テスト | ScalaCheck | JUnit 5 プロパティテスト | use, FsCheck | Resource, Validator | bracket, QuickCheck | with-open, test.check | ExUnit, StreamData | トレイト, proptest | Protocol, Hypothesis | Reader, fast-check |
 
 ## 参照
 
@@ -102,3 +108,6 @@ Python 3.11+ と returns ライブラリを使った関数型プログラミン�
 - [Python 公式ドキュメント](https://docs.python.org/3/)
 - [returns](https://returns.readthedocs.io/)
 - [Hypothesis](https://hypothesis.readthedocs.io/)
+- [TypeScript 公式ドキュメント](https://www.typescriptlang.org/docs/)
+- [fp-ts](https://gcanti.github.io/fp-ts/)
+- [fast-check](https://fast-check.dev/)
