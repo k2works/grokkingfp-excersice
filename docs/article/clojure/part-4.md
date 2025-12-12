@@ -55,12 +55,23 @@ rectangle "Clojure の副作用管理" {
   card "atom" as atom
   card "future" as future
   card "promise" as promise
-
-  delay : 遅延評価
-  atom : 状態管理
-  future : 非同期処理
-  promise : 同期プリミティブ
 }
+
+note right of delay
+  遅延評価
+end note
+
+note right of atom
+  状態管理
+end note
+
+note right of future
+  非同期処理
+end note
+
+note right of promise
+  同期プリミティブ
+end note
 
 note bottom
   Scala の IO モナドとは異なり
@@ -522,18 +533,24 @@ rectangle "通常のチェーン" {
   card "take" as t1
   card "結果" as r1
 
-  c1 --> f1 --> c2 --> m1 --> c3 --> t1 --> r1
+  c1 --> f1
+  f1 --> c2
+  c2 --> m1
+  m1 --> c3
+  c3 --> t1
+  t1 --> r1
 }
 
 rectangle "トランスデューサー" {
   card "coll" as c4
-  card "comp(filter, map, take)" as comp
+  card "comp(filter, map, take)" as comp1
   card "結果" as r2
 
-  c4 --> comp --> r2
+  c4 --> comp1
+  comp1 --> r2
 }
 
-note bottom of comp
+note bottom of comp1
   中間コレクションなし
   一度のパスで処理
 end note
