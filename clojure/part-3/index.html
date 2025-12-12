@@ -1,0 +1,2904 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Scala、Java、F#、C#、Haskell、Clojure で学ぶ関数型プログラミング">
+      
+      
+        <meta name="author" content="Project Team">
+      
+      
+      
+        <link rel="prev" href="../part-2/">
+      
+      
+        <link rel="next" href="../part-4/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.0">
+    
+    
+      
+        <title>Part III - nil 安全性 - Grokking Functional Programming</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.618322db.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../docs/mkdocs/assets/css/extra.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#part-iii-clojure" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="Grokking Functional Programming" class="md-header__button md-logo" aria-label="Grokking Functional Programming" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Grokking Functional Programming
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Part III - nil 安全性
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/k2works/grokkingfp-excersice" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    grokkingfp-excersice
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../scala/" class="md-tabs__link">
+          
+  
+  
+  Scala
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../java/" class="md-tabs__link">
+          
+  
+  
+  Java
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../fsharp/" class="md-tabs__link">
+          
+  
+  
+  F#
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../csharp/" class="md-tabs__link">
+          
+  
+  
+  C#
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../haskell/" class="md-tabs__link">
+          
+  
+  
+  Haskell
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../" class="md-tabs__link">
+          
+  
+  
+  Clojure
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+  
+
+<nav class="md-nav md-nav--primary md-nav--lifted md-nav--integrated" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Grokking Functional Programming" class="md-nav__button md-logo" aria-label="Grokking Functional Programming" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Grokking Functional Programming
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/k2works/grokkingfp-excersice" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    grokkingfp-excersice
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Scala
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Scala
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../scala/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    概要
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../scala/part-1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Part I - 基礎
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../scala/part-2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Part II - 関数型スタイル
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../scala/part-3/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Part III - エラーハンドリング
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../scala/part-4/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Part IV - IO と副作用
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../scala/part-5/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Part V - 並行処理
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../scala/part-6/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Part VI - 実践
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Java
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Java
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../java/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    概要
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../java/part-1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Part I - 基礎
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../java/part-2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Part II - 関数型スタイル
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../java/part-3/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Part III - エラーハンドリング
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../java/part-4/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Part IV - IO と副作用
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../java/part-5/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Part V - 並行処理
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../java/part-6/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Part VI - 実践
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    F#
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    F#
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../fsharp/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    概要
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../fsharp/part-1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Part I - 基礎
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../fsharp/part-2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Part II - 関数型スタイル
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../fsharp/part-3/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Part III - エラーハンドリング
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../fsharp/part-4/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Part IV - 非同期処理とストリーム
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../fsharp/part-5/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Part V - 並行処理
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../fsharp/part-6/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Part VI - 実践
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    C#
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    C#
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../csharp/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    概要
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../csharp/part-1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Part I - 基礎
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../csharp/part-2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Part II - 関数型スタイル
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../csharp/part-3/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Part III - エラーハンドリング
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../csharp/part-4/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Part IV - 非同期処理とストリーム
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../csharp/part-5/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Part V - 並行処理
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../csharp/part-6/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Part VI - 実践
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Haskell
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Haskell
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../haskell/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    概要
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../haskell/part-1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Part I - 基礎
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../haskell/part-2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Part II - 関数型スタイル
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../haskell/part-3/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Part III - エラーハンドリング
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../haskell/part-4/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Part IV - IO とストリーム
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../haskell/part-5/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Part V - 並行処理
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../haskell/part-6/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Part VI - 実践
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Clojure
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Clojure
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    概要
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../part-1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Part I - 基礎
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../part-2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Part II - 関数型スタイル
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Part III - nil 安全性
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Part III - nil 安全性
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#6-nil" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第6章: nil と安全なエラーハンドリング
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="第6章: nil と安全なエラーハンドリング">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#61" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.1 なぜ安全なエラーハンドリングが必要か
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#62-nil" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.2 nil の基本
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#63" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.3 安全な関数
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#64-some-some-" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.4 some-&gt; と some-&gt;&gt; マクロ
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#65-tv" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.5 TV番組パースの例
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#66-when-let-if-let" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.6 when-let と if-let
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#67-tv" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.7 TV番組パース（完全版）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#68" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.8 エラーハンドリング戦略
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#69-fnil-nil" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.9 fnil - nil に対するデフォルト値
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-result-adt" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第7章: Result 型パターンと ADT
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="第7章: Result 型パターンと ADT">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#71-nil" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.1 nil の限界
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#72-result" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.2 Result 型パターン
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#73-result" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.3 Result の操作
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#74-tvresult" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.4 TV番組パース（Result 版）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#75-adt" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.5 代数的データ型（ADT）
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="7.5 代数的データ型（ADT）">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#sum-type" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        直和型（Sum Type）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#product-type" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        直積型（Product Type）
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#76" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.6 パターンマッチング
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#77" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.7 検索条件のモデリング
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#78" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.8 バリデーション
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#79-every-some" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.9 every? と some
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#710-ex-info" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.10 ex-info による例外処理
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        まとめ
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="まとめ">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#part-iii" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part III で学んだこと
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#scala" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Scala との比較
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        キーポイント
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        次のステップ
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../part-4/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Part IV - 副作用とシーケンス
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../part-5/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Part V - 並行処理
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../part-6/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Part VI - 実践
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="part-iii-clojure">Part III: エラーハンドリング（Clojure 版）<a class="headerlink" href="#part-iii-clojure" title="Permanent link">&para;</a></h1>
+<p>本章では、Clojure における安全なエラーハンドリングを学びます。<code>nil</code> の扱い、Result 型パターン、そして代数的データ型（ADT）を習得します。</p>
+<hr />
+<h2 id="6-nil">第6章: nil と安全なエラーハンドリング<a class="headerlink" href="#6-nil" title="Permanent link">&para;</a></h2>
+<h3 id="61">6.1 なぜ安全なエラーハンドリングが必要か<a class="headerlink" href="#61" title="Permanent link">&para;</a></h3>
+<p>従来のエラーハンドリングには問題があります。</p>
+<p><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiBjb250ZW50U3R5bGVUeXBlPSJ0ZXh0L2NzcyIgZGF0YS1kaWFncmFtLXR5cGU9IkRFU0NSSVBUSU9OIiBoZWlnaHQ9IjQxOXB4IiBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSJub25lIiBzdHlsZT0id2lkdGg6OTQ4cHg7aGVpZ2h0OjQxOXB4O2JhY2tncm91bmQ6I0ZGRkZGRjsiIHZlcnNpb249IjEuMSIgdmlld0JveD0iMCAwIDk0OCA0MTkiIHdpZHRoPSI5NDhweCIgem9vbUFuZFBhbj0ibWFnbmlmeSI+PGRlZnMvPjxnPjwhLS1jbHVzdGVyID8/Pz8/Pz8/Pz8/Py0tPjxnIGNsYXNzPSJjbHVzdGVyIiBkYXRhLWVudGl0eT0iLi4uLi4uLi4uLi4uIiBkYXRhLXNvdXJjZS1saW5lPSIzIiBkYXRhLXVpZD0iZW50MDAwMiIgaWQ9ImNsdXN0ZXJfLi4uLi4uLi4uLi4uIj48cmVjdCBmaWxsPSIjRkZGRkZGIiBoZWlnaHQ9IjE3Mi4zIiByeD0iMi41IiByeT0iMi41IiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE7IiB3aWR0aD0iOTMwIiB4PSIxMiIgeT0iMTIiLz48dGV4dCBmaWxsPSIjMDAwMDAwIiBmb250LWZhbWlseT0iVmVyZGFuYSIgZm9udC1zaXplPSIxNCIgZm9udC13ZWlnaHQ9ImJvbGQiIGxlbmd0aEFkanVzdD0ic3BhY2luZyIgdGV4dExlbmd0aD0iMTY3Ljk5OTMiIHg9IjM5My4wMDA0IiB5PSIyNi45OTUxIj4mIzI0NDY3OyYjMjY0Njk7JiMxMjM5ODsmIzEyNDU2OyYjMTI1MjE7JiMxMjU0MDsmIzEyNDk1OyYjMTI1MzE7JiMxMjQ4OTsmIzEyNTIyOyYjMTI1MzE7JiMxMjQ2NDs8L3RleHQ+PC9nPjwhLS1jbHVzdGVyIG51bGxfcmV0LS0+PGcgY2xhc3M9ImNsdXN0ZXIiIGRhdGEtZW50aXR5PSJudWxsX3JldCIgZGF0YS1zb3VyY2UtbGluZT0iNCIgZGF0YS11aWQ9ImVudDAwMDMiIGlkPSJjbHVzdGVyX251bGxfcmV0Ij48cmVjdCBmaWxsPSIjRkZGRkZGIiBoZWlnaHQ9Ijg5LjMiIHJ4PSIyLjUiIHJ5PSIyLjUiIHN0eWxlPSJzdHJva2U6IzAwMDAwMDtzdHJva2Utd2lkdGg6MTsiIHdpZHRoPSI0MTgiIHg9IjQ0IiB5PSI2MyIvPjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJWZXJkYW5hIiBmb250LXNpemU9IjE0IiBmb250LXdlaWdodD0iYm9sZCIgbGVuZ3RoQWRqdXN0PSJzcGFjaW5nIiB0ZXh0TGVuZ3RoPSIxMDEuMDgyOCIgeD0iMjAyLjQ1ODYiIHk9Ijc3Ljk5NTEiPm51bGwvbmlsICYjMTI0MzQ7JiMzNjgyMDsmIzEyMzc3OzwvdGV4dD48L2c+PCEtLWNsdXN0ZXIgZXhjZXB0aW9uLS0+PGcgY2xhc3M9ImNsdXN0ZXIiIGRhdGEtZW50aXR5PSJleGNlcHRpb24iIGRhdGEtc291cmNlLWxpbmU9IjkiIGRhdGEtdWlkPSJlbnQwMDA2IiBpZD0iY2x1c3Rlcl9leGNlcHRpb24iPjxyZWN0IGZpbGw9IiNGRkZGRkYiIGhlaWdodD0iODkuMyIgcng9IjIuNSIgcnk9IjIuNSIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxOyIgd2lkdGg9IjQwOCIgeD0iNTAyIiB5PSI2MyIvPjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJWZXJkYW5hIiBmb250LXNpemU9IjE0IiBmb250LXdlaWdodD0iYm9sZCIgbGVuZ3RoQWRqdXN0PSJzcGFjaW5nIiB0ZXh0TGVuZ3RoPSIxMTEuOTk5NSIgeD0iNjUwLjAwMDIiIHk9Ijc3Ljk5NTEiPiYjMjAzNjM7JiMyMjgwNjsmIzEyNDM0OyYjMTI0NzM7JiMxMjUyNTsmIzEyNTQwOyYjMTIzNzc7JiMxMjQyNzs8L3RleHQ+PC9nPjwhLS1jbHVzdGVyIGNsai0tPjxnIGNsYXNzPSJjbHVzdGVyIiBkYXRhLWVudGl0eT0iY2xqIiBkYXRhLXNvdXJjZS1saW5lPSIxNSIgZGF0YS11aWQ9ImVudDAwMDkiIGlkPSJjbHVzdGVyX2NsaiI+PHJlY3QgZmlsbD0iI0ZGRkZGRiIgaGVpZ2h0PSIxNzIuNTkiIHJ4PSIyLjUiIHJ5PSIyLjUiIHN0eWxlPSJzdHJva2U6IzAwMDAwMDtzdHJva2Utd2lkdGg6MTsiIHdpZHRoPSI0NDMiIHg9IjI5MSIgeT0iMjQxLjMiLz48dGV4dCBmaWxsPSIjMDAwMDAwIiBmb250LWZhbWlseT0iVmVyZGFuYSIgZm9udC1zaXplPSIxNCIgZm9udC13ZWlnaHQ9ImJvbGQiIGxlbmd0aEFkanVzdD0ic3BhY2luZyIgdGV4dExlbmd0aD0iMTQ0LjczMDEiIHg9IjQ0MC4xMzQ5IiB5PSIyNTYuMjk1MSI+Q2xvanVyZSAmIzEyMzk4OyYjMTI0NTA7JiMxMjUwMzsmIzEyNTI1OyYjMTI1NDA7JiMxMjQ4MTs8L3RleHQ+PC9nPjwhLS1lbnRpdHkgTnVsbFBvaW50ZXJFeGNlcHRpb24gPz8/LS0+PGcgY2xhc3M9ImVudGl0eSIgZGF0YS1lbnRpdHk9Ik51bGxQb2ludGVyRXhjZXB0aW9uIC4uLiIgZGF0YS1zb3VyY2UtbGluZT0iNSIgZGF0YS11aWQ9ImVudDAwMDQiIGlkPSJlbnRpdHlfTnVsbFBvaW50ZXJFeGNlcHRpb24gLi4uIj48cmVjdCBmaWxsPSIjRkZGRkZGIiBoZWlnaHQ9IjIyLjI5NjkiIHJ4PSIyLjUiIHJ5PSIyLjUiIHN0eWxlPSJzdHJva2U6IzAwMDAwMDtzdHJva2Utd2lkdGg6MTsiIHdpZHRoPSIyMTIuMzQ5NCIgeD0iNjcuODMiIHk9IjEwNiIvPjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJWZXJkYW5hIiBmb250LXNpemU9IjE0IiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjE5Mi4zNDk0IiB4PSI3Ny44MyIgeT0iMTIxLjk5NTEiPk51bGxQb2ludGVyRXhjZXB0aW9uICYjMTIzOTg7JiMyMTM2MTsmIzM4NTIyOzwvdGV4dD48L2c+PCEtLWVudGl0eSA/Pz8/Pz8tLT48ZyBjbGFzcz0iZW50aXR5IiBkYXRhLWVudGl0eT0iLi4uLi4uIiBkYXRhLXNvdXJjZS1saW5lPSI2IiBkYXRhLXVpZD0iZW50MDAwNSIgaWQ9ImVudGl0eV8uLi4uLi4iPjxyZWN0IGZpbGw9IiNGRkZGRkYiIGhlaWdodD0iMjIuMjk2OSIgcng9IjIuNSIgcnk9IjIuNSIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxOyIgd2lkdGg9IjEwMy45OTk2IiB4PSIzMTUiIHk9IjEwNiIvPjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJWZXJkYW5hIiBmb250LXNpemU9IjE0IiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjgzLjk5OTYiIHg9IjMyNSIgeT0iMTIxLjk5NTEiPiYjMTI0ODE7JiMxMjQ1NTsmIzEyNDgzOyYjMTI0NjM7JiMyODQzMTsmIzEyNDI4OzwvdGV4dD48L2c+PCEtLWVudGl0eSA/Pz8/Pz8/Pz8tLT48ZyBjbGFzcz0iZW50aXR5IiBkYXRhLWVudGl0eT0iLi4uLi4uLi4uIiBkYXRhLXNvdXJjZS1saW5lPSIxMCIgZGF0YS11aWQ9ImVudDAwMDciIGlkPSJlbnRpdHlfLi4uLi4uLi4uIj48cmVjdCBmaWxsPSIjRkZGRkZGIiBoZWlnaHQ9IjIyLjI5NjkiIHJ4PSIyLjUiIHJ5PSIyLjUiIHN0eWxlPSJzdHJva2U6IzAwMDAwMDtzdHJva2Utd2lkdGg6MTsiIHdpZHRoPSIxNDUuOTk5NSIgeD0iNTI2IiB5PSIxMDYiLz48dGV4dCBmaWxsPSIjMDAwMDAwIiBmb250LWZhbWlseT0iVmVyZGFuYSIgZm9udC1zaXplPSIxNCIgbGVuZ3RoQWRqdXN0PSJzcGFjaW5nIiB0ZXh0TGVuZ3RoPSIxMjUuOTk5NSIgeD0iNTM2IiB5PSIxMjEuOTk1MSI+JiMyMTA0NjsmIzI0NDgxOyYjMTI1MDE7JiMxMjUyNTsmIzEyNTQwOyYjMTIzNjQ7JiMzNTA3OTsmIzM4NjA5OyYjMjEyNzA7PC90ZXh0PjwvZz48IS0tZW50aXR5ID8/Pz8/Pz8/Pz8tLT48ZyBjbGFzcz0iZW50aXR5IiBkYXRhLWVudGl0eT0iLi4uLi4uLi4uLiIgZGF0YS1zb3VyY2UtbGluZT0iMTEiIGRhdGEtdWlkPSJlbnQwMDA4IiBpZD0iZW50aXR5Xy4uLi4uLi4uLi4iPjxyZWN0IGZpbGw9IiNGRkZGRkYiIGhlaWdodD0iMjIuMjk2OSIgcng9IjIuNSIgcnk9IjIuNSIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxOyIgd2lkdGg9IjE1OS45OTk0IiB4PSI3MDciIHk9IjEwNiIvPjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJWZXJkYW5hIiBmb250LXNpemU9IjE0IiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjEzOS45OTk0IiB4PSI3MTciIHk9IjEyMS45OTUxIj4mIzMyMDIwOyYjMzE4ODM7JiMzODMwNjsmIzI1OTY4OyYjMTIzOTE7JiMxMjM5OTsmIzEyMzk0OyYjMTIzNjc7JiMxMjM5NDsmIzEyNDI3OzwvdGV4dD48L2c+PCEtLWVudGl0eSBuaWwgPz8/Pz8/Py0tPjxnIGNsYXNzPSJlbnRpdHkiIGRhdGEtZW50aXR5PSJuaWwgLi4uLi4uLiIgZGF0YS1zb3VyY2UtbGluZT0iMTYiIGRhdGEtdWlkPSJlbnQwMDEwIiBpZD0iZW50aXR5X25pbCAuLi4uLi4uIj48cmVjdCBmaWxsPSIjRkZGRkZGIiBoZWlnaHQ9IjIyLjI5NjkiIHJ4PSIyLjUiIHJ5PSIyLjUiIHN0eWxlPSJzdHJva2U6IzAwMDAwMDtzdHJva2Utd2lkdGg6MTsiIHdpZHRoPSIxMzkuMTAyMSIgeD0iMzE1LjQ1IiB5PSIyODQuMyIvPjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJWZXJkYW5hIiBmb250LXNpemU9IjE0IiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjExOS4xMDIxIiB4PSIzMjUuNDUiIHk9IjMwMC4yOTUxIj5uaWwgJiMxMjQzNDsmIzI2MTI2OyYjMzEwMzQ7JiMzMDM0MDsmIzEyMzk1OyYjMjUyMDE7JiMxMjM1ODs8L3RleHQ+PC9nPjwhLS1lbnRpdHkgc29tZS0+IC8gc29tZS0+PiA/Pz8tLT48ZyBjbGFzcz0iZW50aXR5IiBkYXRhLWVudGl0eT0ic29tZS0uIC4gc29tZS0uLiAuLi4iIGRhdGEtc291cmNlLWxpbmU9IjE3IiBkYXRhLXVpZD0iZW50MDAxMSIgaWQ9ImVudGl0eV9zb21lLS4gLiBzb21lLS4uIC4uLiI+PHJlY3QgZmlsbD0iI0ZGRkZGRiIgaGVpZ2h0PSIyMi4yOTY5IiByeD0iMi41IiByeT0iMi41IiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE7IiB3aWR0aD0iMjAxLjU4MjgiIHg9IjQ4OS4yMSIgeT0iMjg0LjMiLz48dGV4dCBmaWxsPSIjMDAwMDAwIiBmb250LWZhbWlseT0iVmVyZGFuYSIgZm9udC1zaXplPSIxNCIgbGVuZ3RoQWRqdXN0PSJzcGFjaW5nIiB0ZXh0TGVuZ3RoPSIxODEuNTgyOCIgeD0iNDk5LjIxIiB5PSIzMDAuMjk1MSI+c29tZS0mZ3Q7IC8gc29tZS0mZ3Q7Jmd0OyAmIzEyNTEwOyYjMTI0NjM7JiMxMjUyNTs8L3RleHQ+PC9nPjwhLS1lbnRpdHkgUmVzdWx0ID8/Pz8/LS0+PGcgY2xhc3M9ImVudGl0eSIgZGF0YS1lbnRpdHk9IlJlc3VsdCAuLi4uLiIgZGF0YS1zb3VyY2UtbGluZT0iMTgiIGRhdGEtdWlkPSJlbnQwMDEyIiBpZD0iZW50aXR5X1Jlc3VsdCAuLi4uLiI+PHJlY3QgZmlsbD0iI0ZGRkZGRiIgaGVpZ2h0PSIyMi4yOTY5IiByeD0iMi41IiByeT0iMi41IiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE7IiB3aWR0aD0iMTM4LjMzNjYiIHg9IjMxNS44MyIgeT0iMzY3LjU5Ii8+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9IlZlcmRhbmEiIGZvbnQtc2l6ZT0iMTQiIGxlbmd0aEFkanVzdD0ic3BhY2luZyIgdGV4dExlbmd0aD0iMTE4LjMzNjYiIHg9IjMyNS44MyIgeT0iMzgzLjU4NTEiPlJlc3VsdCAmIzIyNDExOyYjMTI0OTc7JiMxMjQ3OTsmIzEyNTQwOyYjMTI1MzE7PC90ZXh0PjwvZz48IS0tbGluayBudWxsX3JldCB0byBjbGotLT48ZyBjbGFzcz0ibGluayIgZGF0YS1lbnRpdHktMT0ibnVsbF9yZXQiIGRhdGEtZW50aXR5LTI9ImNsaiIgZGF0YS1zb3VyY2UtbGluZT0iMjEiIGRhdGEtdWlkPSJsbmsxMyIgaWQ9ImxpbmtfbnVsbF9yZXRfY2xqIj48cGF0aCBkPSJNNDYyLjEwNTMsMTM1LjM4NzcgQzQ2Mi4xNTk4LDEzNS40OTE1IDQ2Mi4yMTQ2LDEzNS41OTU2IDQ2Mi4yNjk2LDEzNS43MDAxIEM0NjIuMzc5NywxMzUuOTA5IDQ2Mi40OTA5LDEzNi4xMTkxIDQ2Mi42MDMxLDEzNi4zMzA0IEM0NjIuODI3NSwxMzYuNzUzIDQ2My4wNTYxLDEzNy4xODAzIDQ2My4yODg5LDEzNy42MTIyIEM0NjUuMTUxMywxNDEuMDY3MSA0NjcuMjgxOSwxNDQuODA5MSA0NjkuNjcsMTQ4LjY4ODcgQzQ3OS4yMjI1LDE2NC4yMDc1IDQ5Mi44OTUsMTgxLjkzIDUxMCwxOTIuMyBDNTg1LjkyLDIzOC4zMiA2NDEuMSwxNjUuODEgNzA3LDIyNS4zIEM3MDkuODY1LDIyNy44ODYyIDcxMi4zMTQ3LDIzMC44NiA3MTQuNDA3NiwyMzQuMDg5NSBDNzE1LjQ1NDEsMjM1LjcwNDIgNzE2LjQxMTQsMjM3LjM4MjkgNzE3LjI4NjgsMjM5LjEwOTEgQzcxNy41MDU3LDIzOS41NDA2IDcxNy43MTk0LDIzOS45NzUxIDcxNy45MjgyLDI0MC40MTIzIEM3MTguMDMyNSwyNDAuNjMwOSA3MTUuNjEzNiwyMzUuNDA2IDcxNS43MTU1LDIzNS42MjU5IiBmaWxsPSJub25lIiBpZD0ibnVsbF9yZXQtdG8tY2xqIiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE7Ii8+PHBvbHlnb24gZmlsbD0iIzAwMDAwMCIgcG9pbnRzPSI3MTguMjM3NSwyNDEuMDcwMSw3MTguMDgzOSwyMzEuMjIyNSw3MTYuMTM1OCwyMzYuNTMzMyw3MTAuODI1LDIzNC41ODUyLDcxOC4yMzc1LDI0MS4wNzAxIiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE7Ii8+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9IlZlcmRhbmEiIGZvbnQtc2l6ZT0iMTMiIGxlbmd0aEFkanVzdD0ic3BhY2luZyIgdGV4dExlbmd0aD0iMjYiIHg9IjY5Ni4yNSIgeT0iMjEzLjM2NjkiPiYjMjU5MTM7JiMyMTg5Mjs8L3RleHQ+PC9nPjwhLS1saW5rIGV4Y2VwdGlvbiB0byBjbGotLT48ZyBjbGFzcz0ibGluayIgZGF0YS1lbnRpdHktMT0iZXhjZXB0aW9uIiBkYXRhLWVudGl0eS0yPSJjbGoiIGRhdGEtc291cmNlLWxpbmU9IjIyIiBkYXRhLXVpZD0ibG5rMTQiIGlkPSJsaW5rX2V4Y2VwdGlvbl9jbGoiPjxwYXRoIGQ9Ik04OTguNjQ0NywxNTIuMzI1OCBDODk4LjYyMSwxNTIuNDQ2OCA4OTguNTk3MSwxNTIuNTY3OCA4OTguNTczMSwxNTIuNjg5IEM4OTguNTI1LDE1Mi45MzEzIDg5OC40NzYyLDE1My4xNzQyIDg5OC40MjY4LDE1My40MTc0IEM4OTguMzI3OSwxNTMuOTA0IDg5OC4yMjYzLDE1NC4zOTIzIDg5OC4xMjIsMTU0Ljg4MjIgQzg5Ny45MTMyLDE1NS44NjIxIDg5Ny42OTMzLDE1Ni44NDgyIDg5Ny40NjE1LDE1Ny44Mzg4IEM4OTYuNTM0NiwxNjEuODAxMiA4OTUuNDE5MiwxNjUuODM1MiA4OTQuMDc3MiwxNjkuODI0NyBDODkxLjM5MzEsMTc3LjgwMzcgODg3LjgwMjUsMTg1LjYwNSA4ODMsMTkyLjMgQzg1OS4xMTUsMjI1LjU5IDgyMC43MDc1LDI1MC44NTUgNzg3Ljg2LDI2Ny45MyBDNzcxLjQzNjMsMjc2LjQ2NzUgNzU2LjQwMjUsMjgyLjk1NzUgNzQ1LjI2OTEsMjg3LjM3OTQgQzc0Mi40ODU3LDI4OC40ODQ4IDczOS45NDYxLDI4OS40NjExIDczNy42ODk1LDI5MC4zMDc3IEM3MzYuNTYxMiwyOTAuNzMxIDczNS41MDM3LDI5MS4xMjE5IDczNC41MjE4LDI5MS40ODA0IEM3MzQuMzk5LDI5MS41MjUyIDczOS45MTU4LDI4OS41MTc5IDczOS43OTU0LDI4OS41NjE3IiBmaWxsPSJub25lIiBpZD0iZXhjZXB0aW9uLXRvLWNsaiIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxOyIvPjxwb2x5Z29uIGZpbGw9IiMwMDAwMDAiIHBvaW50cz0iNzM0LjE1NzEsMjkxLjYxMzMsNzQzLjk4MjQsMjkyLjI5NDgsNzM4Ljg1NTcsMjg5LjkwMzYsNzQxLjI0NjksMjg0Ljc3Nyw3MzQuMTU3MSwyOTEuNjEzMyIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxOyIvPjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJWZXJkYW5hIiBmb250LXNpemU9IjEzIiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjI2IiB4PSI4NzQuNjUiIHk9IjIxMy4zNjY5Ij4mIzI1OTEzOyYjMjE4OTI7PC90ZXh0PjwvZz48IS0tU1JDPVtOUDNISVc5MTY4Tmx6b2NjbEhWbGtfMGNrZXRlMU1CUFhiZVBUc0xUOE9Xa1BhT2dNS2lpdFI5OEkwcEJBM0taSzRHVnZjenN6SXNRdExwQlJlUVZWeXdTeHluUFNtdm0xZ0NpcUduSktNb2lFdmd2SnAxSW5VSkFsdHk0LVdSaTJWV3B5MzdtQ2wwMXkyQm1KWlltZGVnRV9adW55dUdhSk9DV085VXBRSExlTktMUTNlTmhOSGl4S2duaHpYdklqLUhZc3A5QzF6a1JYcGhFRWVQYjhhYUl2X3J2VlFHa0xDMGZpM1BtM2dwaFp5bDBJZ2ZvbDFCblEtQUFiWVRYbThSME55RThqMHhDWlFYdXdIblpuVGNkYzNtMGh5TlFxZ25yRWgtaFk5OE5DdUVGUWwza3Boc2NOLWkxUkdGajBrcTBCT1VkejlOeXJHR1JuNGhkUk9vWWNmaDBoblZNZDRPUFQ5OVVxWFV6LTNTTkdNaUt0MVEwbGxaNUZqMkpjOXNwQ1pZSEdhZHFDd0dHeThSeWtkSUM1Sml1Ym9TRTRXcU5VME5PRDI4RGViUU03SVVhSE9YVEh0dnJBQm8yeWpsM193amxdLS0+PC9nPjwvc3ZnPg==" class="uml" alt="uml diagram" title="" /></p>
+<h3 id="62-nil">6.2 nil の基本<a class="headerlink" href="#62-nil" title="Permanent link">&para;</a></h3>
+<p>Clojure では <code>nil</code> が「値がない」ことを表します。</p>
+<div class="highlight"><pre><span></span><code><span class="c1">;; nil チェック</span>
+<span class="p">(</span><span class="nf">some?</span><span class="w"> </span><span class="mi">42</span><span class="p">)</span><span class="w">    </span><span class="c1">; =&gt; true</span>
+<span class="p">(</span><span class="nf">some?</span><span class="w"> </span><span class="nv">nil</span><span class="p">)</span><span class="w">   </span><span class="c1">; =&gt; false</span>
+<span class="p">(</span><span class="nb">nil? </span><span class="nv">nil</span><span class="p">)</span><span class="w">    </span><span class="c1">; =&gt; true</span>
+<span class="p">(</span><span class="nb">nil? </span><span class="mi">42</span><span class="p">)</span><span class="w">     </span><span class="c1">; =&gt; false</span>
+
+<span class="c1">;; nil は false 扱い（falsy）</span>
+<span class="p">(</span><span class="k">if </span><span class="nv">nil</span><span class="w"> </span><span class="s">&quot;truthy&quot;</span><span class="w"> </span><span class="s">&quot;falsy&quot;</span><span class="p">)</span><span class="w">  </span><span class="c1">; =&gt; &quot;falsy&quot;</span>
+<span class="p">(</span><span class="k">if </span><span class="mi">0</span><span class="w"> </span><span class="s">&quot;truthy&quot;</span><span class="w"> </span><span class="s">&quot;falsy&quot;</span><span class="p">)</span><span class="w">    </span><span class="c1">; =&gt; &quot;truthy&quot; (0 は truthy)</span>
+</code></pre></div>
+<h3 id="63">6.3 安全な関数<a class="headerlink" href="#63" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="c1">;; 安全な除算</span>
+<span class="p">(</span><span class="kd">defn </span><span class="nv">safe-divide</span><span class="w"> </span><span class="p">[</span><span class="nv">a</span><span class="w"> </span><span class="nv">b</span><span class="p">]</span>
+<span class="w">  </span><span class="p">(</span><span class="nb">when-not </span><span class="p">(</span><span class="nb">zero? </span><span class="nv">b</span><span class="p">)</span>
+<span class="w">    </span><span class="p">(</span><span class="nb">/ </span><span class="nv">a</span><span class="w"> </span><span class="nv">b</span><span class="p">)))</span>
+
+<span class="p">(</span><span class="nf">safe-divide</span><span class="w"> </span><span class="mi">10</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="w">  </span><span class="c1">; =&gt; 5</span>
+<span class="p">(</span><span class="nf">safe-divide</span><span class="w"> </span><span class="mi">10</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w">  </span><span class="c1">; =&gt; nil</span>
+
+<span class="c1">;; 安全な平方根</span>
+<span class="p">(</span><span class="kd">defn </span><span class="nv">safe-sqrt</span><span class="w"> </span><span class="p">[</span><span class="nv">n</span><span class="p">]</span>
+<span class="w">  </span><span class="p">(</span><span class="nb">when </span><span class="p">(</span><span class="nb">&gt;= </span><span class="nv">n</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span>
+<span class="w">    </span><span class="p">(</span><span class="nf">Math/sqrt</span><span class="w"> </span><span class="nv">n</span><span class="p">)))</span>
+
+<span class="p">(</span><span class="nf">safe-sqrt</span><span class="w"> </span><span class="mi">4</span><span class="p">)</span><span class="w">   </span><span class="c1">; =&gt; 2.0</span>
+<span class="p">(</span><span class="nf">safe-sqrt</span><span class="w"> </span><span class="mi">-1</span><span class="p">)</span><span class="w">  </span><span class="c1">; =&gt; nil</span>
+</code></pre></div>
+<h3 id="64-some-some-">6.4 some-&gt; と some-&gt;&gt; マクロ<a class="headerlink" href="#64-some-some-" title="Permanent link">&para;</a></h3>
+<p><code>some-&gt;</code> は途中で <code>nil</code> になったら処理を中断します。Scala の <code>Option.flatMap</code> のチェーンに相当します。</p>
+<div class="highlight"><pre><span></span><code><span class="c1">;; some-&gt; : 最初の引数位置に挿入、nil で中断</span>
+<span class="p">(</span><span class="nf">some-&gt;</span><span class="w"> </span><span class="p">{</span><span class="ss">:user</span><span class="w"> </span><span class="p">{</span><span class="ss">:profile</span><span class="w"> </span><span class="p">{</span><span class="ss">:name</span><span class="w"> </span><span class="s">&quot;Alice&quot;</span><span class="p">}}}</span>
+<span class="w">        </span><span class="ss">:user</span>
+<span class="w">        </span><span class="ss">:profile</span>
+<span class="w">        </span><span class="ss">:name</span><span class="p">)</span>
+<span class="c1">; =&gt; &quot;Alice&quot;</span>
+
+<span class="p">(</span><span class="nf">some-&gt;</span><span class="w"> </span><span class="p">{</span><span class="ss">:user</span><span class="w"> </span><span class="p">{</span><span class="ss">:profile</span><span class="w"> </span><span class="p">{}}}</span>
+<span class="w">        </span><span class="ss">:user</span>
+<span class="w">        </span><span class="ss">:profile</span>
+<span class="w">        </span><span class="ss">:name</span><span class="p">)</span>
+<span class="c1">; =&gt; nil （:name がないので nil）</span>
+
+<span class="c1">;; some-&gt;&gt; : 最後の引数位置に挿入</span>
+<span class="p">(</span><span class="nf">some-&gt;&gt;</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="w"> </span><span class="mi">-2</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="mi">-4</span><span class="w"> </span><span class="mi">5</span><span class="p">]</span>
+<span class="w">         </span><span class="p">(</span><span class="nb">filter </span><span class="nv">pos?</span><span class="p">)</span>
+<span class="w">         </span><span class="nv">seq</span>
+<span class="w">         </span><span class="p">(</span><span class="nb">reduce </span><span class="nv">+</span><span class="p">))</span>
+<span class="c1">; =&gt; 9</span>
+</code></pre></div>
+<p><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiBjb250ZW50U3R5bGVUeXBlPSJ0ZXh0L2NzcyIgZGF0YS1kaWFncmFtLXR5cGU9IkRFU0NSSVBUSU9OIiBoZWlnaHQ9IjQ1NnB4IiBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSJub25lIiBzdHlsZT0id2lkdGg6MzEwcHg7aGVpZ2h0OjQ1NnB4O2JhY2tncm91bmQ6I0ZGRkZGRjsiIHZlcnNpb249IjEuMSIgdmlld0JveD0iMCAwIDMxMCA0NTYiIHdpZHRoPSIzMTBweCIgem9vbUFuZFBhbj0ibWFnbmlmeSI+PGRlZnMvPjxnPjwhLS1jbHVzdGVyIHNvbWUtPiA/Pz8tLT48ZyBjbGFzcz0iY2x1c3RlciIgZGF0YS1lbnRpdHk9InNvbWUtLiAuLi4iIGRhdGEtc291cmNlLWxpbmU9IjMiIGRhdGEtdWlkPSJlbnQwMDAyIiBpZD0iY2x1c3Rlcl9zb21lLS4gLi4uIj48cmVjdCBmaWxsPSIjRkZGRkZGIiBoZWlnaHQ9IjQzOC40OCIgcng9IjIuNSIgcnk9IjIuNSIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxOyIgd2lkdGg9IjI5MiIgeD0iMTIiIHk9IjEyIi8+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9IlZlcmRhbmEiIGZvbnQtc2l6ZT0iMTQiIGZvbnQtd2VpZ2h0PSJib2xkIiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjEwNi40NDkiIHg9IjEwNC43NzU1IiB5PSIyNi45OTUxIj5zb21lLSZndDsgJiMxMjM5ODsmIzIxMjA1OyYjMjAzMTY7PC90ZXh0PjwvZz48IS0tZW50aXR5IHYxLS0+PGcgY2xhc3M9ImVudGl0eSIgZGF0YS1lbnRpdHk9InYxIiBkYXRhLXNvdXJjZS1saW5lPSI0IiBkYXRhLXVpZD0iZW50MDAwMyIgaWQ9ImVudGl0eV92MSI+PHJlY3QgZmlsbD0iI0ZGRkZGRiIgaGVpZ2h0PSIyMi4yOTY5IiByeD0iMi41IiByeT0iMi41IiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE7IiB3aWR0aD0iMzMuOTk5OSIgeD0iMTIyIiB5PSI0NyIvPjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJWZXJkYW5hIiBmb250LXNpemU9IjE0IiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjEzLjk5OTkiIHg9IjEzMiIgeT0iNjIuOTk1MSI+JiMyMDUxNjs8L3RleHQ+PC9nPjwhLS1lbnRpdHkgZjEtLT48ZyBjbGFzcz0iZW50aXR5IiBkYXRhLWVudGl0eT0iZjEiIGRhdGEtc291cmNlLWxpbmU9IjUiIGRhdGEtdWlkPSJlbnQwMDA0IiBpZD0iZW50aXR5X2YxIj48cmVjdCBmaWxsPSIjRkZGRkZGIiBoZWlnaHQ9IjIyLjI5NjkiIHJ4PSIyLjUiIHJ5PSIyLjUiIHN0eWxlPSJzdHJva2U6IzAwMDAwMDtzdHJva2Utd2lkdGg6MTsiIHdpZHRoPSIzMy44MzU5IiB4PSIxMjIuMDgiIHk9IjEzMC4yOSIvPjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJWZXJkYW5hIiBmb250LXNpemU9IjE0IiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjEzLjgzNTkiIHg9IjEzMi4wOCIgeT0iMTQ2LjI4NTEiPmYxPC90ZXh0PjwvZz48IS0tZW50aXR5IGYyLS0+PGcgY2xhc3M9ImVudGl0eSIgZGF0YS1lbnRpdHk9ImYyIiBkYXRhLXNvdXJjZS1saW5lPSI2IiBkYXRhLXVpZD0iZW50MDAwNSIgaWQ9ImVudGl0eV9mMiI+PHJlY3QgZmlsbD0iI0ZGRkZGRiIgaGVpZ2h0PSIyMi4yOTY5IiByeD0iMi41IiByeT0iMi41IiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE7IiB3aWR0aD0iMzMuODM1OSIgeD0iNDYuMDgiIHk9IjIyOS41OSIvPjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJWZXJkYW5hIiBmb250LXNpemU9IjE0IiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjEzLjgzNTkiIHg9IjU2LjA4IiB5PSIyNDUuNTg1MSI+ZjI8L3RleHQ+PC9nPjwhLS1lbnRpdHkgZjMtLT48ZyBjbGFzcz0iZW50aXR5IiBkYXRhLWVudGl0eT0iZjMiIGRhdGEtc291cmNlLWxpbmU9IjciIGRhdGEtdWlkPSJlbnQwMDA2IiBpZD0iZW50aXR5X2YzIj48cmVjdCBmaWxsPSIjRkZGRkZGIiBoZWlnaHQ9IjIyLjI5NjkiIHJ4PSIyLjUiIHJ5PSIyLjUiIHN0eWxlPSJzdHJva2U6IzAwMDAwMDtzdHJva2Utd2lkdGg6MTsiIHdpZHRoPSIzMy44MzU5IiB4PSI0Ni4wOCIgeT0iMzI4Ljg5Ii8+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9IlZlcmRhbmEiIGZvbnQtc2l6ZT0iMTQiIGxlbmd0aEFkanVzdD0ic3BhY2luZyIgdGV4dExlbmd0aD0iMTMuODM1OSIgeD0iNTYuMDgiIHk9IjM0NC44ODUxIj5mMzwvdGV4dD48L2c+PCEtLWVudGl0eSByZXN1bHQtLT48ZyBjbGFzcz0iZW50aXR5IiBkYXRhLWVudGl0eT0icmVzdWx0IiBkYXRhLXNvdXJjZS1saW5lPSI4IiBkYXRhLXVpZD0iZW50MDAwNyIgaWQ9ImVudGl0eV9yZXN1bHQiPjxyZWN0IGZpbGw9IiNGRkZGRkYiIGhlaWdodD0iMjIuMjk2OSIgcng9IjIuNSIgcnk9IjIuNSIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxOyIgd2lkdGg9IjQ3Ljk5OTkiIHg9IjM5IiB5PSI0MTIuMTgiLz48dGV4dCBmaWxsPSIjMDAwMDAwIiBmb250LWZhbWlseT0iVmVyZGFuYSIgZm9udC1zaXplPSIxNCIgbGVuZ3RoQWRqdXN0PSJzcGFjaW5nIiB0ZXh0TGVuZ3RoPSIyNy45OTk5IiB4PSI0OSIgeT0iNDI4LjE3NTEiPiYjMzIwODA7JiMyNjUyNDs8L3RleHQ+PC9nPjwhLS1lbnRpdHkgbmlsX3ZhbC0tPjxnIGNsYXNzPSJlbnRpdHkiIGRhdGEtZW50aXR5PSJuaWxfdmFsIiBkYXRhLXNvdXJjZS1saW5lPSIxNSIgZGF0YS11aWQ9ImVudDAwMTIiIGlkPSJlbnRpdHlfbmlsX3ZhbCI+PHJlY3QgZmlsbD0iI0ZGRkZGRiIgaGVpZ2h0PSIyMi4yOTY5IiByeD0iMi41IiByeT0iMi41IiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE7IiB3aWR0aD0iMzYuNjUyMyIgeD0iMTk2LjY3IiB5PSIyMjkuNTkiLz48dGV4dCBmaWxsPSIjMDAwMDAwIiBmb250LWZhbWlseT0iVmVyZGFuYSIgZm9udC1zaXplPSIxNCIgbGVuZ3RoQWRqdXN0PSJzcGFjaW5nIiB0ZXh0TGVuZ3RoPSIxNi42NTIzIiB4PSIyMDYuNjciIHk9IjI0NS41ODUxIj5uaWw8L3RleHQ+PC9nPjwhLS1saW5rIHYxIHRvIGYxLS0+PGcgY2xhc3M9ImxpbmsiIGRhdGEtZW50aXR5LTE9InYxIiBkYXRhLWVudGl0eS0yPSJmMSIgZGF0YS1zb3VyY2UtbGluZT0iMTAiIGRhdGEtdWlkPSJsbms4IiBpZD0ibGlua192MV9mMSI+PHBhdGggZD0iTTEzOSw2OS43NyBDMTM5LDg1LjM1IDEzOSwxMDguMjMgMTM5LDEyMy44MSIgZmlsbD0ibm9uZSIgaWQ9InYxLXRvLWYxIiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE7Ii8+PHBvbHlnb24gZmlsbD0iIzAwMDAwMCIgcG9pbnRzPSIxMzksMTI5LjgxLDE0MywxMjAuODEsMTM5LDEyNC44MSwxMzUsMTIwLjgxLDEzOSwxMjkuODEiIHN0eWxlPSJzdHJva2U6IzAwMDAwMDtzdHJva2Utd2lkdGg6MTsiLz48L2c+PCEtLWxpbmsgZjEgdG8gZjItLT48ZyBjbGFzcz0ibGluayIgZGF0YS1lbnRpdHktMT0iZjEiIGRhdGEtZW50aXR5LTI9ImYyIiBkYXRhLXNvdXJjZS1saW5lPSIxMSIgZGF0YS11aWQ9ImxuazkiIGlkPSJsaW5rX2YxX2YyIj48cGF0aCBkPSJNMTIxLjg3LDE0NS42OCBDMTAyLjk2LDE1MC4yOCA3My40NCwxNjAuNjkgNjAsMTgyLjU5IEM1MS4yNywxOTYuODIgNTMuNTA0NCwyMTEuMjUxOSA1Ny4zMDQ0LDIyMy40NDE5IiBmaWxsPSJub25lIiBpZD0iZjEtdG8tZjIiIHN0eWxlPSJzdHJva2U6IzAwMDAwMDtzdHJva2Utd2lkdGg6MTsiLz48cG9seWdvbiBmaWxsPSIjMDAwMDAwIiBwb2ludHM9IjU5LjA5LDIyOS4xNyw2MC4yMzAzLDIxOS4zODc0LDU3LjYwMiwyMjQuMzk2Niw1Mi41OTI4LDIyMS43NjgyLDU5LjA5LDIyOS4xNyIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxOyIvPjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJWZXJkYW5hIiBmb250LXNpemU9IjEzIiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjExMC41OTUzIiB4PSI2MSIgeT0iMTk1LjY1NjkiPm5pbCAmIzEyMzkxOyYjMTIzOTQ7JiMxMjM2OTsmIzEyNDI4OyYjMTI0MDA7JiMzMjE1NDsmIzM0ODkyOzwvdGV4dD48L2c+PCEtLWxpbmsgZjIgdG8gZjMtLT48ZyBjbGFzcz0ibGluayIgZGF0YS1lbnRpdHktMT0iZjIiIGRhdGEtZW50aXR5LTI9ImYzIiBkYXRhLXNvdXJjZS1saW5lPSIxMiIgZGF0YS11aWQ9ImxuazEwIiBpZD0ibGlua19mMl9mMyI+PHBhdGggZD0iTTYzLDI1Mi4xNSBDNjMsMjcwLjc4IDYzLDMwMy42MiA2MywzMjIuNCIgZmlsbD0ibm9uZSIgaWQ9ImYyLXRvLWYzIiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE7Ii8+PHBvbHlnb24gZmlsbD0iIzAwMDAwMCIgcG9pbnRzPSI2MywzMjguNCw2NywzMTkuNCw2MywzMjMuNCw1OSwzMTkuNCw2MywzMjguNCIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxOyIvPjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJWZXJkYW5hIiBmb250LXNpemU9IjEzIiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjExMC41OTUzIiB4PSI2NCIgeT0iMjk0Ljk1NjkiPm5pbCAmIzEyMzkxOyYjMTIzOTQ7JiMxMjM2OTsmIzEyNDI4OyYjMTI0MDA7JiMzMjE1NDsmIzM0ODkyOzwvdGV4dD48L2c+PCEtLWxpbmsgZjMgdG8gcmVzdWx0LS0+PGcgY2xhc3M9ImxpbmsiIGRhdGEtZW50aXR5LTE9ImYzIiBkYXRhLWVudGl0eS0yPSJyZXN1bHQiIGRhdGEtc291cmNlLWxpbmU9IjEzIiBkYXRhLXVpZD0ibG5rMTEiIGlkPSJsaW5rX2YzX3Jlc3VsdCI+PHBhdGggZD0iTTYzLDM1MS42NiBDNjMsMzY3LjI0IDYzLDM5MC4xMiA2Myw0MDUuNyIgZmlsbD0ibm9uZSIgaWQ9ImYzLXRvLXJlc3VsdCIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxOyIvPjxwb2x5Z29uIGZpbGw9IiMwMDAwMDAiIHBvaW50cz0iNjMsNDExLjcsNjcsNDAyLjcsNjMsNDA2LjcsNTksNDAyLjcsNjMsNDExLjciIHN0eWxlPSJzdHJva2U6IzAwMDAwMDtzdHJva2Utd2lkdGg6MTsiLz48L2c+PCEtLWxpbmsgZjEgdG8gbmlsX3ZhbC0tPjxnIGNsYXNzPSJsaW5rIiBkYXRhLWVudGl0eS0xPSJmMSIgZGF0YS1lbnRpdHktMj0ibmlsX3ZhbCIgZGF0YS1zb3VyY2UtbGluZT0iMTYiIGRhdGEtdWlkPSJsbmsxMyIgaWQ9ImxpbmtfZjFfbmlsX3ZhbCI+PHBhdGggZD0iTTE0OS40OSwxNTIuOTcgQzE1Ny4xNiwxNjAuODUgMTY3LjYyLDE3Mi4wNSAxNzYsMTgyLjU5IEMxODguNDEsMTk4LjIgMTk3LjkxMTYsMjEyLjUxOTggMjA1LjMyMTYsMjI0LjIyOTgiIGZpbGw9Im5vbmUiIGlkPSJmMS10by1uaWxfdmFsIiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE7Ii8+PHBvbHlnb24gZmlsbD0iIzAwMDAwMCIgcG9pbnRzPSIyMDguNTMsMjI5LjMsMjA3LjA5NzYsMjE5LjU1NTksMjA1Ljg1NjQsMjI1LjA3NDksMjAwLjMzNzQsMjIzLjgzMzcsMjA4LjUzLDIyOS4zIiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE7Ii8+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9IlZlcmRhbmEiIGZvbnQtc2l6ZT0iMTMiIGxlbmd0aEFkanVzdD0ic3BhY2luZyIgdGV4dExlbmd0aD0iNzEuNTk1MyIgeD0iMTg5LjUyIiB5PSIxOTUuNjU2OSI+bmlsICYjMTIzOTQ7JiMxMjQyNTsmIzIwMDEzOyYjMjYwMjk7PC90ZXh0PjwvZz48IS0tU1JDPVtLb3A5SUNyRExJWjhJU3BDdS04Z0lhcWtJU25CcHFiTEsyaEVwcXRMakxEdXRCWmtRVlZLOXRsZEEyYktTb0tkNWdLZUEzcmpNQUFhYTVZaUs2Tzg1S1dwMUZGSnU3bVoyRHk4blpVNnk4c1hfRVRSOXBvUkRtU2lMZkhRTjlmSm1pTExQZ1lXMnhHRFE0R1FiNk1hT0FNR2J2YTNUQzNvbnVzaDdaVEVWRHBLeXhYbm1fRGppcnVpeEU0MkllREw2VUROUEduTTFSQzRPWmpHRVRYZzgxclZiZlczaW4zQVhQa3R3ZDVKdnZDVFF2ekRNeWpMMm0wMF0tLT48L2c+PC9zdmc+" class="uml" alt="uml diagram" title="" /></p>
+<h3 id="65-tv">6.5 TV番組パースの例<a class="headerlink" href="#65-tv" title="Permanent link">&para;</a></h3>
+<p>TV番組の文字列をパースする例で、nil の扱いを学びます。</p>
+<div class="highlight"><pre><span></span><code><span class="c1">;; TV番組のデータ構造</span>
+<span class="p">(</span><span class="kd">defn </span><span class="nv">tv-show</span><span class="w"> </span><span class="p">[</span><span class="nv">title</span><span class="w"> </span><span class="nv">start</span><span class="w"> </span><span class="nv">end</span><span class="p">]</span>
+<span class="w">  </span><span class="p">{</span><span class="ss">:title</span><span class="w"> </span><span class="nv">title</span><span class="w"> </span><span class="ss">:start</span><span class="w"> </span><span class="nv">start</span><span class="w"> </span><span class="ss">:end</span><span class="w"> </span><span class="nv">end</span><span class="p">})</span>
+
+<span class="c1">;; 文字列を整数にパース（失敗時は nil）</span>
+<span class="p">(</span><span class="kd">defn </span><span class="nv">parse-int</span><span class="w"> </span><span class="p">[</span><span class="nv">s</span><span class="p">]</span>
+<span class="w">  </span><span class="p">(</span><span class="nf">try</span>
+<span class="w">    </span><span class="p">(</span><span class="nf">Integer/parseInt</span><span class="w"> </span><span class="p">(</span><span class="nf">clojure.string/trim</span><span class="w"> </span><span class="nv">s</span><span class="p">))</span>
+<span class="w">    </span><span class="p">(</span><span class="nf">catch</span><span class="w"> </span><span class="nv">Exception</span><span class="w"> </span><span class="nv">_</span><span class="w"> </span><span class="nv">nil</span><span class="p">)))</span>
+
+<span class="c1">;; 名前を抽出</span>
+<span class="p">(</span><span class="kd">defn </span><span class="nv">extract-name</span><span class="w"> </span><span class="p">[</span><span class="nv">raw-show</span><span class="p">]</span>
+<span class="w">  </span><span class="p">(</span><span class="nb">when-let </span><span class="p">[</span><span class="nv">bracket-open</span><span class="w"> </span><span class="p">(</span><span class="nf">.indexOf</span><span class="w"> </span><span class="nv">raw-show</span><span class="w"> </span><span class="s">&quot;(&quot;</span><span class="p">)]</span>
+<span class="w">    </span><span class="p">(</span><span class="nb">when </span><span class="p">(</span><span class="nb">pos? </span><span class="nv">bracket-open</span><span class="p">)</span>
+<span class="w">      </span><span class="p">(</span><span class="nf">clojure.string/trim</span><span class="w"> </span><span class="p">(</span><span class="nb">subs </span><span class="nv">raw-show</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="nv">bracket-open</span><span class="p">)))))</span>
+
+<span class="p">(</span><span class="nf">extract-name</span><span class="w"> </span><span class="s">&quot;Breaking Bad (2008-2013)&quot;</span><span class="p">)</span>
+<span class="c1">; =&gt; &quot;Breaking Bad&quot;</span>
+
+<span class="p">(</span><span class="nf">extract-name</span><span class="w"> </span><span class="s">&quot;No Brackets&quot;</span><span class="p">)</span>
+<span class="c1">; =&gt; nil</span>
+</code></pre></div>
+<h3 id="66-when-let-if-let">6.6 when-let と if-let<a class="headerlink" href="#66-when-let-if-let" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="c1">;; when-let: 値があれば処理</span>
+<span class="p">(</span><span class="kd">defn </span><span class="nv">greet-user</span><span class="w"> </span><span class="p">[</span><span class="nv">user</span><span class="p">]</span>
+<span class="w">  </span><span class="p">(</span><span class="nb">if-let </span><span class="p">[</span><span class="nb">name </span><span class="p">(</span><span class="ss">:name</span><span class="w"> </span><span class="nv">user</span><span class="p">)]</span>
+<span class="w">    </span><span class="p">(</span><span class="nb">str </span><span class="s">&quot;Hello, &quot;</span><span class="w"> </span><span class="nb">name </span><span class="s">&quot;!&quot;</span><span class="p">)</span>
+<span class="w">    </span><span class="s">&quot;Hello, Guest!&quot;</span><span class="p">))</span>
+
+<span class="p">(</span><span class="nf">greet-user</span><span class="w"> </span><span class="p">{</span><span class="ss">:name</span><span class="w"> </span><span class="s">&quot;Alice&quot;</span><span class="p">})</span><span class="w">  </span><span class="c1">; =&gt; &quot;Hello, Alice!&quot;</span>
+<span class="p">(</span><span class="nf">greet-user</span><span class="w"> </span><span class="p">{})</span><span class="w">               </span><span class="c1">; =&gt; &quot;Hello, Guest!&quot;</span>
+
+<span class="c1">;; when-let: 条件を満たす場合のみ処理（else なし）</span>
+<span class="p">(</span><span class="kd">defn </span><span class="nv">process-order</span><span class="w"> </span><span class="p">[</span><span class="nv">order</span><span class="p">]</span>
+<span class="w">  </span><span class="p">(</span><span class="nb">when-let </span><span class="p">[</span><span class="nv">items</span><span class="w"> </span><span class="p">(</span><span class="ss">:items</span><span class="w"> </span><span class="nv">order</span><span class="p">)]</span>
+<span class="w">    </span><span class="p">(</span><span class="nb">when </span><span class="p">(</span><span class="nb">seq </span><span class="nv">items</span><span class="p">)</span>
+<span class="w">      </span><span class="p">{</span><span class="ss">:order-id</span><span class="w"> </span><span class="p">(</span><span class="ss">:id</span><span class="w"> </span><span class="nv">order</span><span class="p">)</span>
+<span class="w">       </span><span class="ss">:total</span><span class="w"> </span><span class="p">(</span><span class="nb">reduce + </span><span class="p">(</span><span class="nb">map </span><span class="ss">:price</span><span class="w"> </span><span class="nv">items</span><span class="p">))})))</span>
+</code></pre></div>
+<h3 id="67-tv">6.7 TV番組パース（完全版）<a class="headerlink" href="#67-tv" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="c1">;; 開始年を抽出</span>
+<span class="p">(</span><span class="kd">defn </span><span class="nv">extract-year-start</span><span class="w"> </span><span class="p">[</span><span class="nv">raw-show</span><span class="p">]</span>
+<span class="w">  </span><span class="p">(</span><span class="k">let </span><span class="p">[</span><span class="nv">bracket-open</span><span class="w"> </span><span class="p">(</span><span class="nf">.indexOf</span><span class="w"> </span><span class="nv">raw-show</span><span class="w"> </span><span class="s">&quot;(&quot;</span><span class="p">)</span>
+<span class="w">        </span><span class="nv">dash</span><span class="w"> </span><span class="p">(</span><span class="nf">.indexOf</span><span class="w"> </span><span class="nv">raw-show</span><span class="w"> </span><span class="s">&quot;-&quot;</span><span class="p">)]</span>
+<span class="w">    </span><span class="p">(</span><span class="nb">when </span><span class="p">(</span><span class="nb">and </span><span class="p">(</span><span class="nb">&gt;= </span><span class="nv">bracket-open</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="nb">&gt; </span><span class="nv">dash</span><span class="w"> </span><span class="p">(</span><span class="nb">inc </span><span class="nv">bracket-open</span><span class="p">)))</span>
+<span class="w">      </span><span class="p">(</span><span class="nf">parse-int</span><span class="w"> </span><span class="p">(</span><span class="nb">subs </span><span class="nv">raw-show</span><span class="w"> </span><span class="p">(</span><span class="nb">inc </span><span class="nv">bracket-open</span><span class="p">)</span><span class="w"> </span><span class="nv">dash</span><span class="p">)))))</span>
+
+<span class="c1">;; 終了年を抽出</span>
+<span class="p">(</span><span class="kd">defn </span><span class="nv">extract-year-end</span><span class="w"> </span><span class="p">[</span><span class="nv">raw-show</span><span class="p">]</span>
+<span class="w">  </span><span class="p">(</span><span class="k">let </span><span class="p">[</span><span class="nv">dash</span><span class="w"> </span><span class="p">(</span><span class="nf">.indexOf</span><span class="w"> </span><span class="nv">raw-show</span><span class="w"> </span><span class="s">&quot;-&quot;</span><span class="p">)</span>
+<span class="w">        </span><span class="nv">bracket-close</span><span class="w"> </span><span class="p">(</span><span class="nf">.indexOf</span><span class="w"> </span><span class="nv">raw-show</span><span class="w"> </span><span class="s">&quot;)&quot;</span><span class="p">)]</span>
+<span class="w">    </span><span class="p">(</span><span class="nb">when </span><span class="p">(</span><span class="nb">and </span><span class="p">(</span><span class="nb">&gt;= </span><span class="nv">dash</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="nb">&gt; </span><span class="nv">bracket-close</span><span class="w"> </span><span class="p">(</span><span class="nb">inc </span><span class="nv">dash</span><span class="p">)))</span>
+<span class="w">      </span><span class="p">(</span><span class="nf">parse-int</span><span class="w"> </span><span class="p">(</span><span class="nb">subs </span><span class="nv">raw-show</span><span class="w"> </span><span class="p">(</span><span class="nb">inc </span><span class="nv">dash</span><span class="p">)</span><span class="w"> </span><span class="nv">bracket-close</span><span class="p">)))))</span>
+
+<span class="c1">;; 単年を抽出（&quot;Chernobyl (2019)&quot; 形式）</span>
+<span class="p">(</span><span class="kd">defn </span><span class="nv">extract-single-year</span><span class="w"> </span><span class="p">[</span><span class="nv">raw-show</span><span class="p">]</span>
+<span class="w">  </span><span class="p">(</span><span class="k">let </span><span class="p">[</span><span class="nv">dash</span><span class="w"> </span><span class="p">(</span><span class="nf">.indexOf</span><span class="w"> </span><span class="nv">raw-show</span><span class="w"> </span><span class="s">&quot;-&quot;</span><span class="p">)</span>
+<span class="w">        </span><span class="nv">bracket-open</span><span class="w"> </span><span class="p">(</span><span class="nf">.indexOf</span><span class="w"> </span><span class="nv">raw-show</span><span class="w"> </span><span class="s">&quot;(&quot;</span><span class="p">)</span>
+<span class="w">        </span><span class="nv">bracket-close</span><span class="w"> </span><span class="p">(</span><span class="nf">.indexOf</span><span class="w"> </span><span class="nv">raw-show</span><span class="w"> </span><span class="s">&quot;)&quot;</span><span class="p">)]</span>
+<span class="w">    </span><span class="p">(</span><span class="nb">when </span><span class="p">(</span><span class="nb">and </span><span class="p">(</span><span class="nb">neg? </span><span class="nv">dash</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="nb">&gt;= </span><span class="nv">bracket-open</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="nb">&gt; </span><span class="nv">bracket-close</span><span class="w"> </span><span class="p">(</span><span class="nb">inc </span><span class="nv">bracket-open</span><span class="p">)))</span>
+<span class="w">      </span><span class="p">(</span><span class="nf">parse-int</span><span class="w"> </span><span class="p">(</span><span class="nb">subs </span><span class="nv">raw-show</span><span class="w"> </span><span class="p">(</span><span class="nb">inc </span><span class="nv">bracket-open</span><span class="p">)</span><span class="w"> </span><span class="nv">bracket-close</span><span class="p">)))))</span>
+
+<span class="c1">;; TV番組パース</span>
+<span class="p">(</span><span class="kd">defn </span><span class="nv">parse-show</span><span class="w"> </span><span class="p">[</span><span class="nv">raw-show</span><span class="p">]</span>
+<span class="w">  </span><span class="p">(</span><span class="nb">when-let </span><span class="p">[</span><span class="nb">name </span><span class="p">(</span><span class="nf">extract-name</span><span class="w"> </span><span class="nv">raw-show</span><span class="p">)]</span>
+<span class="w">    </span><span class="p">(</span><span class="nb">when-let </span><span class="p">[</span><span class="nv">year-start</span><span class="w"> </span><span class="p">(</span><span class="nb">or </span><span class="p">(</span><span class="nf">extract-year-start</span><span class="w"> </span><span class="nv">raw-show</span><span class="p">)</span>
+<span class="w">                              </span><span class="p">(</span><span class="nf">extract-single-year</span><span class="w"> </span><span class="nv">raw-show</span><span class="p">))]</span>
+<span class="w">      </span><span class="p">(</span><span class="nb">when-let </span><span class="p">[</span><span class="nv">year-end</span><span class="w"> </span><span class="p">(</span><span class="nb">or </span><span class="p">(</span><span class="nf">extract-year-end</span><span class="w"> </span><span class="nv">raw-show</span><span class="p">)</span>
+<span class="w">                              </span><span class="p">(</span><span class="nf">extract-single-year</span><span class="w"> </span><span class="nv">raw-show</span><span class="p">))]</span>
+<span class="w">        </span><span class="p">(</span><span class="nf">tv-show</span><span class="w"> </span><span class="nb">name </span><span class="nv">year-start</span><span class="w"> </span><span class="nv">year-end</span><span class="p">)))))</span>
+
+<span class="p">(</span><span class="nf">parse-show</span><span class="w"> </span><span class="s">&quot;Breaking Bad (2008-2013)&quot;</span><span class="p">)</span>
+<span class="c1">; =&gt; {:title &quot;Breaking Bad&quot;, :start 2008, :end 2013}</span>
+
+<span class="p">(</span><span class="nf">parse-show</span><span class="w"> </span><span class="s">&quot;Chernobyl (2019)&quot;</span><span class="p">)</span>
+<span class="c1">; =&gt; {:title &quot;Chernobyl&quot;, :start 2019, :end 2019}</span>
+
+<span class="p">(</span><span class="nf">parse-show</span><span class="w"> </span><span class="s">&quot;Invalid&quot;</span><span class="p">)</span>
+<span class="c1">; =&gt; nil</span>
+</code></pre></div>
+<h3 id="68">6.8 エラーハンドリング戦略<a class="headerlink" href="#68" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="c1">;; Best-effort 戦略: パースできたものだけ返す</span>
+<span class="p">(</span><span class="kd">defn </span><span class="nv">parse-shows-best-effort</span><span class="w"> </span><span class="p">[</span><span class="nv">raw-shows</span><span class="p">]</span>
+<span class="w">  </span><span class="p">(</span><span class="nf">keep</span><span class="w"> </span><span class="nv">parse-show</span><span class="w"> </span><span class="nv">raw-shows</span><span class="p">))</span>
+
+<span class="p">(</span><span class="nf">parse-shows-best-effort</span><span class="w"> </span><span class="p">[</span><span class="s">&quot;Breaking Bad (2008-2013)&quot;</span>
+<span class="w">                          </span><span class="s">&quot;Invalid&quot;</span>
+<span class="w">                          </span><span class="s">&quot;Chernobyl (2019)&quot;</span><span class="p">])</span>
+<span class="c1">; =&gt; ({:title &quot;Breaking Bad&quot;, ...} {:title &quot;Chernobyl&quot;, ...})</span>
+
+<span class="c1">;; All-or-nothing 戦略: 全部成功するか nil</span>
+<span class="p">(</span><span class="kd">defn </span><span class="nv">parse-shows-all-or-nothing</span><span class="w"> </span><span class="p">[</span><span class="nv">raw-shows</span><span class="p">]</span>
+<span class="w">  </span><span class="p">(</span><span class="k">let </span><span class="p">[</span><span class="nv">parsed</span><span class="w"> </span><span class="p">(</span><span class="nb">map </span><span class="nv">parse-show</span><span class="w"> </span><span class="nv">raw-shows</span><span class="p">)]</span>
+<span class="w">    </span><span class="p">(</span><span class="nb">when </span><span class="p">(</span><span class="nb">every? </span><span class="nv">some?</span><span class="w"> </span><span class="nv">parsed</span><span class="p">)</span>
+<span class="w">      </span><span class="p">(</span><span class="nf">vec</span><span class="w"> </span><span class="nv">parsed</span><span class="p">))))</span>
+
+<span class="p">(</span><span class="nf">parse-shows-all-or-nothing</span><span class="w"> </span><span class="p">[</span><span class="s">&quot;Breaking Bad (2008-2013)&quot;</span>
+<span class="w">                             </span><span class="s">&quot;Chernobyl (2019)&quot;</span><span class="p">])</span>
+<span class="c1">; =&gt; [{...} {...}]</span>
+
+<span class="p">(</span><span class="nf">parse-shows-all-or-nothing</span><span class="w"> </span><span class="p">[</span><span class="s">&quot;Breaking Bad (2008-2013)&quot;</span>
+<span class="w">                             </span><span class="s">&quot;Invalid&quot;</span><span class="p">])</span>
+<span class="c1">; =&gt; nil</span>
+</code></pre></div>
+<h3 id="69-fnil-nil">6.9 fnil - nil に対するデフォルト値<a class="headerlink" href="#69-fnil-nil" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="c1">;; fnil: nil を指定値として扱う関数を作成</span>
+<span class="p">(</span><span class="k">def </span><span class="nv">safe-inc</span><span class="w"> </span><span class="p">(</span><span class="nf">fnil</span><span class="w"> </span><span class="nb">inc </span><span class="mi">0</span><span class="p">))</span>
+
+<span class="p">(</span><span class="nf">safe-inc</span><span class="w"> </span><span class="mi">5</span><span class="p">)</span><span class="w">    </span><span class="c1">; =&gt; 6</span>
+<span class="p">(</span><span class="nf">safe-inc</span><span class="w"> </span><span class="nv">nil</span><span class="p">)</span><span class="w">  </span><span class="c1">; =&gt; 1</span>
+
+<span class="c1">;; 出現回数カウントに活用</span>
+<span class="p">(</span><span class="kd">defn </span><span class="nv">count-occurrences</span><span class="w"> </span><span class="p">[</span><span class="nv">coll</span><span class="p">]</span>
+<span class="w">  </span><span class="p">(</span><span class="nb">reduce </span><span class="p">(</span><span class="k">fn </span><span class="p">[</span><span class="nv">acc</span><span class="w"> </span><span class="nv">item</span><span class="p">]</span>
+<span class="w">            </span><span class="p">(</span><span class="nf">update</span><span class="w"> </span><span class="nv">acc</span><span class="w"> </span><span class="nv">item</span><span class="w"> </span><span class="p">(</span><span class="nf">fnil</span><span class="w"> </span><span class="nb">inc </span><span class="mi">0</span><span class="p">)))</span>
+<span class="w">          </span><span class="p">{}</span>
+<span class="w">          </span><span class="nv">coll</span><span class="p">))</span>
+
+<span class="p">(</span><span class="nf">count-occurrences</span><span class="w"> </span><span class="p">[</span><span class="ss">:a</span><span class="w"> </span><span class="ss">:b</span><span class="w"> </span><span class="ss">:b</span><span class="w"> </span><span class="ss">:c</span><span class="w"> </span><span class="ss">:a</span><span class="w"> </span><span class="ss">:b</span><span class="p">])</span>
+<span class="c1">; =&gt; {:a 2, :b 3, :c 1}</span>
+</code></pre></div>
+<hr />
+<h2 id="7-result-adt">第7章: Result 型パターンと ADT<a class="headerlink" href="#7-result-adt" title="Permanent link">&para;</a></h2>
+<h3 id="71-nil">7.1 nil の限界<a class="headerlink" href="#71-nil" title="Permanent link">&para;</a></h3>
+<p><code>nil</code> は「値がないこと」しか表現できません。<strong>なぜ失敗したのか</strong>を伝えられません。</p>
+<p><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiBjb250ZW50U3R5bGVUeXBlPSJ0ZXh0L2NzcyIgZGF0YS1kaWFncmFtLXR5cGU9IkRFU0NSSVBUSU9OIiBoZWlnaHQ9IjQxN3B4IiBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSJub25lIiBzdHlsZT0id2lkdGg6ODUxcHg7aGVpZ2h0OjQxN3B4O2JhY2tncm91bmQ6I0ZGRkZGRjsiIHZlcnNpb249IjEuMSIgdmlld0JveD0iMCAwIDg1MSA0MTciIHdpZHRoPSI4NTFweCIgem9vbUFuZFBhbj0ibWFnbmlmeSI+PGRlZnMvPjxnPjwhLS1jbHVzdGVyIG5pbCB2cyBSZXN1bHQtLT48ZyBjbGFzcz0iY2x1c3RlciIgZGF0YS1lbnRpdHk9Im5pbCB2cyBSZXN1bHQiIGRhdGEtc291cmNlLWxpbmU9IjMiIGRhdGEtdWlkPSJlbnQwMDAyIiBpZD0iY2x1c3Rlcl9uaWwgdnMgUmVzdWx0Ij48cmVjdCBmaWxsPSIjRkZGRkZGIiBoZWlnaHQ9IjMyNi42IiByeD0iMi41IiByeT0iMi41IiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE7IiB3aWR0aD0iNjY1IiB4PSIxMiIgeT0iMTIiLz48dGV4dCBmaWxsPSIjMDAwMDAwIiBmb250LWZhbWlseT0iVmVyZGFuYSIgZm9udC1zaXplPSIxNCIgZm9udC13ZWlnaHQ9ImJvbGQiIGxlbmd0aEFkanVzdD0ic3BhY2luZyIgdGV4dExlbmd0aD0iOTYuODM3OSIgeD0iMjk2LjA4MTEiIHk9IjI2Ljk5NTEiPm5pbCB2cyBSZXN1bHQ8L3RleHQ+PC9nPjwhLS1jbHVzdGVyIG5pbF90eXBlLS0+PGcgY2xhc3M9ImNsdXN0ZXIiIGRhdGEtZW50aXR5PSJuaWxfdHlwZSIgZGF0YS1zb3VyY2UtbGluZT0iNCIgZGF0YS11aWQ9ImVudDAwMDMiIGlkPSJjbHVzdGVyX25pbF90eXBlIj48cmVjdCBmaWxsPSIjRkZGRkZGIiBoZWlnaHQ9Ijg5LjMiIHJ4PSIyLjUiIHJ5PSIyLjUiIHN0eWxlPSJzdHJva2U6IzAwMDAwMDtzdHJva2Utd2lkdGg6MTsiIHdpZHRoPSIyNzUiIHg9IjM2OCIgeT0iNjMiLz48dGV4dCBmaWxsPSIjMDAwMDAwIiBmb250LWZhbWlseT0iVmVyZGFuYSIgZm9udC1zaXplPSIxNCIgZm9udC13ZWlnaHQ9ImJvbGQiIGxlbmd0aEFkanVzdD0ic3BhY2luZyIgdGV4dExlbmd0aD0iMTkuNTY0NSIgeD0iNDk1LjcxNzgiIHk9Ijc3Ljk5NTEiPm5pbDwvdGV4dD48L2c+PCEtLWNsdXN0ZXIgcmVzdWx0X3R5cGUtLT48ZyBjbGFzcz0iY2x1c3RlciIgZGF0YS1lbnRpdHk9InJlc3VsdF90eXBlIiBkYXRhLXNvdXJjZS1saW5lPSI5IiBkYXRhLXVpZD0iZW50MDAwNiIgaWQ9ImNsdXN0ZXJfcmVzdWx0X3R5cGUiPjxyZWN0IGZpbGw9IiNGRkZGRkYiIGhlaWdodD0iODkuMyIgcng9IjIuNSIgcnk9IjIuNSIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxOyIgd2lkdGg9IjYwMSIgeD0iNDQiIHk9IjIxNy4zIi8+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9IlZlcmRhbmEiIGZvbnQtc2l6ZT0iMTQiIGZvbnQtd2VpZ2h0PSJib2xkIiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjUwLjA2NjQiIHg9IjMxOS40NjY4IiB5PSIyMzIuMjk1MSI+UmVzdWx0PC90ZXh0PjwvZz48IS0tZW50aXR5ID8/PzogPy0tPjxnIGNsYXNzPSJlbnRpdHkiIGRhdGEtZW50aXR5PSIuLi4uIC4iIGRhdGEtc291cmNlLWxpbmU9IjUiIGRhdGEtdWlkPSJlbnQwMDA0IiBpZD0iZW50aXR5Xy4uLi4gLiI+PHJlY3QgZmlsbD0iI0ZGRkZGRiIgaGVpZ2h0PSIyMi4yOTY5IiByeD0iMi41IiByeT0iMi41IiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE7IiB3aWR0aD0iODUuMTY2NyIgeD0iMzkyLjQyIiB5PSIxMDYiLz48dGV4dCBmaWxsPSIjMDAwMDAwIiBmb250LWZhbWlseT0iVmVyZGFuYSIgZm9udC1zaXplPSIxNCIgbGVuZ3RoQWRqdXN0PSJzcGFjaW5nIiB0ZXh0TGVuZ3RoPSI2NS4xNjY3IiB4PSI0MDIuNDIiIHk9IjEyMS45OTUxIj4mIzIwNTE2OyYjMTIzNTQ7JiMxMjQyNjs6ICYjMjA1MTY7PC90ZXh0PjwvZz48IS0tZW50aXR5ID8/PzogbmlsLS0+PGcgY2xhc3M9ImVudGl0eSIgZGF0YS1lbnRpdHk9Ii4uLi4gbmlsIiBkYXRhLXNvdXJjZS1saW5lPSI2IiBkYXRhLXVpZD0iZW50MDAwNSIgaWQ9ImVudGl0eV8uLi4uIG5pbCI+PHJlY3QgZmlsbD0iI0ZGRkZGRiIgaGVpZ2h0PSIyMi4yOTY5IiByeD0iMi41IiByeT0iMi41IiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE7IiB3aWR0aD0iODcuODE5MiIgeD0iNTEyLjA5IiB5PSIxMDYiLz48dGV4dCBmaWxsPSIjMDAwMDAwIiBmb250LWZhbWlseT0iVmVyZGFuYSIgZm9udC1zaXplPSIxNCIgbGVuZ3RoQWRqdXN0PSJzcGFjaW5nIiB0ZXh0TGVuZ3RoPSI2Ny44MTkyIiB4PSI1MjIuMDkiIHk9IjEyMS45OTUxIj4mIzIwNTE2OyYjMTIzOTQ7JiMxMjM3NTs6IG5pbDwvdGV4dD48L2c+PCEtLWVudGl0eSA/PzogezpzdGF0dXMgOm9rIDp2YWx1ZSA/fS0tPjxnIGNsYXNzPSJlbnRpdHkiIGRhdGEtZW50aXR5PSIuLi4gLi5zdGF0dXMgLm9rIC52YWx1ZSAuLiIgZGF0YS1zb3VyY2UtbGluZT0iMTAiIGRhdGEtdWlkPSJlbnQwMDA3IiBpZD0iZW50aXR5Xy4uLiAuLnN0YXR1cyAub2sgLnZhbHVlIC4uIj48cmVjdCBmaWxsPSIjRkZGRkZGIiBoZWlnaHQ9IjIyLjI5NjkiIHJ4PSIyLjUiIHJ5PSIyLjUiIHN0eWxlPSJzdHJva2U6IzAwMDAwMDtzdHJva2Utd2lkdGg6MTsiIHdpZHRoPSIyMTQuNDEzOSIgeD0iNjcuNzkiIHk9IjI2MC4zIi8+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9IlZlcmRhbmEiIGZvbnQtc2l6ZT0iMTQiIGxlbmd0aEFkanVzdD0ic3BhY2luZyIgdGV4dExlbmd0aD0iMTk0LjQxMzkiIHg9Ijc3Ljc5IiB5PSIyNzYuMjk1MSI+JiMyNTEwNDsmIzIxMTUxOzogezpzdGF0dXMgOm9rIDp2YWx1ZSAmIzIwNTE2O308L3RleHQ+PC9nPjwhLS1lbnRpdHkgPz86IHs6c3RhdHVzIDplcnJvciA6ZXJyb3IgPz8/Pz99LS0+PGcgY2xhc3M9ImVudGl0eSIgZGF0YS1lbnRpdHk9Ii4uLiAuLnN0YXR1cyAuZXJyb3IgLmVycm9yIC4uLi4uLiIgZGF0YS1zb3VyY2UtbGluZT0iMTEiIGRhdGEtdWlkPSJlbnQwMDA4IiBpZD0iZW50aXR5Xy4uLiAuLnN0YXR1cyAuZXJyb3IgLmVycm9yIC4uLi4uLiI+PHJlY3QgZmlsbD0iI0ZGRkZGRiIgaGVpZ2h0PSIyMi4yOTY5IiByeD0iMi41IiByeT0iMi41IiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE7IiB3aWR0aD0iMjg0LjM5MzEiIHg9IjMxNi44IiB5PSIyNjAuMyIvPjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJWZXJkYW5hIiBmb250LXNpemU9IjE0IiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjI2NC4zOTMxIiB4PSIzMjYuOCIgeT0iMjc2LjI5NTEiPiYjMjI4MzM7JiMyNTk0Mzs6IHs6c3RhdHVzIDplcnJvciA6ZXJyb3IgJiMxMjUxMzsmIzEyNDgzOyYjMTI0NzU7JiMxMjU0MDsmIzEyNDcyO308L3RleHQ+PC9nPjxnIGNsYXNzPSJlbnRpdHkiIGRhdGEtZW50aXR5PSJHTU4xMCIgZGF0YS1zb3VyY2UtbGluZT0iMTgiIGRhdGEtdWlkPSJlbnQwMDExIiBpZD0iZW50aXR5X0dNTjEwIj48cGF0aCBkPSJNNjkzLjUsMjU4Ljg4IEw2OTMuNSwyODQuMDEyOCBMODQ0LjUwMDIsMjg0LjAxMjggTDg0NC41MDAyLDI2OC44OCBMODM0LjUwMDIsMjU4Ljg4IEw2OTMuNSwyNTguODgiIGZpbGw9IiNGRkZGRkYiIHN0eWxlPSJzdHJva2U6IzAwMDAwMDtzdHJva2Utd2lkdGg6MTsiLz48cGF0aCBkPSJNODM0LjUwMDIsMjU4Ljg4IEw4MzQuNTAwMiwyNjguODggTDg0NC41MDAyLDI2OC44OCBMODM0LjUwMDIsMjU4Ljg4IiBmaWxsPSIjRkZGRkZGIiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE7Ii8+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9IlZlcmRhbmEiIGZvbnQtc2l6ZT0iMTMiIGxlbmd0aEFkanVzdD0ic3BhY2luZyIgdGV4dExlbmd0aD0iMTMwLjAwMDIiIHg9IjY5OS41IiB5PSIyNzUuOTQ2OSI+JiMyMjgzMzsmIzI1OTQzOyYjMjk3MDI7JiMzMDAwMTsmIzEyMzY0OyYjMjA5OTg7JiMxMjM2MzsmIzEyNDI1OyYjMTIzOTQ7JiMxMjM1Njs8L3RleHQ+PC9nPjxnIGNsYXNzPSJlbnRpdHkiIGRhdGEtZW50aXR5PSJHTU4xMyIgZGF0YS1zb3VyY2UtbGluZT0iMjIiIGRhdGEtdWlkPSJlbnQwMDE0IiBpZD0iZW50aXR5X0dNTjEzIj48cGF0aCBkPSJNNTU1LDM4NS42IEw1NTUsNDEwLjczMjggTDcxOS4wMDAyLDQxMC43MzI4IEw3MTkuMDAwMiwzOTUuNiBMNzA5LjAwMDIsMzg1LjYgTDU1NSwzODUuNiIgZmlsbD0iI0ZGRkZGRiIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxOyIvPjxwYXRoIGQ9Ik03MDkuMDAwMiwzODUuNiBMNzA5LjAwMDIsMzk1LjYgTDcxOS4wMDAyLDM5NS42IEw3MDkuMDAwMiwzODUuNiIgZmlsbD0iI0ZGRkZGRiIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxOyIvPjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJWZXJkYW5hIiBmb250LXNpemU9IjEzIiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjE0My4wMDAyIiB4PSI1NjEiIHk9IjQwMi42NjY5Ij4mIzEyNDU2OyYjMTI1MjE7JiMxMjU0MDsmIzI0NzczOyYjMjI1Nzc7JiMxMjQzNDsmIzIwNDQ1OyYjMjUzNDU7JiMxMjM5MTsmIzEyMzY1OyYjMTI0Mjc7PC90ZXh0PjwvZz48IS0tbGluayBuaWxfdHlwZSB0byByZXN1bHRfdHlwZS0tPjxnIGNsYXNzPSJsaW5rIiBkYXRhLWVudGl0eS0xPSJuaWxfdHlwZSIgZGF0YS1lbnRpdHktMj0icmVzdWx0X3R5cGUiIGRhdGEtc291cmNlLWxpbmU9IjE0IiBkYXRhLXVpZD0ibG5rOSIgaWQ9ImxpbmtfbmlsX3R5cGVfcmVzdWx0X3R5cGUiPjxwYXRoIGQ9Ik02MzUuNDQ5MSwxNTIuNDEzNyBDNjM1LjQ1MjMsMTUyLjY1OSA2MzUuNDU1NSwxNTIuOTA1MiA2MzUuNDU4OCwxNTMuMTUyMiBDNjM1LjQ2NTMsMTUzLjY0NjEgNjM1LjQ3MTgsMTU0LjE0MzQgNjM1LjQ3ODQsMTU0LjY0MzkgQzYzNS41MzEsMTU4LjY0NzUgNjM1LjU4NjMsMTYyLjg1MzkgNjM1LjY0MzQsMTY3LjE5NTYgQzYzNS43NTc1LDE3NS44Nzg4IDYzNS44Nzg4LDE4NS4xMDI4IDYzNiwxOTQuMzI2MyBDNjM2LjA2MDYsMTk4LjkzOCA2MzYuMTIxMywyMDMuNTQ5NiA2MzYuMTgxLDIwOC4wOTMzIEM2MzYuMjEwOSwyMTAuMzY1MiA2MzYuMjQwNSwyMTIuNjIwMiA2MzYuMjY5OCwyMTQuODQ5NyBDNjM2LjI3NzEsMjE1LjQwNzEgNjM2LjI4NDQsMjE1Ljk2MjkgNjM2LjI5MTcsMjE2LjUxNyBDNjM2LjI5MzYsMjE2LjY1NTUgNjM2LjIxNjUsMjEwLjc5NDQgNjM2LjIxODMsMjEwLjkzMjciIGZpbGw9Im5vbmUiIGlkPSJuaWxfdHlwZS10by1yZXN1bHRfdHlwZSIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxOyIvPjxwb2x5Z29uIGZpbGw9IiMwMDAwMDAiIHBvaW50cz0iNjM2LjI5NzIsMjE2LjkzMjIsNjQwLjE3ODUsMjA3Ljg4MDQsNjM2LjIzMTUsMjExLjkzMjYsNjMyLjE3OTIsMjA3Ljk4NTYsNjM2LjI5NzIsMjE2LjkzMjIiIHN0eWxlPSJzdHJva2U6IzAwMDAwMDtzdHJva2Utd2lkdGg6MTsiLz48dGV4dCBmaWxsPSIjMDAwMDAwIiBmb250LWZhbWlseT0iVmVyZGFuYSIgZm9udC1zaXplPSIxMyIgbGVuZ3RoQWRqdXN0PSJzcGFjaW5nIiB0ZXh0TGVuZ3RoPSIyNiIgeD0iNjM2Ljk0IiB5PSIxODkuMzY2OSI+JiMzNjkxNDsmIzIxMjcwOzwvdGV4dD48L2c+PCEtLWxpbmsgbmlsX3R5cGUgdG8gR01OMTAtLT48ZyBjbGFzcz0ibGluayIgZGF0YS1lbnRpdHktMT0ibmlsX3R5cGUiIGRhdGEtZW50aXR5LTI9IkdNTjEwIiBkYXRhLXNvdXJjZS1saW5lPSIxOCIgZGF0YS11aWQ9ImxuazEyIiBpZD0ibGlua19uaWxfdHlwZV9HTU4xMCI+PHBhdGggZD0iTTY0My4wNDU0LDEyNy4yOTEzIEM2NDMuMjYxMywxMjcuNTM2OCA2NDMuNDgxMSwxMjcuNzg2NSA2NDMuNzA0NiwxMjguMDQwNSBDNjQ0LjE1MTUsMTI4LjU0ODYgNjQ0LjYxMzQsMTI5LjA3MzUgNjQ1LjA4OTYsMTI5LjYxNDggQzY0Ni45OTQ2LDEzMS43OCA2NDkuMTI5NCwxMzQuMjA2NCA2NTEuNDU4OCwxMzYuODUzOSBDNjYwLjc3NjMsMTQ3LjQ0NDEgNjczLjIwNzUsMTYxLjU3MzEgNjg2LjUsMTc2LjY4MTIgQzcxMy4wODUsMjA2Ljg5NzUgNzQzLjExNSwyNDEuMDMgNzU4LjU3LDI1OC42IiBmaWxsPSJub25lIiBpZD0ibmlsX3R5cGUtR01OMTAiIHN0eWxlPSJzdHJva2U6IzAwMDAwMDtzdHJva2Utd2lkdGg6MTtzdHJva2UtZGFzaGFycmF5OjcsNzsiLz48L2c+PCEtLWxpbmsgcmVzdWx0X3R5cGUgdG8gR01OMTMtLT48ZyBjbGFzcz0ibGluayIgZGF0YS1lbnRpdHktMT0icmVzdWx0X3R5cGUiIGRhdGEtZW50aXR5LTI9IkdNTjEzIiBkYXRhLXNvdXJjZS1saW5lPSIyMiIgZGF0YS11aWQ9ImxuazE1IiBpZD0ibGlua19yZXN1bHRfdHlwZV9HTU4xMyI+PHBhdGggZD0iTTYzNywzMDcuMDI3NiBDNjM3LDMwNy4yMDI0IDYzNywzMDcuMzc3NSA2MzcsMzA3LjU1MzEgQzYzNywzMDguMjU1MiA2MzcsMzA4Ljk2MzEgNjM3LDMwOS42NzYyIEM2MzcsMzEyLjUyODcgNjM3LDMxNS40NjU1IDYzNywzMTguNDU2MyBDNjM3LDM0Mi4zODI1IDYzNywzNjkuNzY1IDYzNywzODUuMTEiIGZpbGw9Im5vbmUiIGlkPSJyZXN1bHRfdHlwZS1HTU4xMyIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxO3N0cm9rZS1kYXNoYXJyYXk6Nyw3OyIvPjwvZz48IS0tU1JDPVtQT19GSWlEMDRDUmwtbkpadGxpMlVfMFgtV0FvamdpamZqY29zSElhMUJneE1jZVJlT1pRYXdYR3lDeWpkZUdBRmlvTzVEXzI5REFHdzZjNi1NUS10cFR4a1lTNjBlT1V4X2s0QUQ3SHQzX3MxNTJfeHk0ZVdCTzhHYXpKNkZfSEFGMDB5ZGdXSnVTWUxwalNUTzZjYXBLUVl0UkU4NnpmVlZnQVBpTUEycWdZMWNYN29GcktzSk9qaXphb2RUeXA2QkQwU25xNm1FRzlpMTd0R2I0bWVXZ29KaEFSTE5yRkEyTkxoZzF4SEVWR1JqMXplN3NGb1hITF9iUGhsbTVkeTNydkktRlJTYWJnME9USVFwYTBVTEp6Sjd3MXMtTHFVdnNXWVRGUDVDcTJ4S052d1hhSFZYVUFxdHk2REd2MS11cGs5Ty1La1ZGcThLNXh6Vkx2YnlLNnBIRVFJeElCb2tPN10tLT48L2c+PC9zdmc+" class="uml" alt="uml diagram" title="" /></p>
+<h3 id="72-result">7.2 Result 型パターン<a class="headerlink" href="#72-result" title="Permanent link">&para;</a></h3>
+<p>Clojure では Either の代わりに <code>:ok/:error</code> のマップを使うのが一般的です。</p>
+<div class="highlight"><pre><span></span><code><span class="c1">;; Result 作成関数</span>
+<span class="p">(</span><span class="kd">defn </span><span class="nv">ok</span><span class="w"> </span><span class="p">[</span><span class="nv">value</span><span class="p">]</span>
+<span class="w">  </span><span class="p">{</span><span class="ss">:status</span><span class="w"> </span><span class="ss">:ok</span><span class="w"> </span><span class="ss">:value</span><span class="w"> </span><span class="nv">value</span><span class="p">})</span>
+
+<span class="p">(</span><span class="kd">defn </span><span class="nv">error</span><span class="w"> </span><span class="p">[</span><span class="nv">message</span><span class="p">]</span>
+<span class="w">  </span><span class="p">{</span><span class="ss">:status</span><span class="w"> </span><span class="ss">:error</span><span class="w"> </span><span class="ss">:error</span><span class="w"> </span><span class="nv">message</span><span class="p">})</span>
+
+<span class="c1">;; チェック関数</span>
+<span class="p">(</span><span class="kd">defn </span><span class="nv">ok?</span><span class="w"> </span><span class="p">[</span><span class="nv">result</span><span class="p">]</span>
+<span class="w">  </span><span class="p">(</span><span class="nb">= </span><span class="p">(</span><span class="ss">:status</span><span class="w"> </span><span class="nv">result</span><span class="p">)</span><span class="w"> </span><span class="ss">:ok</span><span class="p">))</span>
+
+<span class="p">(</span><span class="kd">defn </span><span class="nv">error?</span><span class="w"> </span><span class="p">[</span><span class="nv">result</span><span class="p">]</span>
+<span class="w">  </span><span class="p">(</span><span class="nb">= </span><span class="p">(</span><span class="ss">:status</span><span class="w"> </span><span class="nv">result</span><span class="p">)</span><span class="w"> </span><span class="ss">:error</span><span class="p">))</span>
+
+<span class="c1">;; 使用例</span>
+<span class="p">(</span><span class="nf">ok</span><span class="w"> </span><span class="mi">42</span><span class="p">)</span><span class="w">           </span><span class="c1">; =&gt; {:status :ok, :value 42}</span>
+<span class="p">(</span><span class="nf">error</span><span class="w"> </span><span class="s">&quot;Failed&quot;</span><span class="p">)</span><span class="w">  </span><span class="c1">; =&gt; {:status :error, :error &quot;Failed&quot;}</span>
+</code></pre></div>
+<h3 id="73-result">7.3 Result の操作<a class="headerlink" href="#73-result" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="c1">;; map: 成功時のみ値を変換</span>
+<span class="p">(</span><span class="kd">defn </span><span class="nv">result-map</span><span class="w"> </span><span class="p">[</span><span class="nv">f</span><span class="w"> </span><span class="nv">result</span><span class="p">]</span>
+<span class="w">  </span><span class="p">(</span><span class="k">if </span><span class="p">(</span><span class="nf">ok?</span><span class="w"> </span><span class="nv">result</span><span class="p">)</span>
+<span class="w">    </span><span class="p">(</span><span class="nf">ok</span><span class="w"> </span><span class="p">(</span><span class="nf">f</span><span class="w"> </span><span class="p">(</span><span class="ss">:value</span><span class="w"> </span><span class="nv">result</span><span class="p">)))</span>
+<span class="w">    </span><span class="nv">result</span><span class="p">))</span>
+
+<span class="p">(</span><span class="nf">result-map</span><span class="w"> </span><span class="o">#</span><span class="p">(</span><span class="nb">* </span><span class="nv">%</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="nf">ok</span><span class="w"> </span><span class="mi">5</span><span class="p">))</span><span class="w">      </span><span class="c1">; =&gt; {:status :ok, :value 10}</span>
+<span class="p">(</span><span class="nf">result-map</span><span class="w"> </span><span class="o">#</span><span class="p">(</span><span class="nb">* </span><span class="nv">%</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="nf">error</span><span class="w"> </span><span class="s">&quot;e&quot;</span><span class="p">))</span><span class="w"> </span><span class="c1">; =&gt; {:status :error, :error &quot;e&quot;}</span>
+
+<span class="c1">;; flatmap: Result を返す関数を適用</span>
+<span class="p">(</span><span class="kd">defn </span><span class="nv">result-flatmap</span><span class="w"> </span><span class="p">[</span><span class="nv">f</span><span class="w"> </span><span class="nv">result</span><span class="p">]</span>
+<span class="w">  </span><span class="p">(</span><span class="k">if </span><span class="p">(</span><span class="nf">ok?</span><span class="w"> </span><span class="nv">result</span><span class="p">)</span>
+<span class="w">    </span><span class="p">(</span><span class="nf">f</span><span class="w"> </span><span class="p">(</span><span class="ss">:value</span><span class="w"> </span><span class="nv">result</span><span class="p">))</span>
+<span class="w">    </span><span class="nv">result</span><span class="p">))</span>
+
+<span class="c1">;; or-else: エラー時に代替を使用</span>
+<span class="p">(</span><span class="kd">defn </span><span class="nv">result-or-else</span><span class="w"> </span><span class="p">[</span><span class="nv">result</span><span class="w"> </span><span class="nv">alternative</span><span class="p">]</span>
+<span class="w">  </span><span class="p">(</span><span class="k">if </span><span class="p">(</span><span class="nf">ok?</span><span class="w"> </span><span class="nv">result</span><span class="p">)</span>
+<span class="w">    </span><span class="nv">result</span>
+<span class="w">    </span><span class="nv">alternative</span><span class="p">))</span>
+
+<span class="c1">;; get-or-else: 値を取得、エラー時はデフォルト</span>
+<span class="p">(</span><span class="kd">defn </span><span class="nv">result-get-or-else</span><span class="w"> </span><span class="p">[</span><span class="nv">result</span><span class="w"> </span><span class="nv">default</span><span class="p">]</span>
+<span class="w">  </span><span class="p">(</span><span class="k">if </span><span class="p">(</span><span class="nf">ok?</span><span class="w"> </span><span class="nv">result</span><span class="p">)</span>
+<span class="w">    </span><span class="p">(</span><span class="ss">:value</span><span class="w"> </span><span class="nv">result</span><span class="p">)</span>
+<span class="w">    </span><span class="nv">default</span><span class="p">))</span>
+</code></pre></div>
+<h3 id="74-tvresult">7.4 TV番組パース（Result 版）<a class="headerlink" href="#74-tvresult" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="p">(</span><span class="kd">defn </span><span class="nv">parse-int-result</span><span class="w"> </span><span class="p">[</span><span class="nv">s</span><span class="p">]</span>
+<span class="w">  </span><span class="p">(</span><span class="nf">try</span>
+<span class="w">    </span><span class="p">(</span><span class="nf">ok</span><span class="w"> </span><span class="p">(</span><span class="nf">Integer/parseInt</span><span class="w"> </span><span class="p">(</span><span class="nf">clojure.string/trim</span><span class="w"> </span><span class="nv">s</span><span class="p">)))</span>
+<span class="w">    </span><span class="p">(</span><span class="nf">catch</span><span class="w"> </span><span class="nv">Exception</span><span class="w"> </span><span class="nv">_</span>
+<span class="w">      </span><span class="p">(</span><span class="nf">error</span><span class="w"> </span><span class="p">(</span><span class="nb">str </span><span class="s">&quot;Cannot parse &#39;&quot;</span><span class="w"> </span><span class="nv">s</span><span class="w"> </span><span class="s">&quot;&#39; as integer&quot;</span><span class="p">)))))</span>
+
+<span class="p">(</span><span class="kd">defn </span><span class="nv">extract-name-result</span><span class="w"> </span><span class="p">[</span><span class="nv">raw-show</span><span class="p">]</span>
+<span class="w">  </span><span class="p">(</span><span class="nb">if-let </span><span class="p">[</span><span class="nv">bracket-open</span><span class="w"> </span><span class="p">(</span><span class="nf">.indexOf</span><span class="w"> </span><span class="nv">raw-show</span><span class="w"> </span><span class="s">&quot;(&quot;</span><span class="p">)]</span>
+<span class="w">    </span><span class="p">(</span><span class="k">if </span><span class="p">(</span><span class="nb">pos? </span><span class="nv">bracket-open</span><span class="p">)</span>
+<span class="w">      </span><span class="p">(</span><span class="nf">ok</span><span class="w"> </span><span class="p">(</span><span class="nf">clojure.string/trim</span><span class="w"> </span><span class="p">(</span><span class="nb">subs </span><span class="nv">raw-show</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="nv">bracket-open</span><span class="p">)))</span>
+<span class="w">      </span><span class="p">(</span><span class="nf">error</span><span class="w"> </span><span class="p">(</span><span class="nb">str </span><span class="s">&quot;Can&#39;t extract name from &quot;</span><span class="w"> </span><span class="nv">raw-show</span><span class="p">)))</span>
+<span class="w">    </span><span class="p">(</span><span class="nf">error</span><span class="w"> </span><span class="p">(</span><span class="nb">str </span><span class="s">&quot;Can&#39;t extract name from &quot;</span><span class="w"> </span><span class="nv">raw-show</span><span class="p">))))</span>
+
+<span class="p">(</span><span class="nf">extract-name-result</span><span class="w"> </span><span class="s">&quot;The Wire (2002-2008)&quot;</span><span class="p">)</span>
+<span class="c1">; =&gt; {:status :ok, :value &quot;The Wire&quot;}</span>
+
+<span class="p">(</span><span class="nf">extract-name-result</span><span class="w"> </span><span class="s">&quot;(2022)&quot;</span><span class="p">)</span>
+<span class="c1">; =&gt; {:status :error, :error &quot;Can&#39;t extract name from (2022)&quot;}</span>
+</code></pre></div>
+<h3 id="75-adt">7.5 代数的データ型（ADT）<a class="headerlink" href="#75-adt" title="Permanent link">&para;</a></h3>
+<p>Clojure ではマップ + <code>:type</code> タグで ADT を表現します。</p>
+<h4 id="sum-type">直和型（Sum Type）<a class="headerlink" href="#sum-type" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="c1">;; 活動期間を表す直和型</span>
+<span class="p">(</span><span class="kd">defn </span><span class="nv">still-active</span><span class="w"> </span><span class="p">[</span><span class="nv">since</span><span class="p">]</span>
+<span class="w">  </span><span class="p">{</span><span class="ss">:type</span><span class="w"> </span><span class="ss">:still-active</span><span class="w"> </span><span class="ss">:since</span><span class="w"> </span><span class="nv">since</span><span class="p">})</span>
+
+<span class="p">(</span><span class="kd">defn </span><span class="nv">active-between</span><span class="w"> </span><span class="p">[</span><span class="nv">start</span><span class="w"> </span><span class="nv">end</span><span class="p">]</span>
+<span class="w">  </span><span class="p">{</span><span class="ss">:type</span><span class="w"> </span><span class="ss">:active-between</span><span class="w"> </span><span class="ss">:start</span><span class="w"> </span><span class="nv">start</span><span class="w"> </span><span class="ss">:end</span><span class="w"> </span><span class="nv">end</span><span class="p">})</span>
+
+<span class="c1">;; 使用例</span>
+<span class="p">(</span><span class="nf">still-active</span><span class="w"> </span><span class="mi">1981</span><span class="p">)</span>
+<span class="c1">; =&gt; {:type :still-active, :since 1981}</span>
+
+<span class="p">(</span><span class="nf">active-between</span><span class="w"> </span><span class="mi">1968</span><span class="w"> </span><span class="mi">1980</span><span class="p">)</span>
+<span class="c1">; =&gt; {:type :active-between, :start 1968, :end 1980}</span>
+</code></pre></div>
+<h4 id="product-type">直積型（Product Type）<a class="headerlink" href="#product-type" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="c1">;; アーティストを表す直積型</span>
+<span class="p">(</span><span class="kd">defn </span><span class="nv">artist</span><span class="w"> </span><span class="p">[</span><span class="nb">name </span><span class="nv">genre</span><span class="w"> </span><span class="nv">origin</span><span class="w"> </span><span class="nv">years-active</span><span class="p">]</span>
+<span class="w">  </span><span class="p">{</span><span class="ss">:name</span><span class="w"> </span><span class="nv">name</span>
+<span class="w">   </span><span class="ss">:genre</span><span class="w"> </span><span class="nv">genre</span>
+<span class="w">   </span><span class="ss">:origin</span><span class="w"> </span><span class="nv">origin</span>
+<span class="w">   </span><span class="ss">:years-active</span><span class="w"> </span><span class="nv">years-active</span><span class="p">})</span>
+
+<span class="p">(</span><span class="k">def </span><span class="nv">metallica</span>
+<span class="w">  </span><span class="p">(</span><span class="nf">artist</span><span class="w"> </span><span class="s">&quot;Metallica&quot;</span><span class="w"> </span><span class="ss">:heavy-metal</span><span class="w"> </span><span class="s">&quot;U.S.&quot;</span><span class="w"> </span><span class="p">(</span><span class="nf">still-active</span><span class="w"> </span><span class="mi">1981</span><span class="p">)))</span>
+
+<span class="p">(</span><span class="k">def </span><span class="nv">led-zeppelin</span>
+<span class="w">  </span><span class="p">(</span><span class="nf">artist</span><span class="w"> </span><span class="s">&quot;Led Zeppelin&quot;</span><span class="w"> </span><span class="ss">:hard-rock</span><span class="w"> </span><span class="s">&quot;England&quot;</span><span class="w"> </span><span class="p">(</span><span class="nf">active-between</span><span class="w"> </span><span class="mi">1968</span><span class="w"> </span><span class="mi">1980</span><span class="p">)))</span>
+</code></pre></div>
+<p><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiBjb250ZW50U3R5bGVUeXBlPSJ0ZXh0L2NzcyIgZGF0YS1kaWFncmFtLXR5cGU9IkRFU0NSSVBUSU9OIiBoZWlnaHQ9IjIzMnB4IiBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSJub25lIiBzdHlsZT0id2lkdGg6MTA0MHB4O2hlaWdodDoyMzJweDtiYWNrZ3JvdW5kOiNGRkZGRkY7IiB2ZXJzaW9uPSIxLjEiIHZpZXdCb3g9IjAgMCAxMDQwIDIzMiIgd2lkdGg9IjEwNDBweCIgem9vbUFuZFBhbj0ibWFnbmlmeSI+PGRlZnMvPjxnPjwhLS1jbHVzdGVyID8/Pz8/Pz8/QURUPy0tPjxnIGNsYXNzPSJjbHVzdGVyIiBkYXRhLWVudGl0eT0iLi4uLi4uLi5BRFQuIiBkYXRhLXNvdXJjZS1saW5lPSIzIiBkYXRhLXVpZD0iZW50MDAwMiIgaWQ9ImNsdXN0ZXJfLi4uLi4uLi5BRFQuIj48cmVjdCBmaWxsPSIjRkZGRkZGIiBoZWlnaHQ9IjE3Mi4zIiByeD0iMi41IiByeT0iMi41IiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE7IiB3aWR0aD0iOTA4IiB4PSIxMiIgeT0iMTIiLz48dGV4dCBmaWxsPSIjMDAwMDAwIiBmb250LWZhbWlseT0iVmVyZGFuYSIgZm9udC1zaXplPSIxNCIgZm9udC13ZWlnaHQ9ImJvbGQiIGxlbmd0aEFkanVzdD0ic3BhY2luZyIgdGV4dExlbmd0aD0iMTU4LjAwNTMiIHg9IjM4Ni45OTczIiB5PSIyNi45OTUxIj4mIzIwMTk1OyYjMjU5Njg7JiMzMDM0MDsmIzEyNDg3OyYjMTI1NDA7JiMxMjQ3OTsmIzIyNDExOyYjNjUyODg7QURUJiM2NTI4OTs8L3RleHQ+PC9nPjwhLS1jbHVzdGVyIHByb2R1Y3QtLT48ZyBjbGFzcz0iY2x1c3RlciIgZGF0YS1lbnRpdHk9InByb2R1Y3QiIGRhdGEtc291cmNlLWxpbmU9IjQiIGRhdGEtdWlkPSJlbnQwMDAzIiBpZD0iY2x1c3Rlcl9wcm9kdWN0Ij48cmVjdCBmaWxsPSIjRkZGRkZGIiBoZWlnaHQ9Ijg5LjMiIHJ4PSIyLjUiIHJ5PSIyLjUiIHN0eWxlPSJzdHJva2U6IzAwMDAwMDtzdHJva2Utd2lkdGg6MTsiIHdpZHRoPSIzODQiIHg9IjQ0IiB5PSI2MyIvPjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJWZXJkYW5hIiBmb250LXNpemU9IjE0IiBmb250LXdlaWdodD0iYm9sZCIgbGVuZ3RoQWRqdXN0PSJzcGFjaW5nIiB0ZXh0TGVuZ3RoPSIxNzQuODI4OCIgeD0iMTQ4LjU4NTYiIHk9Ijc3Ljk5NTEiPiYjMzA0NTI7JiMzMTMwOTsmIzIyNDExOyYjNjUyODg7UHJvZHVjdCBUeXBlJiM2NTI4OTs8L3RleHQ+PC9nPjwhLS1jbHVzdGVyIHN1bS0tPjxnIGNsYXNzPSJjbHVzdGVyIiBkYXRhLWVudGl0eT0ic3VtIiBkYXRhLXNvdXJjZS1saW5lPSI5IiBkYXRhLXVpZD0iZW50MDAwNiIgaWQ9ImNsdXN0ZXJfc3VtIj48cmVjdCBmaWxsPSIjRkZGRkZGIiBoZWlnaHQ9Ijg5LjMiIHJ4PSIyLjUiIHJ5PSIyLjUiIHN0eWxlPSJzdHJva2U6IzAwMDAwMDtzdHJva2Utd2lkdGg6MTsiIHdpZHRoPSI0MjAiIHg9IjQ2OCIgeT0iNjMiLz48dGV4dCBmaWxsPSIjMDAwMDAwIiBmb250LWZhbWlseT0iVmVyZGFuYSIgZm9udC1zaXplPSIxNCIgZm9udC13ZWlnaHQ9ImJvbGQiIGxlbmd0aEFkanVzdD0ic3BhY2luZyIgdGV4dExlbmd0aD0iMTQ3LjcwMzgiIHg9IjYwNC4xNDgxIiB5PSI3Ny45OTUxIj4mIzMwNDUyOyYjMjE2NDQ7JiMyMjQxMTsmIzY1Mjg4O1N1bSBUeXBlJiM2NTI4OTs8L3RleHQ+PC9nPjwhLS1lbnRpdHkgPz8/LS0+PGcgY2xhc3M9ImVudGl0eSIgZGF0YS1lbnRpdHk9Ii4uLiIgZGF0YS1zb3VyY2UtbGluZT0iNSIgZGF0YS11aWQ9ImVudDAwMDQiIGlkPSJlbnRpdHlfLi4uIj48cmVjdCBmaWxsPSIjRkZGRkZGIiBoZWlnaHQ9IjIyLjI5NjkiIHJ4PSIyLjUiIHJ5PSIyLjUiIHN0eWxlPSJzdHJva2U6IzAwMDAwMDtzdHJva2Utd2lkdGg6MTsiIHdpZHRoPSI2MS45OTk4IiB4PSI2OCIgeT0iMTA2Ii8+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9IlZlcmRhbmEiIGZvbnQtc2l6ZT0iMTQiIGxlbmd0aEFkanVzdD0ic3BhY2luZyIgdGV4dExlbmd0aD0iNDEuOTk5OCIgeD0iNzgiIHk9IjEyMS45OTUxIj4mIzEyNTEwOyYjMTI0ODM7JiMxMjUwMzs8L3RleHQ+PC9nPjwhLS1lbnRpdHkgbmFtZSBBTkQgZ2VucmUgQU5EIG9yaWdpbi0tPjxnIGNsYXNzPSJlbnRpdHkiIGRhdGEtZW50aXR5PSJuYW1lIEFORCBnZW5yZSBBTkQgb3JpZ2luIiBkYXRhLXNvdXJjZS1saW5lPSI2IiBkYXRhLXVpZD0iZW50MDAwNSIgaWQ9ImVudGl0eV9uYW1lIEFORCBnZW5yZSBBTkQgb3JpZ2luIj48cmVjdCBmaWxsPSIjRkZGRkZGIiBoZWlnaHQ9IjIyLjI5NjkiIHJ4PSIyLjUiIHJ5PSIyLjUiIHN0eWxlPSJzdHJva2U6IzAwMDAwMDtzdHJva2Utd2lkdGg6MTsiIHdpZHRoPSIyMTkuNzY2NiIgeD0iMTY1LjEyIiB5PSIxMDYiLz48dGV4dCBmaWxsPSIjMDAwMDAwIiBmb250LWZhbWlseT0iVmVyZGFuYSIgZm9udC1zaXplPSIxNCIgbGVuZ3RoQWRqdXN0PSJzcGFjaW5nIiB0ZXh0TGVuZ3RoPSIxOTkuNzY2NiIgeD0iMTc1LjEyIiB5PSIxMjEuOTk1MSI+bmFtZSBBTkQgZ2VucmUgQU5EIG9yaWdpbjwvdGV4dD48L2c+PCEtLWVudGl0eSA6dHlwZSA/Py0tPjxnIGNsYXNzPSJlbnRpdHkiIGRhdGEtZW50aXR5PSIudHlwZSAuLiIgZGF0YS1zb3VyY2UtbGluZT0iMTAiIGRhdGEtdWlkPSJlbnQwMDA3IiBpZD0iZW50aXR5Xy50eXBlIC4uIj48cmVjdCBmaWxsPSIjRkZGRkZGIiBoZWlnaHQ9IjIyLjI5NjkiIHJ4PSIyLjUiIHJ5PSIyLjUiIHN0eWxlPSJzdHJva2U6IzAwMDAwMDtzdHJva2Utd2lkdGg6MTsiIHdpZHRoPSI4OC40NDEzIiB4PSI0OTEuNzgiIHk9IjEwNiIvPjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJWZXJkYW5hIiBmb250LXNpemU9IjE0IiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjY4LjQ0MTMiIHg9IjUwMS43OCIgeT0iMTIxLjk5NTEiPjp0eXBlICYjMTI0Nzk7JiMxMjQ2NDs8L3RleHQ+PC9nPjwhLS1lbnRpdHkgc3RpbGwtYWN0aXZlIE9SIGFjdGl2ZS1iZXR3ZWVuLS0+PGcgY2xhc3M9ImVudGl0eSIgZGF0YS1lbnRpdHk9InN0aWxsLWFjdGl2ZSBPUiBhY3RpdmUtYmV0d2VlbiIgZGF0YS1zb3VyY2UtbGluZT0iMTEiIGRhdGEtdWlkPSJlbnQwMDA4IiBpZD0iZW50aXR5X3N0aWxsLWFjdGl2ZSBPUiBhY3RpdmUtYmV0d2VlbiI+PHJlY3QgZmlsbD0iI0ZGRkZGRiIgaGVpZ2h0PSIyMi4yOTY5IiByeD0iMi41IiByeT0iMi41IiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE7IiB3aWR0aD0iMjI5Ljg0OTYiIHg9IjYxNS4wOCIgeT0iMTA2Ii8+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9IlZlcmRhbmEiIGZvbnQtc2l6ZT0iMTQiIGxlbmd0aEFkanVzdD0ic3BhY2luZyIgdGV4dExlbmd0aD0iMjA5Ljg0OTYiIHg9IjYyNS4wOCIgeT0iMTIxLjk5NTEiPnN0aWxsLWFjdGl2ZSBPUiBhY3RpdmUtYmV0d2VlbjwvdGV4dD48L2c+PGcgY2xhc3M9ImVudGl0eSIgZGF0YS1lbnRpdHk9IkdNTjkiIGRhdGEtc291cmNlLWxpbmU9IjE2IiBkYXRhLXVpZD0iZW50MDAxMCIgaWQ9ImVudGl0eV9HTU45Ij48cGF0aCBkPSJNMjMxLjMzLDIwMC4zIEwyMzEuMzMsMjI1LjQzMjggTDYwOC42NzQ3LDIyNS40MzI4IEw2MDguNjc0NywyMTAuMyBMNTk4LjY3NDcsMjAwLjMgTDIzMS4zMywyMDAuMyIgZmlsbD0iI0ZGRkZGRiIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxOyIvPjxwYXRoIGQ9Ik01OTguNjc0NywyMDAuMyBMNTk4LjY3NDcsMjEwLjMgTDYwOC42NzQ3LDIxMC4zIEw1OTguNjc0NywyMDAuMyIgZmlsbD0iI0ZGRkZGRiIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxOyIvPjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJWZXJkYW5hIiBmb250LXNpemU9IjEzIiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjM1Ni4zNDQ3IiB4PSIyMzcuMzMiIHk9IjIxNy4zNjY5Ij5BcnRpc3QgPSBuYW1lIEFORCBnZW5yZSBBTkQgb3JpZ2luIEFORCB5ZWFycy1hY3RpdmU8L3RleHQ+PC9nPjxnIGNsYXNzPSJlbnRpdHkiIGRhdGEtZW50aXR5PSJHTU4xMiIgZGF0YS1zb3VyY2UtbGluZT0iMjAiIGRhdGEtdWlkPSJlbnQwMDEzIiBpZD0iZW50aXR5X0dNTjEyIj48cGF0aCBkPSJNNzI2Ljk1LDIwMC4zIEw3MjYuOTUsMjI1LjQzMjggTDEwMzMuMDQ4NiwyMjUuNDMyOCBMMTAzMy4wNDg2LDIxMC4zIEwxMDIzLjA0ODYsMjAwLjMgTDcyNi45NSwyMDAuMyIgZmlsbD0iI0ZGRkZGRiIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxOyIvPjxwYXRoIGQ9Ik0xMDIzLjA0ODYsMjAwLjMgTDEwMjMuMDQ4NiwyMTAuMyBMMTAzMy4wNDg2LDIxMC4zIEwxMDIzLjA0ODYsMjAwLjMiIGZpbGw9IiNGRkZGRkYiIHN0eWxlPSJzdHJva2U6IzAwMDAwMDtzdHJva2Utd2lkdGg6MTsiLz48dGV4dCBmaWxsPSIjMDAwMDAwIiBmb250LWZhbWlseT0iVmVyZGFuYSIgZm9udC1zaXplPSIxMyIgbGVuZ3RoQWRqdXN0PSJzcGFjaW5nIiB0ZXh0TGVuZ3RoPSIyODUuMDk4NiIgeD0iNzMyLjk1IiB5PSIyMTcuMzY2OSI+WWVhcnNBY3RpdmUgPSBTdGlsbEFjdGl2ZSBPUiBBY3RpdmVCZXR3ZWVuPC90ZXh0PjwvZz48IS0tbGluayBwcm9kdWN0IHRvIEdNTjktLT48ZyBjbGFzcz0ibGluayIgZGF0YS1lbnRpdHktMT0icHJvZHVjdCIgZGF0YS1lbnRpdHktMj0iR01OOSIgZGF0YS1zb3VyY2UtbGluZT0iMTYiIGRhdGEtdWlkPSJsbmsxMSIgaWQ9ImxpbmtfcHJvZHVjdF9HTU45Ij48cGF0aCBkPSJNNDIwLDE1Mi42NTAyIEM0MjAsMTUyLjc4NTEgNDIwLDE1Mi45MjAyIDQyMCwxNTMuMDU1NSBDNDIwLDE1My4zMjYgNDIwLDE1My41OTcgNDIwLDE1My44Njg2IEM0MjAsMTU0Ljk1NSA0MjAsMTU2LjA0OTggNDIwLDE1Ny4xNTA2IEM0MjAsMTU5LjM1MjIgNDIwLDE2MS41Nzc3IDQyMCwxNjMuODA2NyBDNDIwLDE2OC4yNjQ4IDQyMCwxNzIuNzM3NSA0MjAsMTc3LjA2MzEgQzQyMCwxODUuNzE0NCA0MjAsMTkzLjc3NzUgNDIwLDE5OS45NiIgZmlsbD0ibm9uZSIgaWQ9InByb2R1Y3QtR01OOSIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxO3N0cm9rZS1kYXNoYXJyYXk6Nyw3OyIvPjwvZz48IS0tbGluayBzdW0gdG8gR01OMTItLT48ZyBjbGFzcz0ibGluayIgZGF0YS1lbnRpdHktMT0ic3VtIiBkYXRhLWVudGl0eS0yPSJHTU4xMiIgZGF0YS1zb3VyY2UtbGluZT0iMjAiIGRhdGEtdWlkPSJsbmsxNCIgaWQ9Imxpbmtfc3VtX0dNTjEyIj48cGF0aCBkPSJNODgwLDE1Mi42NTAyIEM4ODAsMTUyLjc4NTEgODgwLDE1Mi45MjAyIDg4MCwxNTMuMDU1NSBDODgwLDE1My4zMjYgODgwLDE1My41OTcgODgwLDE1My44Njg2IEM4ODAsMTU0Ljk1NSA4ODAsMTU2LjA0OTggODgwLDE1Ny4xNTA2IEM4ODAsMTU5LjM1MjIgODgwLDE2MS41Nzc3IDg4MCwxNjMuODA2NyBDODgwLDE2OC4yNjQ4IDg4MCwxNzIuNzM3NSA4ODAsMTc3LjA2MzEgQzg4MCwxODUuNzE0NCA4ODAsMTkzLjc3NzUgODgwLDE5OS45NiIgZmlsbD0ibm9uZSIgaWQ9InN1bS1HTU4xMiIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxO3N0cm9rZS1kYXNoYXJyYXk6Nyw3OyIvPjwvZz48IS0tU1JDPVtUT3d6SmlDbTU4THRGeUtiVXJ5MGdLREdQcTJxMndFUk44QWJuOHdTTXIxTGlUSDhXODA1Mkk2MXI4TTloR0NSYU5XT0twQnM1TjNZZkU5N1JDVk5ILVZ4amtXT0N1R3l2SzhvZlo0WUJmQ0s4Vlh1VV93eU5yUUZ2elBTTTVGUS1WamdTUnFrQnlGMVE1clUxSjN4Tmd3VU5na05Ncl9Pcm9nVUgwSVpRT3ZEYW5VR2p4U1BZeFlFOFIxY09Pc252WTVlM3Y4eFlOMXQwMGJBeFBGSThYNG9PNlZpNXNiclQtRDltcWRzV3JBdVRxVk85bFMxcGpoRWJuc2E4OTZjRkh3SEU0N09FbTJWVWNFYUt5STZ2NVhJNFM5TzRRYUNyNTVkcGE5RGVZM2VteC1jSlBtWXJxTUJPMlhaZ0VWLVozZkhUYld0Ry1fSVhzNmo1Y3hDVkRobk9ma1RCbTAwXS0tPjwvZz48L3N2Zz4=" class="uml" alt="uml diagram" title="" /></p>
+<h3 id="76">7.6 パターンマッチング<a class="headerlink" href="#76" title="Permanent link">&para;</a></h3>
+<p><code>case</code> を使って直和型を処理します。</p>
+<div class="highlight"><pre><span></span><code><span class="p">(</span><span class="kd">defn </span><span class="nv">was-artist-active?</span><span class="w"> </span><span class="p">[</span><span class="nv">artist</span><span class="w"> </span><span class="nv">year-start</span><span class="w"> </span><span class="nv">year-end</span><span class="p">]</span>
+<span class="w">  </span><span class="p">(</span><span class="k">let </span><span class="p">[</span><span class="nv">years</span><span class="w"> </span><span class="p">(</span><span class="ss">:years-active</span><span class="w"> </span><span class="nv">artist</span><span class="p">)]</span>
+<span class="w">    </span><span class="p">(</span><span class="nf">case</span><span class="w"> </span><span class="p">(</span><span class="ss">:type</span><span class="w"> </span><span class="nv">years</span><span class="p">)</span>
+<span class="w">      </span><span class="ss">:still-active</span><span class="w"> </span><span class="p">(</span><span class="nb">&lt;= </span><span class="p">(</span><span class="ss">:since</span><span class="w"> </span><span class="nv">years</span><span class="p">)</span><span class="w"> </span><span class="nv">year-end</span><span class="p">)</span>
+<span class="w">      </span><span class="ss">:active-between</span><span class="w"> </span><span class="p">(</span><span class="nb">and </span><span class="p">(</span><span class="nb">&lt;= </span><span class="p">(</span><span class="ss">:start</span><span class="w"> </span><span class="nv">years</span><span class="p">)</span><span class="w"> </span><span class="nv">year-end</span><span class="p">)</span>
+<span class="w">                           </span><span class="p">(</span><span class="nb">&gt;= </span><span class="p">(</span><span class="ss">:end</span><span class="w"> </span><span class="nv">years</span><span class="p">)</span><span class="w"> </span><span class="nv">year-start</span><span class="p">)))))</span>
+
+<span class="p">(</span><span class="nf">was-artist-active?</span><span class="w"> </span><span class="nv">metallica</span><span class="w"> </span><span class="mi">1990</span><span class="w"> </span><span class="mi">2000</span><span class="p">)</span><span class="w">    </span><span class="c1">; =&gt; true</span>
+<span class="p">(</span><span class="nf">was-artist-active?</span><span class="w"> </span><span class="nv">led-zeppelin</span><span class="w"> </span><span class="mi">1990</span><span class="w"> </span><span class="mi">2000</span><span class="p">)</span><span class="w"> </span><span class="c1">; =&gt; false</span>
+
+<span class="p">(</span><span class="kd">defn </span><span class="nv">active-length</span><span class="w"> </span><span class="p">[</span><span class="nv">artist</span><span class="w"> </span><span class="nv">current-year</span><span class="p">]</span>
+<span class="w">  </span><span class="p">(</span><span class="k">let </span><span class="p">[</span><span class="nv">years</span><span class="w"> </span><span class="p">(</span><span class="ss">:years-active</span><span class="w"> </span><span class="nv">artist</span><span class="p">)]</span>
+<span class="w">    </span><span class="p">(</span><span class="nf">case</span><span class="w"> </span><span class="p">(</span><span class="ss">:type</span><span class="w"> </span><span class="nv">years</span><span class="p">)</span>
+<span class="w">      </span><span class="ss">:still-active</span><span class="w"> </span><span class="p">(</span><span class="nb">- </span><span class="nv">current-year</span><span class="w"> </span><span class="p">(</span><span class="ss">:since</span><span class="w"> </span><span class="nv">years</span><span class="p">))</span>
+<span class="w">      </span><span class="ss">:active-between</span><span class="w"> </span><span class="p">(</span><span class="nb">- </span><span class="p">(</span><span class="ss">:end</span><span class="w"> </span><span class="nv">years</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="ss">:start</span><span class="w"> </span><span class="nv">years</span><span class="p">)))))</span>
+
+<span class="p">(</span><span class="nf">active-length</span><span class="w"> </span><span class="nv">metallica</span><span class="w"> </span><span class="mi">2024</span><span class="p">)</span><span class="w">     </span><span class="c1">; =&gt; 43</span>
+<span class="p">(</span><span class="nf">active-length</span><span class="w"> </span><span class="nv">led-zeppelin</span><span class="w"> </span><span class="mi">2024</span><span class="p">)</span><span class="w">  </span><span class="c1">; =&gt; 12</span>
+</code></pre></div>
+<h3 id="77">7.7 検索条件のモデリング<a class="headerlink" href="#77" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="c1">;; 検索条件（直和型）</span>
+<span class="p">(</span><span class="kd">defn </span><span class="nv">search-by-genre</span><span class="w"> </span><span class="p">[</span><span class="nv">genres</span><span class="p">]</span>
+<span class="w">  </span><span class="p">{</span><span class="ss">:type</span><span class="w"> </span><span class="ss">:by-genre</span><span class="w"> </span><span class="ss">:genres</span><span class="w"> </span><span class="p">(</span><span class="nb">set </span><span class="nv">genres</span><span class="p">)})</span>
+
+<span class="p">(</span><span class="kd">defn </span><span class="nv">search-by-origin</span><span class="w"> </span><span class="p">[</span><span class="nv">locations</span><span class="p">]</span>
+<span class="w">  </span><span class="p">{</span><span class="ss">:type</span><span class="w"> </span><span class="ss">:by-origin</span><span class="w"> </span><span class="ss">:locations</span><span class="w"> </span><span class="p">(</span><span class="nb">set </span><span class="nv">locations</span><span class="p">)})</span>
+
+<span class="p">(</span><span class="kd">defn </span><span class="nv">search-by-active-years</span><span class="w"> </span><span class="p">[</span><span class="nv">start</span><span class="w"> </span><span class="nv">end</span><span class="p">]</span>
+<span class="w">  </span><span class="p">{</span><span class="ss">:type</span><span class="w"> </span><span class="ss">:by-active-years</span><span class="w"> </span><span class="ss">:start</span><span class="w"> </span><span class="nv">start</span><span class="w"> </span><span class="ss">:end</span><span class="w"> </span><span class="nv">end</span><span class="p">})</span>
+
+<span class="c1">;; 条件マッチング</span>
+<span class="p">(</span><span class="kd">defn </span><span class="nv">matches-condition?</span><span class="w"> </span><span class="p">[</span><span class="nv">artist</span><span class="w"> </span><span class="nv">condition</span><span class="p">]</span>
+<span class="w">  </span><span class="p">(</span><span class="nf">case</span><span class="w"> </span><span class="p">(</span><span class="ss">:type</span><span class="w"> </span><span class="nv">condition</span><span class="p">)</span>
+<span class="w">    </span><span class="ss">:by-genre</span><span class="w"> </span><span class="p">(</span><span class="nb">contains? </span><span class="p">(</span><span class="ss">:genres</span><span class="w"> </span><span class="nv">condition</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="ss">:genre</span><span class="w"> </span><span class="nv">artist</span><span class="p">))</span>
+<span class="w">    </span><span class="ss">:by-origin</span><span class="w"> </span><span class="p">(</span><span class="nb">contains? </span><span class="p">(</span><span class="ss">:locations</span><span class="w"> </span><span class="nv">condition</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="ss">:origin</span><span class="w"> </span><span class="nv">artist</span><span class="p">))</span>
+<span class="w">    </span><span class="ss">:by-active-years</span><span class="w"> </span><span class="p">(</span><span class="nf">was-artist-active?</span><span class="w"> </span><span class="nv">artist</span>
+<span class="w">                                         </span><span class="p">(</span><span class="ss">:start</span><span class="w"> </span><span class="nv">condition</span><span class="p">)</span>
+<span class="w">                                         </span><span class="p">(</span><span class="ss">:end</span><span class="w"> </span><span class="nv">condition</span><span class="p">))))</span>
+
+<span class="c1">;; 検索</span>
+<span class="p">(</span><span class="kd">defn </span><span class="nv">search-artists</span><span class="w"> </span><span class="p">[</span><span class="nv">artists</span><span class="w"> </span><span class="nv">conditions</span><span class="p">]</span>
+<span class="w">  </span><span class="p">(</span><span class="nb">filter </span><span class="p">(</span><span class="k">fn </span><span class="p">[</span><span class="nv">artist</span><span class="p">]</span>
+<span class="w">            </span><span class="p">(</span><span class="nb">every? </span><span class="o">#</span><span class="p">(</span><span class="nf">matches-condition?</span><span class="w"> </span><span class="nv">artist</span><span class="w"> </span><span class="nv">%</span><span class="p">)</span><span class="w"> </span><span class="nv">conditions</span><span class="p">))</span>
+<span class="w">          </span><span class="nv">artists</span><span class="p">))</span>
+
+<span class="p">(</span><span class="nf">search-artists</span><span class="w"> </span><span class="nv">sample-artists</span>
+<span class="w">                </span><span class="p">[(</span><span class="nf">search-by-genre</span><span class="w"> </span><span class="p">[</span><span class="ss">:heavy-metal</span><span class="p">])</span>
+<span class="w">                 </span><span class="p">(</span><span class="nf">search-by-origin</span><span class="w"> </span><span class="p">[</span><span class="s">&quot;U.S.&quot;</span><span class="p">])])</span>
+<span class="c1">; =&gt; [{:name &quot;Metallica&quot;, ...}]</span>
+</code></pre></div>
+<h3 id="78">7.8 バリデーション<a class="headerlink" href="#78" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="p">(</span><span class="kd">defn </span><span class="nv">validate-not-empty</span><span class="w"> </span><span class="p">[</span><span class="nv">field-name</span><span class="w"> </span><span class="nv">value</span><span class="p">]</span>
+<span class="w">  </span><span class="p">(</span><span class="k">if </span><span class="p">(</span><span class="nb">and </span><span class="nv">value</span><span class="w"> </span><span class="p">(</span><span class="nb">not </span><span class="p">(</span><span class="nf">clojure.string/blank?</span><span class="w"> </span><span class="nv">value</span><span class="p">)))</span>
+<span class="w">    </span><span class="p">(</span><span class="nf">ok</span><span class="w"> </span><span class="nv">value</span><span class="p">)</span>
+<span class="w">    </span><span class="p">(</span><span class="nf">error</span><span class="w"> </span><span class="p">(</span><span class="nb">str </span><span class="nv">field-name</span><span class="w"> </span><span class="s">&quot; cannot be empty&quot;</span><span class="p">))))</span>
+
+<span class="p">(</span><span class="kd">defn </span><span class="nv">validate-email</span><span class="w"> </span><span class="p">[</span><span class="nv">email</span><span class="p">]</span>
+<span class="w">  </span><span class="p">(</span><span class="k">if </span><span class="p">(</span><span class="nb">re-matches </span><span class="o">#</span><span class="s">&quot;.+@.+\..+&quot;</span><span class="w"> </span><span class="nv">email</span><span class="p">)</span>
+<span class="w">    </span><span class="p">(</span><span class="nf">ok</span><span class="w"> </span><span class="nv">email</span><span class="p">)</span>
+<span class="w">    </span><span class="p">(</span><span class="nf">error</span><span class="w"> </span><span class="s">&quot;Invalid email format&quot;</span><span class="p">)))</span>
+
+<span class="p">(</span><span class="kd">defn </span><span class="nv">validate-age</span><span class="w"> </span><span class="p">[</span><span class="nv">age</span><span class="p">]</span>
+<span class="w">  </span><span class="p">(</span><span class="nf">cond</span>
+<span class="w">    </span><span class="p">(</span><span class="nb">not </span><span class="p">(</span><span class="nf">integer?</span><span class="w"> </span><span class="nv">age</span><span class="p">))</span><span class="w"> </span><span class="p">(</span><span class="nf">error</span><span class="w"> </span><span class="s">&quot;Age must be an integer&quot;</span><span class="p">)</span>
+<span class="w">    </span><span class="p">(</span><span class="nb">neg? </span><span class="nv">age</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="nf">error</span><span class="w"> </span><span class="s">&quot;Age cannot be negative&quot;</span><span class="p">)</span>
+<span class="w">    </span><span class="p">(</span><span class="nb">&gt; </span><span class="nv">age</span><span class="w"> </span><span class="mi">150</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="nf">error</span><span class="w"> </span><span class="s">&quot;Age seems unrealistic&quot;</span><span class="p">)</span>
+<span class="w">    </span><span class="ss">:else</span><span class="w"> </span><span class="p">(</span><span class="nf">ok</span><span class="w"> </span><span class="nv">age</span><span class="p">)))</span>
+
+<span class="p">(</span><span class="kd">defn </span><span class="nv">validate-user</span><span class="w"> </span><span class="p">[</span><span class="nv">user</span><span class="p">]</span>
+<span class="w">  </span><span class="p">(</span><span class="k">let </span><span class="p">[</span><span class="nv">name-result</span><span class="w"> </span><span class="p">(</span><span class="nf">validate-not-empty</span><span class="w"> </span><span class="s">&quot;Name&quot;</span><span class="w"> </span><span class="p">(</span><span class="ss">:name</span><span class="w"> </span><span class="nv">user</span><span class="p">))</span>
+<span class="w">        </span><span class="nv">email-result</span><span class="w"> </span><span class="p">(</span><span class="nf">validate-email</span><span class="w"> </span><span class="p">(</span><span class="nb">or </span><span class="p">(</span><span class="ss">:email</span><span class="w"> </span><span class="nv">user</span><span class="p">)</span><span class="w"> </span><span class="s">&quot;&quot;</span><span class="p">))</span>
+<span class="w">        </span><span class="nv">age-result</span><span class="w"> </span><span class="p">(</span><span class="nf">validate-age</span><span class="w"> </span><span class="p">(</span><span class="ss">:age</span><span class="w"> </span><span class="nv">user</span><span class="p">))]</span>
+<span class="w">    </span><span class="p">(</span><span class="k">if </span><span class="p">(</span><span class="nb">and </span><span class="p">(</span><span class="nf">ok?</span><span class="w"> </span><span class="nv">name-result</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="nf">ok?</span><span class="w"> </span><span class="nv">email-result</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="nf">ok?</span><span class="w"> </span><span class="nv">age-result</span><span class="p">))</span>
+<span class="w">      </span><span class="p">(</span><span class="nf">ok</span><span class="w"> </span><span class="nv">user</span><span class="p">)</span>
+<span class="w">      </span><span class="p">(</span><span class="nf">error</span><span class="w"> </span><span class="p">{</span><span class="ss">:errors</span><span class="w"> </span><span class="p">(</span><span class="nb">remove </span><span class="nv">nil?</span>
+<span class="w">                        </span><span class="p">[(</span><span class="nb">when </span><span class="p">(</span><span class="nf">error?</span><span class="w"> </span><span class="nv">name-result</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="ss">:error</span><span class="w"> </span><span class="nv">name-result</span><span class="p">))</span>
+<span class="w">                         </span><span class="p">(</span><span class="nb">when </span><span class="p">(</span><span class="nf">error?</span><span class="w"> </span><span class="nv">email-result</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="ss">:error</span><span class="w"> </span><span class="nv">email-result</span><span class="p">))</span>
+<span class="w">                         </span><span class="p">(</span><span class="nb">when </span><span class="p">(</span><span class="nf">error?</span><span class="w"> </span><span class="nv">age-result</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="ss">:error</span><span class="w"> </span><span class="nv">age-result</span><span class="p">))])}))))</span>
+
+<span class="p">(</span><span class="nf">validate-user</span><span class="w"> </span><span class="p">{</span><span class="ss">:name</span><span class="w"> </span><span class="s">&quot;Alice&quot;</span><span class="w"> </span><span class="ss">:email</span><span class="w"> </span><span class="s">&quot;alice@example.com&quot;</span><span class="w"> </span><span class="ss">:age</span><span class="w"> </span><span class="mi">30</span><span class="p">})</span>
+<span class="c1">; =&gt; {:status :ok, :value {...}}</span>
+
+<span class="p">(</span><span class="nf">validate-user</span><span class="w"> </span><span class="p">{</span><span class="ss">:name</span><span class="w"> </span><span class="s">&quot;&quot;</span><span class="w"> </span><span class="ss">:email</span><span class="w"> </span><span class="s">&quot;invalid&quot;</span><span class="w"> </span><span class="ss">:age</span><span class="w"> </span><span class="mi">-1</span><span class="p">})</span>
+<span class="c1">; =&gt; {:status :error, :error {:errors [&quot;Name cannot be empty&quot; &quot;Invalid email format&quot; &quot;Age cannot be negative&quot;]}}</span>
+</code></pre></div>
+<h3 id="79-every-some">7.9 every? と some<a class="headerlink" href="#79-every-some" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="c1">;; every?: すべてが条件を満たす</span>
+<span class="p">(</span><span class="nb">every? pos? </span><span class="p">[</span><span class="mi">1</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="mi">4</span><span class="w"> </span><span class="mi">5</span><span class="p">])</span><span class="w">  </span><span class="c1">; =&gt; true</span>
+<span class="p">(</span><span class="nb">every? pos? </span><span class="p">[</span><span class="mi">1</span><span class="w"> </span><span class="mi">-2</span><span class="w"> </span><span class="mi">3</span><span class="p">])</span><span class="w">     </span><span class="c1">; =&gt; false</span>
+
+<span class="c1">;; some: いずれかが条件を満たす（最初のマッチを返す）</span>
+<span class="p">(</span><span class="nb">some neg? </span><span class="p">[</span><span class="mi">1</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">-3</span><span class="w"> </span><span class="mi">4</span><span class="p">])</span><span class="w">     </span><span class="c1">; =&gt; true (-3 がマッチ)</span>
+<span class="p">(</span><span class="nb">some neg? </span><span class="p">[</span><span class="mi">1</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">3</span><span class="p">])</span><span class="w">        </span><span class="c1">; =&gt; nil</span>
+
+<span class="c1">;; not-any?: どれも条件を満たさない</span>
+<span class="p">(</span><span class="nb">not-any? neg? </span><span class="p">[</span><span class="mi">1</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="mi">3</span><span class="p">])</span><span class="w">    </span><span class="c1">; =&gt; true</span>
+
+<span class="c1">;; not-every?: すべてが条件を満たすわけではない</span>
+<span class="p">(</span><span class="nb">not-every? pos? </span><span class="p">[</span><span class="mi">1</span><span class="w"> </span><span class="mi">-2</span><span class="w"> </span><span class="mi">3</span><span class="p">])</span><span class="w"> </span><span class="c1">; =&gt; true</span>
+</code></pre></div>
+<h3 id="710-ex-info">7.10 ex-info による例外処理<a class="headerlink" href="#710-ex-info" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="c1">;; ex-info: データ付き例外を作成</span>
+<span class="p">(</span><span class="kd">defn </span><span class="nv">divide-or-throw</span><span class="w"> </span><span class="p">[</span><span class="nv">a</span><span class="w"> </span><span class="nv">b</span><span class="p">]</span>
+<span class="w">  </span><span class="p">(</span><span class="k">if </span><span class="p">(</span><span class="nb">zero? </span><span class="nv">b</span><span class="p">)</span>
+<span class="w">    </span><span class="p">(</span><span class="nf">throw</span><span class="w"> </span><span class="p">(</span><span class="nf">ex-info</span><span class="w"> </span><span class="s">&quot;Division by zero&quot;</span><span class="w"> </span><span class="p">{</span><span class="ss">:a</span><span class="w"> </span><span class="nv">a</span><span class="w"> </span><span class="ss">:b</span><span class="w"> </span><span class="nv">b</span><span class="p">}))</span>
+<span class="w">    </span><span class="p">(</span><span class="nb">/ </span><span class="nv">a</span><span class="w"> </span><span class="nv">b</span><span class="p">)))</span>
+
+<span class="c1">;; Result に変換</span>
+<span class="p">(</span><span class="kd">defn </span><span class="nv">try-result</span><span class="w"> </span><span class="p">[</span><span class="nv">f</span><span class="p">]</span>
+<span class="w">  </span><span class="p">(</span><span class="nf">try</span>
+<span class="w">    </span><span class="p">(</span><span class="nf">ok</span><span class="w"> </span><span class="p">(</span><span class="nf">f</span><span class="p">))</span>
+<span class="w">    </span><span class="p">(</span><span class="nf">catch</span><span class="w"> </span><span class="nv">Exception</span><span class="w"> </span><span class="nv">e</span>
+<span class="w">      </span><span class="p">(</span><span class="nf">error</span><span class="w"> </span><span class="p">{</span><span class="ss">:message</span><span class="w"> </span><span class="p">(</span><span class="nf">ex-message</span><span class="w"> </span><span class="nv">e</span><span class="p">)</span>
+<span class="w">              </span><span class="ss">:data</span><span class="w"> </span><span class="p">(</span><span class="nf">ex-data</span><span class="w"> </span><span class="nv">e</span><span class="p">)}))))</span>
+
+<span class="p">(</span><span class="nf">try-result</span><span class="w"> </span><span class="o">#</span><span class="p">(</span><span class="nf">divide-or-throw</span><span class="w"> </span><span class="mi">10</span><span class="w"> </span><span class="mi">2</span><span class="p">))</span>
+<span class="c1">; =&gt; {:status :ok, :value 5}</span>
+
+<span class="p">(</span><span class="nf">try-result</span><span class="w"> </span><span class="o">#</span><span class="p">(</span><span class="nf">divide-or-throw</span><span class="w"> </span><span class="mi">10</span><span class="w"> </span><span class="mi">0</span><span class="p">))</span>
+<span class="c1">; =&gt; {:status :error, :error {:message &quot;Division by zero&quot;, :data {:a 10, :b 0}}}</span>
+</code></pre></div>
+<hr />
+<h2 id="_1">まとめ<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h2>
+<h3 id="part-iii">Part III で学んだこと<a class="headerlink" href="#part-iii" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>章</th>
+<th>主要概念</th>
+<th>キー操作</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>第6章</td>
+<td>nil の扱い</td>
+<td><code>some?</code>, <code>nil?</code>, <code>some-&gt;</code>, <code>when-let</code></td>
+</tr>
+<tr>
+<td>第7章</td>
+<td>Result パターン</td>
+<td><code>ok</code>, <code>error</code>, <code>case</code>, ADT</td>
+</tr>
+</tbody>
+</table>
+<h3 id="scala">Scala との比較<a class="headerlink" href="#scala" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>概念</th>
+<th>Scala</th>
+<th>Clojure</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>値の有無</td>
+<td><code>Option[A]</code></td>
+<td><code>nil</code> / 値</td>
+</tr>
+<tr>
+<td>成功/失敗</td>
+<td><code>Either[E, A]</code></td>
+<td><code>{:status :ok/:error ...}</code></td>
+</tr>
+<tr>
+<td>パターンマッチ</td>
+<td><code>match</code></td>
+<td><code>case</code>, <code>cond</code></td>
+</tr>
+<tr>
+<td>チェーン</td>
+<td><code>flatMap</code></td>
+<td><code>some-&gt;</code>, <code>some-&gt;&gt;</code></td>
+</tr>
+<tr>
+<td>デフォルト値</td>
+<td><code>getOrElse</code></td>
+<td><code>or</code>, <code>get</code>, <code>fnil</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="_2">キーポイント<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>nil の明示的な扱い</strong>: <code>some?</code>, <code>nil?</code> でチェック</li>
+<li><strong>some-&gt; マクロ</strong>: nil で中断するパイプライン</li>
+<li><strong>Result パターン</strong>: エラー情報を保持する <code>:ok/:error</code> マップ</li>
+<li><strong>ADT</strong>: <code>:type</code> タグで直和型を表現</li>
+<li><strong>case によるパターンマッチ</strong>: 直和型を安全に処理</li>
+</ol>
+<h3 id="_3">次のステップ<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h3>
+<p><a href="../part-4/">Part IV: 副作用の管理</a> では、以下を学びます：</p>
+<ul>
+<li>atom と ref による状態管理</li>
+<li>STM（Software Transactional Memory）</li>
+<li>core.async による非同期処理</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+    <a href="https://github.com/k2works" target="_blank" rel="noopener" title="GitHub Repository/claude-code-booster" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.sections", "toc.integrate", "search.suggest", "search.highlight"], "search": "../../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.e71a0d61.min.js"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+      
+        <script src="../../docs/assets/js/extra.js"></script>
+      
+    
+  </body>
+</html>
