@@ -11,3 +11,5 @@ pub mod ch06_option;
 pub mod ch07_result;
 pub mod ch08_io;
 pub mod ch09_stream;
+pub mod ch10_concurrency;
+pub mod ch11_channels;
