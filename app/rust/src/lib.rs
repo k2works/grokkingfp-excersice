@@ -7,3 +7,5 @@ pub mod ch02_pure_functions;
 pub mod ch03_immutable_data;
 pub mod ch04_higher_order;
 pub mod ch05_flatmap;
+pub mod ch06_option;
+pub mod ch07_result;
