@@ -13,3 +13,4 @@ pub mod ch08_io;
 pub mod ch09_stream;
 pub mod ch10_concurrency;
 pub mod ch11_channels;
+pub mod ch12_app;
