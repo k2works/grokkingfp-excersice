@@ -263,4 +263,10 @@ app/clojure/.clj-kondo/
 pom.xml
 pom.xml.asc
 *.jar
-lib/
+
+# Elixir
+app/elixir/_build/
+app/elixir/deps/
+app/elixir/.elixir_ls/
+*.beam
+*.ez
