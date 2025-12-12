@@ -1,0 +1,17 @@
+[package]
+name = "grokking_fp"
+version = "0.1.0"
+edition = "2021"
+authors = ["Project Team"]
+description = "Grokking Functional Programming - Rust implementation"
+
+[dependencies]
+tokio = { version = "1", features = ["full"] }
+tokio-stream = "0.1"
+futures = "0.3"
+async-stream = "0.3"
+anyhow = "1"
+thiserror = "1"
+
+[dev-dependencies]
+proptest = "1"
