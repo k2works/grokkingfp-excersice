@@ -9,3 +9,5 @@ pub mod ch04_higher_order;
 pub mod ch05_flatmap;
 pub mod ch06_option;
 pub mod ch07_result;
+pub mod ch08_io;
+pub mod ch09_stream;
