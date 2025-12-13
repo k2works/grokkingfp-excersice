@@ -304,3 +304,116 @@ export {
   // 7.11 Sample data
   sampleArtists,
 } from './ch07_either.js'
+
+// Chapter 8: IO Monad
+export {
+  // 8.1 IO basics
+  pureIO,
+  delayIO,
+  getCurrentTime,
+  getRandomNumber,
+  // 8.2 Die casting
+  castTheDieImpure,
+  castTheDie,
+  castTheDieTwice,
+  castTheDieNTimes,
+  // 8.3 IO composition
+  mapIO,
+  chainIO,
+  sequenceIO,
+  // 8.4 Task (async IO)
+  pureTask,
+  delayedTask,
+  mapTask,
+  chainTask,
+  sequenceTask,
+  // 8.5 TaskEither
+  rightTask,
+  leftTask,
+  fromPromise,
+  // 8.6 Meeting scheduling
+  type MeetingTime,
+  createMeetingTime,
+  meetingsOverlap,
+  possibleMeetings,
+  calendarEntriesApi,
+  scheduledMeetings,
+  // 8.7 orElse error handling
+  orElseTE,
+  retry,
+  retryWithDefault,
+  // 8.8 IO utilities
+  consoleLog,
+  chainAll,
+  printAndReturn,
+  // 8.9 IOEither
+  type IOEither,
+  rightIOE,
+  leftIOE,
+  tryCatchIO,
+  // 8.10 Memoization
+  memoizeIO,
+} from './ch08_io.js'
+
+// Chapter 9: Streams
+export {
+  // 9.1 LazyList basics
+  type LazyList,
+  fromArray,
+  singleton,
+  empty,
+  range,
+  rangeInclusive,
+  // 9.2 Infinite streams
+  repeatValue,
+  repeatFn,
+  cycleArray,
+  iterate,
+  naturals,
+  // 9.3 Stream transformations
+  take,
+  drop,
+  takeWhile,
+  dropWhile,
+  mapStream,
+  filterStream,
+  flatMapStream,
+  // 9.4 Stream combination
+  append,
+  zipStream,
+  zipWith,
+  zipWithIndex,
+  // 9.5 Sliding window
+  sliding,
+  chunk,
+  // 9.6 Fold/Reduce
+  foldStream,
+  toArray,
+  head,
+  last,
+  find,
+  // 9.7 Trend detection
+  trending,
+  downtrending,
+  isStable,
+  detectTrends,
+  // 9.8 Die streams
+  dieStream,
+  dieUntil,
+  dieUntilSum,
+  // 9.9 Async streams
+  repeatTask,
+  takeAsync,
+  interval,
+  zipLeftAsync,
+  // 9.10 Stream utilities
+  isEmpty,
+  count,
+  forAll,
+  exists,
+  dedup,
+  interleave,
+  scan,
+  fibonacci,
+  primes,
+} from './ch09_streams.js'
