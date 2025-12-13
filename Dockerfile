@@ -18,7 +18,6 @@ ENV DEBIAN_FRONTEND=noninteractive \
     DOTNET_VERSION=8.0 \
     RUBY_VERSION=3.3 \
     PYTHON_VERSION=3.11 \
-    ELIXIR_VERSION=1.15 \
     # Paths
     SDKMAN_DIR=/home/developer/.sdkman \
     PATH="/home/developer/.local/bin:/home/developer/.cargo/bin:/home/developer/.ghcup/bin:$PATH"
@@ -131,13 +130,10 @@ RUN wget https://raw.githubusercontent.com/technomancy/leiningen/stable/bin/lein
     && chmod +x /usr/local/bin/lein
 
 # =============================================================================
-# Elixir & Erlang
+# Elixir & Erlang (using Ubuntu packages for reliability)
 # =============================================================================
-RUN wget https://packages.erlang-solutions.com/erlang-solutions_2.0_all.deb \
-    && dpkg -i erlang-solutions_2.0_all.deb \
-    && rm erlang-solutions_2.0_all.deb \
-    && apt-get update \
-    && apt-get install -y esl-erlang elixir \
+RUN apt-get update \
+    && apt-get install -y erlang elixir \
     && rm -rf /var/lib/apt/lists/*
 
 # =============================================================================
