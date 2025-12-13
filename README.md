@@ -89,6 +89,56 @@ claude mcp add github npx -y @modelcontextprotocol/server-github -s project
 
 ### 運用
 
+#### GitHub Container Registry
+
+このプロジェクトでは、GitHub Container Registry（GHCR）を使用して開発コンテナイメージを管理しています。
+
+##### 自動ビルド・プッシュ
+
+タグをプッシュすると、GitHub Actions が自動的にコンテナイメージをビルドし、GHCR にプッシュします。
+
+```bash
+# タグを作成してプッシュ
+git tag 0.0.1
+git push origin 0.0.1
+```
+
+##### イメージの取得・実行
+
+GHCR からイメージを取得して実行するには：
+
+```bash
+# イメージをプル
+docker pull ghcr.io/k2works/grokkingfp-excersice:latest
+
+# または特定バージョン
+docker pull ghcr.io/k2works/grokkingfp-excersice:0.0.1
+
+# コンテナを実行
+docker run -it -v $(pwd):/srv ghcr.io/k2works/grokkingfp-excersice:latest
+```
+
+認証が必要な場合は、以下のコマンドでログインします：
+
+```bash
+# GitHub Personal Access Token でログイン
+echo $GITHUB_TOKEN | docker login ghcr.io -u <username> --password-stdin
+```
+
+##### 権限設定
+
+- リポジトリの Settings → Actions → General で `Read and write permissions` を設定
+- `GITHUB_TOKEN` に `packages: write` 権限が付与されています
+
+##### Dev Container の使用
+
+VS Code で Dev Container を使用する場合：
+
+1. VS Code で「Dev Containers: Reopen in Container」を実行
+2. または「Dev Containers: Rebuild and Reopen in Container」で再ビルド
+
+サポートされる言語：Scala, Java, F#, C#, Haskell, Clojure, Elixir, Rust, Python, TypeScript, Ruby
+
 **[⬆ back to top](#構成)**
 
 ### 開発
