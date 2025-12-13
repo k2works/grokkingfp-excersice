@@ -203,3 +203,104 @@ export {
   allCombinations,
   insidePoints,
 } from './ch05_flatmap.js'
+
+// Chapter 6: Error Handling with Option
+export {
+  // 6.1 Option basics
+  safeDivide,
+  parseNumber,
+  safeHead,
+  safeLast,
+  safeGet,
+  // 6.2 TvShow parsing
+  type TvShow,
+  createTvShow,
+  extractName,
+  extractYearStart,
+  extractYearEnd,
+  extractSingleYear,
+  parseShow,
+  // 6.3 Option operations
+  mapOption,
+  flatMapOption,
+  filterOption,
+  orElseOption,
+  getOrElseOption,
+  // 6.4 Error handling strategies
+  parseShowsBestEffort,
+  parseShowsAllOrNothing,
+  // 6.5 Search with Option
+  findFirst,
+  findLast,
+  // 6.6 forall and exists
+  forallOption,
+  existsOption,
+  // 6.7 Option utilities
+  toArray,
+  fromNullable,
+  fromPredicate,
+  // 6.8 Adding string numbers
+  addStrings,
+  // 6.9 Option and ReadonlyArray
+  traverseArray,
+  safeMax,
+  safeMin,
+} from './ch06_error_handling.js'
+
+// Chapter 7: Either and ADT
+export {
+  // 7.1 Either basics
+  safeDivideE,
+  parseNumberE,
+  // 7.2 TvShow parsing with Either
+  type TvShow as TvShowE,
+  createTvShow as createTvShowE,
+  extractNameE,
+  extractYearStartE,
+  extractYearEndE,
+  extractSingleYearE,
+  parseShowE,
+  // 7.3 Either operations
+  mapEither,
+  flatMapEither,
+  orElseEither,
+  getOrElseEither,
+  // 7.4 Option to Either conversion
+  optionToEither,
+  eitherToOption,
+  // 7.5 ADT - Sum types
+  type MusicGenre,
+  type YearsActive,
+  stillActive,
+  activeBetween,
+  type Location,
+  type Artist,
+  createArtist,
+  // 7.6 Pattern matching
+  wasArtistActive,
+  activeLength,
+  // 7.7 Search conditions
+  type SearchCondition,
+  searchByGenre,
+  searchByOrigin,
+  searchByActiveYears,
+  searchArtists,
+  searchArtistsAny,
+  // 7.8 Validation with Either
+  validateAge,
+  validateUsername,
+  validateEmail,
+  type User,
+  validateUser,
+  // 7.9 Either and ReadonlyArray
+  traverseArrayE,
+  collectRights,
+  // 7.10 Payment method ADT
+  type PaymentMethod,
+  creditCard,
+  bankTransfer,
+  cash,
+  describePayment,
+  // 7.11 Sample data
+  sampleArtists,
+} from './ch07_either.js'
