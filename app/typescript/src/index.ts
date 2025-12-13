@@ -477,3 +477,83 @@ export {
   createSemaphore,
   parSequenceN,
 } from './ch10_concurrent.js'
+
+// Chapter 11 & 12: Practical Application and Testing
+export {
+  // 11.1 Domain Model - Branded Types
+  type LocationId,
+  LocationId,
+  type Location as TravelLocation,
+  createLocation,
+  type Attraction,
+  createAttraction,
+  type MusicArtist as TravelMusicArtist,
+  createMusicArtist as createTravelMusicArtist,
+  type Movie as TravelMovie,
+  createMovie as createTravelMovie,
+  type Hotel,
+  createHotel,
+  // 11.2 SearchReport
+  type SearchReport,
+  createSearchReport,
+  emptySearchReport,
+  combineSearchReports,
+  type TravelGuide,
+  createTravelGuide,
+  // 11.3 Attraction Ordering
+  type AttractionOrdering,
+  ByName,
+  ByLocationPopulation,
+  compareAttractions,
+  // 11.4 DataAccess Interface
+  type DataAccess,
+  // 11.5 Resource Pattern
+  type Resource,
+  makeResource,
+  type ResourceEither,
+  makeResourceEither,
+  bracket,
+  bracketEither,
+  // 11.6 Ref-based Cache
+  type CacheRef,
+  createCacheRef,
+  cachedDataAccess,
+  // 11.7 TravelGuide Application
+  travelGuide,
+  travelGuides,
+  travelGuideWithHotels,
+  // 11.8 Test Data Access
+  type TestDataConfig,
+  createTestDataAccess,
+  // 12.1 Property-based Testing
+  type Generator,
+  Gen,
+  forAll,
+  forAll2,
+  // 12.2 Location Filtering
+  filterPopularLocations,
+  sortLocationsByPopulation,
+  topPopularLocations,
+  // 12.3 Validation Helpers
+  validateAttractionName,
+  validateLimit,
+  validatePopulation,
+  validateRating,
+  // 12.4 Sample Data
+  sampleLocation1,
+  sampleLocation2,
+  sampleLocation3,
+  sampleAttraction1,
+  sampleAttraction2,
+  sampleAttraction3,
+  sampleArtist1,
+  sampleArtist2,
+  sampleArtist3,
+  sampleMovie1,
+  sampleMovie2,
+  sampleMovie3,
+  sampleHotel1,
+  sampleHotel2,
+  sampleHotel3,
+  sampleDataAccess,
+} from './ch11_application.js'
