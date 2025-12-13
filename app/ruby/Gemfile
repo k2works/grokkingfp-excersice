@@ -1,0 +1,27 @@
+# frozen_string_literal: true
+
+source 'https://rubygems.org'
+
+ruby '>= 3.2.0'
+
+# Functional programming libraries
+gem 'dry-monads', '~> 1.6'
+gem 'dry-struct', '~> 1.6'
+gem 'dry-types', '~> 1.7'
+gem 'dry-validation', '~> 1.10'
+gem 'dry-auto_inject', '~> 1.0'
+
+# Concurrency
+gem 'concurrent-ruby', '~> 1.2'
+gem 'async', '~> 2.6'
+
+# Testing
+group :test do
+  gem 'rspec', '~> 3.12'
+  gem 'rspec-its', '~> 1.3'
+end
+
+group :development do
+  gem 'rubocop', '~> 1.57'
+  gem 'rubocop-rspec', '~> 2.25'
+end
