@@ -1,0 +1,9 @@
+# Bundler
+vendor/
+.bundle/
+
+# RSpec
+.rspec_status
+
+# IDE
+*.iml
