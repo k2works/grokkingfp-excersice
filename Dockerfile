@@ -201,7 +201,7 @@ RUN npm install -g @google/gemini-cli @anthropic-ai/claude-code
 # =============================================================================
 # MkDocs for documentation
 # =============================================================================
-RUN pip3 install --break-system-packages \
+RUN pip3 install \
     mkdocs \
     mkdocs-material \
     plantuml-markdown \
