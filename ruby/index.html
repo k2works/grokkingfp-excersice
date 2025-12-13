@@ -6,13 +6,17 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
-        <meta name="description" content="Scala、Java、F#、C#、Haskell、Clojure、Elixir、Rust、Python、TypeScript で学ぶ関数型プログラミング">
+        <meta name="description" content="Scala、Java、F#、C#、Haskell、Clojure、Elixir、Rust、Python、TypeScript、Ruby で学ぶ関数型プログラミング">
       
       
         <meta name="author" content="Project Team">
       
       
       
+        <link rel="prev" href="../typescript/part-6/">
+      
+      
+        <link rel="next" href="part-1/">
       
       
         
@@ -23,7 +27,7 @@
     
     
       
-        <title>Grokking Functional Programming - Ruby dry-rb 版 - Grokking Functional Programming</title>
+        <title>概要 - Grokking Functional Programming</title>
       
     
     
@@ -108,7 +112,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Grokking Functional Programming - Ruby dry-rb 版
+              概要
             
           </span>
         </div>
@@ -401,6 +405,28 @@
   
   
   TypeScript
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="./" class="md-tabs__link">
+          
+  
+  
+  Ruby
 
         </a>
       </li>
@@ -3032,6 +3058,573 @@
   
 
     
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_12" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_12" id="__nav_12_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Ruby
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_12_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_12">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Ruby
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    概要
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    概要
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        対象読者
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        記事一覧
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="記事一覧">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#part-i" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part I: 関数型プログラミングの基礎
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#part-ii" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part II: 関数型スタイルのプログラミング
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#part-iii-mayberesult" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part III: エラーハンドリングと Maybe/Result
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#part-iv-io" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part IV: IO と副作用の管理
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#part-v" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part V: 並行処理
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#part-vi" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part VI: 実践的なアプリケーション構築とテスト
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        学習パス
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        使用ライブラリ
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        リポジトリ構成
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ruby" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ruby と関数型プログラミング
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Ruby と関数型プログラミング">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        高階関数
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dry-struct" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        イミュータブルデータ（dry-struct）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#enumerable" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Enumerable と遅延評価
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dry-monads" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dry-monads による型安全なエラーハンドリング
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        パイプライン処理
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#scala" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Scala との対比
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dry-rb" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dry-rb エコシステム
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="dry-rb エコシステム">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_8" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        主要コンポーネント
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_9" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        関数型プログラミングの利点
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_10" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        参考資料
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="part-1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Part I - 基礎
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="part-2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Part II - 関数型スタイル
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="part-3/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Part III - エラーハンドリング
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="part-4/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Part IV - IO とストリーム
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="part-5/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Part V - 並行処理
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="part-6/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Part VI - 実践
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
   </ul>
 </nav>
                   </div>
@@ -3085,7 +3678,7 @@
 </table>
 <p><strong>キーワード</strong>: 純粋関数、参照透過性、イミュータブル、freeze</p>
 <hr />
-<h3 id="part-ii"><a href="part-2.md">Part II: 関数型スタイルのプログラミング</a><a class="headerlink" href="#part-ii" title="Permanent link">&para;</a></h3>
+<h3 id="part-ii"><a href="part-2/">Part II: 関数型スタイルのプログラミング</a><a class="headerlink" href="#part-ii" title="Permanent link">&para;</a></h3>
 <p>イミュータブルなデータ操作と高階関数を学びます。</p>
 <table>
 <thead>
@@ -3111,7 +3704,7 @@
 </table>
 <p><strong>キーワード</strong>: イミュータブル、高階関数、Enumerable、dry-struct</p>
 <hr />
-<h3 id="part-iii-mayberesult"><a href="part-3.md">Part III: エラーハンドリングと Maybe/Result</a><a class="headerlink" href="#part-iii-mayberesult" title="Permanent link">&para;</a></h3>
+<h3 id="part-iii-mayberesult"><a href="part-3/">Part III: エラーハンドリングと Maybe/Result</a><a class="headerlink" href="#part-iii-mayberesult" title="Permanent link">&para;</a></h3>
 <p>dry-monads を使った型安全なエラーハンドリングを学びます。</p>
 <table>
 <thead>
@@ -3133,7 +3726,7 @@
 </table>
 <p><strong>キーワード</strong>: Maybe、Result、dry-monads、Railway Oriented Programming</p>
 <hr />
-<h3 id="part-iv-io"><a href="part-4.md">Part IV: IO と副作用の管理</a><a class="headerlink" href="#part-iv-io" title="Permanent link">&para;</a></h3>
+<h3 id="part-iv-io"><a href="part-4/">Part IV: IO と副作用の管理</a><a class="headerlink" href="#part-iv-io" title="Permanent link">&para;</a></h3>
 <p>Task モナドと遅延評価を学びます。</p>
 <table>
 <thead>
@@ -3155,7 +3748,7 @@
 </table>
 <p><strong>キーワード</strong>: Task、Lazy、遅延評価、ストリーム処理</p>
 <hr />
-<h3 id="part-v"><a href="part-5.md">Part V: 並行処理</a><a class="headerlink" href="#part-v" title="Permanent link">&para;</a></h3>
+<h3 id="part-v"><a href="part-5/">Part V: 並行処理</a><a class="headerlink" href="#part-v" title="Permanent link">&para;</a></h3>
 <p>Ruby における並行処理を学びます。</p>
 <table>
 <thead>
@@ -3177,7 +3770,7 @@
 </table>
 <p><strong>キーワード</strong>: Fiber、async、concurrent-ruby、並行処理</p>
 <hr />
-<h3 id="part-vi"><a href="part-6.md">Part VI: 実践的なアプリケーション構築とテスト</a><a class="headerlink" href="#part-vi" title="Permanent link">&para;</a></h3>
+<h3 id="part-vi"><a href="part-6/">Part VI: 実践的なアプリケーション構築とテスト</a><a class="headerlink" href="#part-vi" title="Permanent link">&para;</a></h3>
 <p>実践的なアプリケーション構築とテスト戦略を学びます。</p>
 <table>
 <thead>

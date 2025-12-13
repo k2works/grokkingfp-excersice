@@ -1,0 +1,4743 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Scala、Java、F#、C#、Haskell、Clojure、Elixir、Rust、Python、TypeScript、Ruby で学ぶ関数型プログラミング">
+      
+      
+        <meta name="author" content="Project Team">
+      
+      
+      
+        <link rel="prev" href="../part-3/">
+      
+      
+        <link rel="next" href="../part-5/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.0">
+    
+    
+      
+        <title>Part IV - IO とストリーム - Grokking Functional Programming</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.618322db.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../docs/mkdocs/assets/css/extra.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#part-iv-io" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="Grokking Functional Programming" class="md-header__button md-logo" aria-label="Grokking Functional Programming" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Grokking Functional Programming
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Part IV - IO とストリーム
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/k2works/grokkingfp-excersice" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    grokkingfp-excersice
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../scala/" class="md-tabs__link">
+          
+  
+  
+  Scala
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../java/" class="md-tabs__link">
+          
+  
+  
+  Java
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../fsharp/" class="md-tabs__link">
+          
+  
+  
+  F#
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../csharp/" class="md-tabs__link">
+          
+  
+  
+  C#
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../haskell/" class="md-tabs__link">
+          
+  
+  
+  Haskell
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../clojure/" class="md-tabs__link">
+          
+  
+  
+  Clojure
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../elixir/" class="md-tabs__link">
+          
+  
+  
+  Elixir
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../rust/" class="md-tabs__link">
+          
+  
+  
+  Rust
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../python/" class="md-tabs__link">
+          
+  
+  
+  Python
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../typescript/" class="md-tabs__link">
+          
+  
+  
+  TypeScript
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../" class="md-tabs__link">
+          
+  
+  
+  Ruby
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+  
+
+<nav class="md-nav md-nav--primary md-nav--lifted md-nav--integrated" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Grokking Functional Programming" class="md-nav__button md-logo" aria-label="Grokking Functional Programming" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Grokking Functional Programming
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/k2works/grokkingfp-excersice" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    grokkingfp-excersice
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Scala
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Scala
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../scala/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    概要
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../scala/part-1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Part I - 基礎
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../scala/part-2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Part II - 関数型スタイル
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../scala/part-3/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Part III - エラーハンドリング
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../scala/part-4/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Part IV - IO と副作用
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../scala/part-5/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Part V - 並行処理
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../scala/part-6/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Part VI - 実践
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Java
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Java
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../java/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    概要
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../java/part-1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Part I - 基礎
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../java/part-2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Part II - 関数型スタイル
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../java/part-3/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Part III - エラーハンドリング
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../java/part-4/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Part IV - IO と副作用
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../java/part-5/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Part V - 並行処理
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../java/part-6/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Part VI - 実践
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    F#
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    F#
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../fsharp/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    概要
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../fsharp/part-1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Part I - 基礎
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../fsharp/part-2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Part II - 関数型スタイル
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../fsharp/part-3/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Part III - エラーハンドリング
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../fsharp/part-4/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Part IV - 非同期処理とストリーム
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../fsharp/part-5/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Part V - 並行処理
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../fsharp/part-6/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Part VI - 実践
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    C#
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    C#
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../csharp/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    概要
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../csharp/part-1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Part I - 基礎
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../csharp/part-2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Part II - 関数型スタイル
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../csharp/part-3/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Part III - エラーハンドリング
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../csharp/part-4/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Part IV - 非同期処理とストリーム
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../csharp/part-5/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Part V - 並行処理
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../csharp/part-6/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Part VI - 実践
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Haskell
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Haskell
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../haskell/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    概要
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../haskell/part-1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Part I - 基礎
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../haskell/part-2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Part II - 関数型スタイル
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../haskell/part-3/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Part III - エラーハンドリング
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../haskell/part-4/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Part IV - IO とストリーム
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../haskell/part-5/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Part V - 並行処理
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../haskell/part-6/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Part VI - 実践
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Clojure
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Clojure
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../clojure/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    概要
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../clojure/part-1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Part I - 基礎
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../clojure/part-2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Part II - 関数型スタイル
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../clojure/part-3/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Part III - nil 安全性
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../clojure/part-4/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Part IV - 副作用とシーケンス
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../clojure/part-5/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Part V - 並行処理
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../clojure/part-6/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Part VI - 実践
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Elixir
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Elixir
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../elixir/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    概要
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../elixir/part-1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Part I - 基礎
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../elixir/part-2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Part II - 関数型スタイル
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../elixir/part-3/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Part III - エラーハンドリング
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../elixir/part-4/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Part IV - IO とストリーム
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../elixir/part-5/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Part V - 並行処理と OTP
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../elixir/part-6/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Part VI - 実践
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9" >
+        
+          
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Rust
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Rust
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../rust/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    概要
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../rust/part-1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Part I - 基礎
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../rust/part-2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Part II - 関数型スタイル
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../rust/part-3/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Part III - エラーハンドリング
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../rust/part-4/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Part IV - 非同期とストリーム
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../rust/part-5/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Part V - 並行処理
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../rust/part-6/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Part VI - 実践
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_10" >
+        
+          
+          <label class="md-nav__link" for="__nav_10" id="__nav_10_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Python
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_10">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Python
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../python/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    概要
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../python/part-1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Part I - 基礎
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../python/part-2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Part II - 関数型スタイル
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../python/part-3/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Part III - エラーハンドリング
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../python/part-4/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Part IV - IO とストリーム
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../python/part-5/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Part V - 並行処理
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../python/part-6/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Part VI - 実践
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_11" >
+        
+          
+          <label class="md-nav__link" for="__nav_11" id="__nav_11_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    TypeScript
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_11_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_11">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    TypeScript
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../typescript/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    概要
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../typescript/part-1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Part I - 基礎
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../typescript/part-2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Part II - 関数型スタイル
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../typescript/part-3/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Part III - エラーハンドリング
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../typescript/part-4/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Part IV - Task と IO
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../typescript/part-5/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Part V - 並行処理
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../typescript/part-6/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Part VI - 実践
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_12" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_12" id="__nav_12_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Ruby
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_12_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_12">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Ruby
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    概要
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../part-1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Part I - 基礎
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../part-2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Part II - 関数型スタイル
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../part-3/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Part III - エラーハンドリング
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Part IV - IO とストリーム
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Part IV - IO とストリーム
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#8-io" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第8章: IO モナドの導入
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="第8章: IO モナドの導入">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#81" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.1 副作用の問題
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#82-io" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.2 IO モナドとは
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#83-ruby-io" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.3 Ruby での IO モナド実装
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#84" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.4 サイコロを振る例
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="8.4 サイコロを振る例">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        不純な関数（副作用あり）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#io" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        IO を使った純粋な記述
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#85-io" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.5 IO の作成方法
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#86-io" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.6 IO の合成
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#87" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.7 ミーティングスケジューリングの例
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="8.7 ミーティングスケジューリングの例">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        予定の取得
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        空き時間の計算（純粋関数）
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#88-or_else" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.8 or_else によるエラーハンドリング
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="8.8 or_else によるエラーハンドリング">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        リトライ戦略
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        汎用リトライ関数
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#89-sequence-io" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.9 sequence による IO のリスト処理
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="8.9 sequence による IO のリスト処理">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        複数人の予定を取得
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第9章: ストリーム処理
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="第9章: ストリーム処理">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#91" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.1 ストリームとは
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#92-lazystream" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.2 LazyStream の実装
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#93" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.3 純粋なストリーム
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#94" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.4 無限ストリーム
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#95" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.5 便利なストリーム生成メソッド
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#96-io" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.6 IO を含むストリーム
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="9.6 IO を含むストリーム">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ストリームの実行
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#97" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.7 ストリームの主要操作
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#98" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.8 通貨交換レートの例
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="9.8 通貨交換レートの例">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_8" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        トレンド判定（純粋関数）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_9" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        レートのストリーム
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#99" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.9 スライディングウィンドウ
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="9.9 スライディングウィンドウ">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_10" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        トレンド検出
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#910" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.10 ストリームの結合
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#911" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.11 便利なストリーム関数
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_11" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        まとめ
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="まとめ">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#part-iv" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part IV で学んだこと
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#io-lazystream" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        IO と LazyStream の比較
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ruby-scala" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ruby と Scala の対応
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_12" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        キーポイント
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_13" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        次のステップ
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_14" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        演習問題
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="演習問題">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-io" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        問題 1: IO の基本
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-io" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        問題 2: IO の合成
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        問題 3: リトライ
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        問題 4: ストリーム操作
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        問題 5: トレンド検出
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        問題 6: フィボナッチ数列
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#7" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        問題 7: 移動平均
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../part-5/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Part V - 並行処理
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../part-6/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Part VI - 実践
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="part-iv-io">Part IV: IO と副作用の管理<a class="headerlink" href="#part-iv-io" title="Permanent link">&para;</a></h1>
+<p>本章では、関数型プログラミングにおける副作用の扱い方を学びます。IO モナドを使って副作用を純粋関数内で安全に記述し、ストリーム処理で無限のデータを扱う方法を習得します。</p>
+<hr />
+<h2 id="8-io">第8章: IO モナドの導入<a class="headerlink" href="#8-io" title="Permanent link">&para;</a></h2>
+<h3 id="81">8.1 副作用の問題<a class="headerlink" href="#81" title="Permanent link">&para;</a></h3>
+<p>純粋関数は副作用を持ちません。しかし、実際のプログラムには副作用が必要です:</p>
+<ul>
+<li>ファイルの読み書き</li>
+<li>ネットワーク通信</li>
+<li>データベースアクセス</li>
+<li>乱数生成</li>
+<li>現在時刻の取得</li>
+</ul>
+<p><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiBjb250ZW50U3R5bGVUeXBlPSJ0ZXh0L2NzcyIgZGF0YS1kaWFncmFtLXR5cGU9IkRFU0NSSVBUSU9OIiBoZWlnaHQ9IjI0OXB4IiBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSJub25lIiBzdHlsZT0id2lkdGg6OTcycHg7aGVpZ2h0OjI0OXB4O2JhY2tncm91bmQ6I0ZGRkZGRjsiIHZlcnNpb249IjEuMSIgdmlld0JveD0iMCAwIDk3MiAyNDkiIHdpZHRoPSI5NzJweCIgem9vbUFuZFBhbj0ibWFnbmlmeSI+PGRlZnMvPjxnPjwhLS1jbHVzdGVyID8/Pz8/Py0tPjxnIGNsYXNzPSJjbHVzdGVyIiBkYXRhLWVudGl0eT0iLi4uLi4uIiBkYXRhLXNvdXJjZS1saW5lPSIzIiBkYXRhLXVpZD0iZW50MDAwMiIgaWQ9ImNsdXN0ZXJfLi4uLi4uIj48cmVjdCBmaWxsPSIjRkZGRkZGIiBoZWlnaHQ9IjIzMS41OCIgcng9IjIuNSIgcnk9IjIuNSIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxOyIgd2lkdGg9Ijc0NyIgeD0iMTIiIHk9IjEyIi8+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9IlZlcmRhbmEiIGZvbnQtc2l6ZT0iMTQiIGZvbnQtd2VpZ2h0PSJib2xkIiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjgzLjk5OTYiIHg9IjM0My41MDAyIiB5PSIyNi45OTUxIj4mIzIxMTAzOyYjMjAzMTY7JiMyOTk5MjsmIzEyMzk4OyYjMjE4Mzk7JiMzODk4ODs8L3RleHQ+PC9nPjwhLS1jbHVzdGVyIGltcHVyZS0tPjxnIGNsYXNzPSJjbHVzdGVyIiBkYXRhLWVudGl0eT0iaW1wdXJlIiBkYXRhLXNvdXJjZS1saW5lPSI0IiBkYXRhLXVpZD0iZW50MDAwMyIgaWQ9ImNsdXN0ZXJfaW1wdXJlIj48cmVjdCBmaWxsPSIjRkZGRkZGIiBoZWlnaHQ9IjE2NC41OCIgcng9IjIuNSIgcnk9IjIuNSIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxOyIgd2lkdGg9IjI2MSIgeD0iMzYiIHk9IjU1Ii8+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9IlZlcmRhbmEiIGZvbnQtc2l6ZT0iMTQiIGZvbnQtd2VpZ2h0PSJib2xkIiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjExMS45OTk1IiB4PSIxMTAuNTAwMiIgeT0iNjkuOTk1MSI+JiMyMTEwMzsmIzIwMzE2OyYjMjk5OTI7JiMxMjQzNDsmIzI1MzQ1OyYjMTIzODg7JiMzODMwNjsmIzI1OTY4OzwvdGV4dD48L2c+PCEtLWNsdXN0ZXIgcHVyZS0tPjxnIGNsYXNzPSJjbHVzdGVyIiBkYXRhLWVudGl0eT0icHVyZSIgZGF0YS1zb3VyY2UtbGluZT0iMTAiIGRhdGEtdWlkPSJlbnQwMDA3IiBpZD0iY2x1c3Rlcl9wdXJlIj48cmVjdCBmaWxsPSIjRkZGRkZGIiBoZWlnaHQ9IjczLjMiIHJ4PSIyLjUiIHJ5PSIyLjUiIHN0eWxlPSJzdHJva2U6IzAwMDAwMDtzdHJva2Utd2lkdGg6MTsiIHdpZHRoPSI0MTQiIHg9IjMyMSIgeT0iNTUiLz48dGV4dCBmaWxsPSIjMDAwMDAwIiBmb250LWZhbWlseT0iVmVyZGFuYSIgZm9udC1zaXplPSIxNCIgZm9udC13ZWlnaHQ9ImJvbGQiIGxlbmd0aEFkanVzdD0ic3BhY2luZyIgdGV4dExlbmd0aD0iNTUuOTk5OCIgeD0iNTAwLjAwMDEiIHk9IjY5Ljk5NTEiPiYjMzIwMjA7JiMzMTg4MzsmIzM4MzA2OyYjMjU5Njg7PC90ZXh0PjwvZz48IS0tZW50aXR5ID8/Pz8/Py0tPjxnIGNsYXNzPSJlbnRpdHkiIGRhdGEtZW50aXR5PSIuLi4uLi4iIGRhdGEtc291cmNlLWxpbmU9IjUiIGRhdGEtdWlkPSJlbnQwMDA0IiBpZD0iZW50aXR5Xy4uLi4uLiI+PHJlY3QgZmlsbD0iI0ZGRkZGRiIgaGVpZ2h0PSIyMi4yOTY5IiByeD0iMi41IiByeT0iMi41IiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE7IiB3aWR0aD0iMTAzLjk5OTYiIHg9IjUyIiB5PSI5MCIvPjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJWZXJkYW5hIiBmb250LXNpemU9IjE0IiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjgzLjk5OTYiIHg9IjYyIiB5PSIxMDUuOTk1MSI+JiMxMjQ4NjsmIzEyNDczOyYjMTI0ODg7JiMxMjM2NDsmIzIyMjU2OyYjMzg2Mjc7PC90ZXh0PjwvZz48IS0tZW50aXR5ID8/Pz8/LS0+PGcgY2xhc3M9ImVudGl0eSIgZGF0YS1lbnRpdHk9Ii4uLi4uIiBkYXRhLXNvdXJjZS1saW5lPSI2IiBkYXRhLXVpZD0iZW50MDAwNSIgaWQ9ImVudGl0eV8uLi4uLiI+PHJlY3QgZmlsbD0iI0ZGRkZGRiIgaGVpZ2h0PSIyMi4yOTY5IiByeD0iMi41IiByeT0iMi41IiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE7IiB3aWR0aD0iODkuOTk5NyIgeD0iMTkxIiB5PSI5MCIvPjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJWZXJkYW5hIiBmb250LXNpemU9IjE0IiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjY5Ljk5OTciIHg9IjIwMSIgeT0iMTA1Ljk5NTEiPiYjMjAxMDQ7JiMyODIwNDsmIzE5OTgxOyYjMjE0ODc7JiMzMzAyMTs8L3RleHQ+PC9nPjwhLS1lbnRpdHkgPz8/Pz8/Pz8tLT48ZyBjbGFzcz0iZW50aXR5IiBkYXRhLWVudGl0eT0iLi4uLi4uLi4iIGRhdGEtc291cmNlLWxpbmU9IjciIGRhdGEtdWlkPSJlbnQwMDA2IiBpZD0iZW50aXR5Xy4uLi4uLi4uIj48cmVjdCBmaWxsPSIjRkZGRkZGIiBoZWlnaHQ9IjIyLjI5NjkiIHJ4PSIyLjUiIHJ5PSIyLjUiIHN0eWxlPSJzdHJva2U6IzAwMDAwMDtzdHJva2Utd2lkdGg6MTsiIHdpZHRoPSIxMzEuOTk5NSIgeD0iNTIiIHk9IjE4MS4yOCIvPjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJWZXJkYW5hIiBmb250LXNpemU9IjE0IiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjExMS45OTk1IiB4PSI2MiIgeT0iMTk3LjI3NTEiPiYjMjE0NDI7JiMyOTAzMTsmIzM2ODc5OyYjMzY5NDI7JiMyNDYxNTsmIzEyMzY0OyYjMTIzOTQ7JiMxMjM1Njs8L3RleHQ+PC9nPjwhLS1lbnRpdHkgPz8/Pz8/LS0+PGcgY2xhc3M9ImVudGl0eSIgZGF0YS1lbnRpdHk9Ii4uLi4uLiIgZGF0YS1zb3VyY2UtbGluZT0iMTEiIGRhdGEtdWlkPSJlbnQwMDA4IiBpZD0iZW50aXR5Xy4uLi4uLiI+PHJlY3QgZmlsbD0iI0ZGRkZGRiIgaGVpZ2h0PSIyMi4yOTY5IiByeD0iMi41IiByeT0iMi41IiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE7IiB3aWR0aD0iMTAzLjk5OTYiIHg9IjMzNyIgeT0iOTAiLz48dGV4dCBmaWxsPSIjMDAwMDAwIiBmb250LWZhbWlseT0iVmVyZGFuYSIgZm9udC1zaXplPSIxNCIgbGVuZ3RoQWRqdXN0PSJzcGFjaW5nIiB0ZXh0TGVuZ3RoPSI4My45OTk2IiB4PSIzNDciIHk9IjEwNS45OTUxIj4mIzEyNDg2OyYjMTI0NzM7JiMxMjQ4ODsmIzEyMzY0OyYjMjM0ODE7JiMyNjEzMTs8L3RleHQ+PC9nPjwhLS1lbnRpdHkgPz8/Py0tPjxnIGNsYXNzPSJlbnRpdHkiIGRhdGEtZW50aXR5PSIuLi4uIiBkYXRhLXNvdXJjZS1saW5lPSIxMiIgZGF0YS11aWQ9ImVudDAwMDkiIGlkPSJlbnRpdHlfLi4uLiI+PHJlY3QgZmlsbD0iI0ZGRkZGRiIgaGVpZ2h0PSIyMi4yOTY5IiByeD0iMi41IiByeT0iMi41IiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE7IiB3aWR0aD0iNzUuOTk5OCIgeD0iNDc2IiB5PSI5MCIvPjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJWZXJkYW5hIiBmb250LXNpemU9IjE0IiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjU1Ljk5OTgiIHg9IjQ4NiIgeT0iMTA1Ljk5NTEiPiYjMjAxMDQ7JiMyODIwNDsmIzIxNDg3OyYjMzMwMjE7PC90ZXh0PjwvZz48IS0tZW50aXR5ID8/Pz8/Pz8/LS0+PGcgY2xhc3M9ImVudGl0eSIgZGF0YS1lbnRpdHk9Ii4uLi4uLi4uIiBkYXRhLXNvdXJjZS1saW5lPSIxMyIgZGF0YS11aWQ9ImVudDAwMTAiIGlkPSJlbnRpdHlfLi4uLi4uLi4iPjxyZWN0IGZpbGw9IiNGRkZGRkYiIGhlaWdodD0iMjIuMjk2OSIgcng9IjIuNSIgcnk9IjIuNSIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxOyIgd2lkdGg9IjEzMS45OTk1IiB4PSI1ODciIHk9IjkwIi8+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9IlZlcmRhbmEiIGZvbnQtc2l6ZT0iMTQiIGxlbmd0aEFkanVzdD0ic3BhY2luZyIgdGV4dExlbmd0aD0iMTExLjk5OTUiIHg9IjU5NyIgeT0iMTA1Ljk5NTEiPiYjMjE0NDI7JiMyOTAzMTsmIzM2ODc5OyYjMzY5NDI7JiMyNDYxNTsmIzEyMzY0OyYjMTIzNTQ7JiMxMjQyNzs8L3RleHQ+PC9nPjxnIGNsYXNzPSJlbnRpdHkiIGRhdGEtZW50aXR5PSJHTU4xMSIgZGF0YS1zb3VyY2UtbGluZT0iMTgiIGRhdGEtdWlkPSJlbnQwMDEyIiBpZD0iZW50aXR5X0dNTjExIj48cGF0aCBkPSJNNzc1LDE3Mi4zIEw3NzUsMjEyLjU2NTYgQTAsMCAwIDAgMCA3NzUsMjEyLjU2NTYgTDk2NS4wMDAyLDIxMi41NjU2IEEwLDAgMCAwIDAgOTY1LjAwMDIsMjEyLjU2NTYgTDk2NS4wMDAyLDE4Mi4zIEw5NTUuMDAwMiwxNzIuMyBMODI2LjU1LDE3Mi4zIEw2NzguNzQsMTEyLjc0IEw4MTguNTUsMTcyLjMgTDc3NSwxNzIuMyBBMCwwIDAgMCAwIDc3NSwxNzIuMyIgZmlsbD0iI0ZGRkZGRiIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxOyIvPjxwYXRoIGQ9Ik05NTUuMDAwMiwxNzIuMyBMOTU1LjAwMDIsMTgyLjMgTDk2NS4wMDAyLDE4Mi4zIEw5NTUuMDAwMiwxNzIuMyIgZmlsbD0iI0ZGRkZGRiIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxOyIvPjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJWZXJkYW5hIiBmb250LXNpemU9IjEzIiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjExNy4wMDAxIiB4PSI3ODEiIHk9IjE4OS4zNjY5Ij4mIzEyMzkzOyYjMTIzNTg7JiMxMjM3NzsmIzEyNDI4OyYjMTI0MDA7JiMyMTEwMzsmIzIwMzE2OyYjMjk5OTI7JiMxMjQzNDs8L3RleHQ+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9IlZlcmRhbmEiIGZvbnQtc2l6ZT0iMTMiIGxlbmd0aEFkanVzdD0ic3BhY2luZyIgdGV4dExlbmd0aD0iMTY5LjAwMDIiIHg9Ijc4MSIgeT0iMjA0LjQ5OTciPiYjMzIwMjA7JiMzMTg4MzsmIzM4MzA2OyYjMjU5Njg7JiMxMjM5ODsmIzEyNDI0OyYjMTIzNTg7JiMxMjM5NTsmIzI1MjAxOyYjMTIzNjA7JiMxMjQyNzsmIzEyMzYzOyYjNjUzMTE7PC90ZXh0PjwvZz48IS0tU1JDPVtYUDNESWlEMDU4TnR5bkpKVVJGTzNiZmVhWEI3YkdZejRvcWZZR1FxNVFNMi0wRnJacFFBWXdRcUp0Q3BheXhBTC1YSzU1OUdraHR0ZEZDVEphdGlTUFZKVGlqZlVlRzRsMnVTUnhWNUFMRXpJUjZ1QVZqRjI2Q3JJQ3JUbWtaWHRtOXZoWEQwVTNJTnp0Z0dDVWhpcXdSUkZXWXVEVElUZTQ0UFhic0tFT09IR2dBNmNIYS1pOXpGQ09scXpBc09kZ2ZxaVdtTmxzVUxvbDlhUDNnZldKRlQ2TGFSbVdsMkNJRDc2b3RCcHR4djRMVjBfc0Y3a1J3d3NDSGtQcWdLeVBmZmdQdWxFRHRuWFYxVFdsMkNxNE11SGNiNU1OS0FLZ3JhanFDUFZLalZUVXlUOFI5djJGN05fOVBtaHE3TmNJaTBdLS0+PC9nPjwvc3ZnPg==" class="uml" alt="uml diagram" title="" /></p>
+<h3 id="82-io">8.2 IO モナドとは<a class="headerlink" href="#82-io" title="Permanent link">&para;</a></h3>
+<p><strong>IO モナド</strong>は「副作用を持つ計算の<strong>記述</strong>」を表す型です。</p>
+<ul>
+<li><code>IO</code> は「実行すると値を返す副作用のある計算」</li>
+<li>IO 値を作成しただけでは副作用は発生しない</li>
+<li><code>run!</code> で実際に実行される</li>
+</ul>
+<p><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiBjb250ZW50U3R5bGVUeXBlPSJ0ZXh0L2NzcyIgZGF0YS1kaWFncmFtLXR5cGU9IkRFU0NSSVBUSU9OIiBoZWlnaHQ9IjQwN3B4IiBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSJub25lIiBzdHlsZT0id2lkdGg6MzU3cHg7aGVpZ2h0OjQwN3B4O2JhY2tncm91bmQ6I0ZGRkZGRjsiIHZlcnNpb249IjEuMSIgdmlld0JveD0iMCAwIDM1NyA0MDciIHdpZHRoPSIzNTdweCIgem9vbUFuZFBhbj0ibWFnbmlmeSI+PGRlZnMvPjxnPjwhLS1jbHVzdGVyIElPID8/Pz8tLT48ZyBjbGFzcz0iY2x1c3RlciIgZGF0YS1lbnRpdHk9IklPIC4uLi4iIGRhdGEtc291cmNlLWxpbmU9IjMiIGRhdGEtdWlkPSJlbnQwMDAyIiBpZD0iY2x1c3Rlcl9JTyAuLi4uIj48cmVjdCBmaWxsPSIjRkZGRkZGIiBoZWlnaHQ9IjM4OS4xNiIgcng9IjIuNSIgcnk9IjIuNSIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxOyIgd2lkdGg9IjE4NCIgeD0iMTIiIHk9IjEyIi8+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9IlZlcmRhbmEiIGZvbnQtc2l6ZT0iMTQiIGZvbnQtd2VpZ2h0PSJib2xkIiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9Ijc3Ljk4NDEiIHg9IjY1LjAwNzkiIHk9IjI2Ljk5NTEiPklPICYjMTIzOTg7JiMyMDE4MTsmIzMyMDY4OyYjMTI0MTU7PC90ZXh0PjwvZz48IS0tZW50aXR5IGNyZWF0ZS0tPjxnIGNsYXNzPSJlbnRpdHkiIGRhdGEtZW50aXR5PSJjcmVhdGUiIGRhdGEtc291cmNlLWxpbmU9IjQiIGRhdGEtdWlkPSJlbnQwMDAzIiBpZD0iZW50aXR5X2NyZWF0ZSI+PHJlY3QgZmlsbD0iI0ZGRkZGRiIgaGVpZ2h0PSIyMi4yOTY5IiByeD0iMi41IiByeT0iMi41IiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE7IiB3aWR0aD0iMTUxLjAxNzQiIHg9IjI4LjQ5IiB5PSI0NyIvPjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJWZXJkYW5hIiBmb250LXNpemU9IjE0IiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjEzMS4wMTc0IiB4PSIzOC40OSIgeT0iNjIuOTk1MSI+SU8uZGVsYXkgeyAmIzIxMTAzOyYjMjAzMTY7JiMyOTk5MjsgfTwvdGV4dD48L2c+PCEtLWVudGl0eSBpby0tPjxnIGNsYXNzPSJlbnRpdHkiIGRhdGEtZW50aXR5PSJpbyIgZGF0YS1zb3VyY2UtbGluZT0iNSIgZGF0YS11aWQ9ImVudDAwMDQiIGlkPSJlbnRpdHlfaW8iPjxyZWN0IGZpbGw9IiNGRkZGRkYiIGhlaWdodD0iMjIuMjk2OSIgcng9IjIuNSIgcnk9IjIuNSIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxOyIgd2lkdGg9IjEyMy41OTgzIiB4PSI0NC4yIiB5PSIxNDYuMyIvPjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJWZXJkYW5hIiBmb250LXNpemU9IjE0IiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjEwMy41OTgzIiB4PSI1NC4yIiB5PSIxNjIuMjk1MSI+SU8gJiMxMjQ1ODsmIzEyNTAyOyYjMTI0NzI7JiMxMjQ1NTsmIzEyNDYzOyYjMTI0ODg7PC90ZXh0PjwvZz48IS0tZW50aXR5IHJ1bi0tPjxnIGNsYXNzPSJlbnRpdHkiIGRhdGEtZW50aXR5PSJydW4iIGRhdGEtc291cmNlLWxpbmU9IjYiIGRhdGEtdWlkPSJlbnQwMDA1IiBpZD0iZW50aXR5X3J1biI+PHJlY3QgZmlsbD0iI0ZGRkZGRiIgaGVpZ2h0PSIyMi4yOTY5IiByeD0iMi41IiByeT0iMi41IiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE7IiB3aWR0aD0iNDkuMTE0MyIgeD0iODEuNDQiIHk9IjI1NC41OCIvPjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJWZXJkYW5hIiBmb250LXNpemU9IjE0IiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjI5LjExNDMiIHg9IjkxLjQ0IiB5PSIyNzAuNTc1MSI+cnVuITwvdGV4dD48L2c+PCEtLWVudGl0eSBlZmZlY3QtLT48ZyBjbGFzcz0iZW50aXR5IiBkYXRhLWVudGl0eT0iZWZmZWN0IiBkYXRhLXNvdXJjZS1saW5lPSI3IiBkYXRhLXVpZD0iZW50MDAwNiIgaWQ9ImVudGl0eV9lZmZlY3QiPjxyZWN0IGZpbGw9IiNGRkZGRkYiIGhlaWdodD0iMjIuMjk2OSIgcng9IjIuNSIgcnk9IjIuNSIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxOyIgd2lkdGg9IjE0NS45OTk1IiB4PSIzMyIgeT0iMzYyLjg2Ii8+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9IlZlcmRhbmEiIGZvbnQtc2l6ZT0iMTQiIGxlbmd0aEFkanVzdD0ic3BhY2luZyIgdGV4dExlbmd0aD0iMTI1Ljk5OTUiIHg9IjQzIiB5PSIzNzguODU1MSI+JiMyMTEwMzsmIzIwMzE2OyYjMjk5OTI7JiMxMjM2NDsmIzIzNDU1OyYjMzQ4OTI7JiMxMjM3MzsmIzEyNDI4OyYjMTI0Mjc7PC90ZXh0PjwvZz48ZyBjbGFzcz0iZW50aXR5IiBkYXRhLWVudGl0eT0iR01OMTAiIGRhdGEtc291cmNlLWxpbmU9IjE1IiBkYXRhLXVpZD0iZW50MDAxMSIgaWQ9ImVudGl0eV9HTU4xMCI+PHBhdGggZD0iTTIxMiwyNDUuNiBMMjEyLDI4NS44NjU2IEwzNTAuMDAwMSwyODUuODY1NiBMMzUwLjAwMDEsMjU1LjYgTDM0MC4wMDAxLDI0NS42IEwyMTIsMjQ1LjYiIGZpbGw9IiNGRkZGRkYiIHN0eWxlPSJzdHJva2U6IzAwMDAwMDtzdHJva2Utd2lkdGg6MTsiLz48cGF0aCBkPSJNMzQwLjAwMDEsMjQ1LjYgTDM0MC4wMDAxLDI1NS42IEwzNTAuMDAwMSwyNTUuNiBMMzQwLjAwMDEsMjQ1LjYiIGZpbGw9IiNGRkZGRkYiIHN0eWxlPSJzdHJva2U6IzAwMDAwMDtzdHJva2Utd2lkdGg6MTsiLz48dGV4dCBmaWxsPSIjMDAwMDAwIiBmb250LWZhbWlseT0iVmVyZGFuYSIgZm9udC1zaXplPSIxMyIgbGVuZ3RoQWRqdXN0PSJzcGFjaW5nIiB0ZXh0TGVuZ3RoPSI3OC4wMDAxIiB4PSIyMTgiIHk9IjI2Mi42NjY5Ij4mIzEyMzcxOyYjMTIzOTg7JiMyNjE3ODsmIzI4ODU3OyYjMTIzOTE7JiMxMjM5OTs8L3RleHQ+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9IlZlcmRhbmEiIGZvbnQtc2l6ZT0iMTMiIGxlbmd0aEFkanVzdD0ic3BhY2luZyIgdGV4dExlbmd0aD0iMTE3LjAwMDEiIHg9IjIxOCIgeT0iMjc3Ljc5OTciPiYjMjExMDM7JiMyMDMxNjsmIzI5OTkyOyYjMTIzOTk7JiMzMDMzMDsmIzI5OTgzOyYjMTIzNzU7JiMxMjM5NDsmIzEyMzU2OzwvdGV4dD48L2c+PCEtLWxpbmsgY3JlYXRlIHRvIGlvLS0+PGcgY2xhc3M9ImxpbmsiIGRhdGEtZW50aXR5LTE9ImNyZWF0ZSIgZGF0YS1lbnRpdHktMj0iaW8iIGRhdGEtc291cmNlLWxpbmU9IjkiIGRhdGEtdWlkPSJsbms3IiBpZD0ibGlua19jcmVhdGVfaW8iPjxwYXRoIGQ9Ik0xMDQuMjEsNjkuNTYgQzEwNC42LDg4LjE5IDEwNS4yNzg3LDEyMS4wMzEyIDEwNS42NTg3LDEzOS44MjEyIiBmaWxsPSJub25lIiBpZD0iY3JlYXRlLXRvLWlvIiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE7Ii8+PHBvbHlnb24gZmlsbD0iIzAwMDAwMCIgcG9pbnRzPSIxMDUuNzgsMTQ1LjgyLDEwOS41OTcyLDEzNi43NDEsMTA1LjY3ODksMTQwLjgyMSwxMDEuNTk4OCwxMzYuOTAyNywxMDUuNzgsMTQ1LjgyIiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE7Ii8+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9IlZlcmRhbmEiIGZvbnQtc2l6ZT0iMTMiIGxlbmd0aEFkanVzdD0ic3BhY2luZyIgdGV4dExlbmd0aD0iNjUuMDAwMSIgeD0iMTA2LjEyIiB5PSIxMTIuMzY2OSI+JiMzNTM1MjsmIzM2ODQ4OyYjMTI0MzQ7JiMyMDMxNjsmIzI1MTA0OzwvdGV4dD48L2c+PCEtLWxpbmsgaW8gdG8gcnVuLS0+PGcgY2xhc3M9ImxpbmsiIGRhdGEtZW50aXR5LTE9ImlvIiBkYXRhLWVudGl0eS0yPSJydW4iIGRhdGEtc291cmNlLWxpbmU9IjEwIiBkYXRhLXVpZD0ibG5rOCIgaWQ9ImxpbmtfaW9fcnVuIj48cGF0aCBkPSJNMTA2LDE2OS4wMyBDMTA2LDE4OS40IDEwNiwyMjcuODYgMTA2LDI0OC4xOSIgZmlsbD0ibm9uZSIgaWQ9ImlvLXRvLXJ1biIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxOyIvPjxwb2x5Z29uIGZpbGw9IiMwMDAwMDAiIHBvaW50cz0iMTA2LDI1NC4xOSwxMTAsMjQ1LjE5LDEwNiwyNDkuMTksMTAyLDI0NS4xOSwxMDYsMjU0LjE5IiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE7Ii8+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9IlZlcmRhbmEiIGZvbnQtc2l6ZT0iMTMiIGxlbmd0aEFkanVzdD0ic3BhY2luZyIgdGV4dExlbmd0aD0iNjUuMDAwMSIgeD0iMTA3IiB5PSIyMTEuNjY2OSI+JiMyMzQ1NTsmIzM0ODkyOyYjMTI0MzQ7JiMyNTM1MTsmIzMxMDM0OzwvdGV4dD48L2c+PCEtLWxpbmsgcnVuIHRvIGVmZmVjdC0tPjxnIGNsYXNzPSJsaW5rIiBkYXRhLWVudGl0eS0xPSJydW4iIGRhdGEtZW50aXR5LTI9ImVmZmVjdCIgZGF0YS1zb3VyY2UtbGluZT0iMTEiIGRhdGEtdWlkPSJsbms5IiBpZD0ibGlua19ydW5fZWZmZWN0Ij48cGF0aCBkPSJNMTA2LDI3Ny4zMSBDMTA2LDI5Ny42OCAxMDYsMzM2LjE0IDEwNiwzNTYuNDgiIGZpbGw9Im5vbmUiIGlkPSJydW4tdG8tZWZmZWN0IiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE7Ii8+PHBvbHlnb24gZmlsbD0iIzAwMDAwMCIgcG9pbnRzPSIxMDYsMzYyLjQ4LDExMCwzNTMuNDgsMTA2LDM1Ny40OCwxMDIsMzUzLjQ4LDEwNiwzNjIuNDgiIHN0eWxlPSJzdHJva2U6IzAwMDAwMDtzdHJva2Utd2lkdGg6MTsiLz48dGV4dCBmaWxsPSIjMDAwMDAwIiBmb250LWZhbWlseT0iVmVyZGFuYSIgZm9udC1zaXplPSIxMyIgbGVuZ3RoQWRqdXN0PSJzcGFjaW5nIiB0ZXh0TGVuZ3RoPSI2NS4wMDAxIiB4PSIxMDciIHk9IjMyOC45MjY5Ij4mIzIzNDU1OyYjMzg1NTU7JiMxMjM5NTsmIzIzNDU1OyYjMzQ4OTI7PC90ZXh0PjwvZz48IS0tbGluayBpbyB0byBHTU4xMC0tPjxnIGNsYXNzPSJsaW5rIiBkYXRhLWVudGl0eS0xPSJpbyIgZGF0YS1lbnRpdHktMj0iR01OMTAiIGRhdGEtc291cmNlLWxpbmU9IjE1IiBkYXRhLXVpZD0ibG5rMTIiIGlkPSJsaW5rX2lvX0dNTjEwIj48cGF0aCBkPSJNMTI2Ljk4LDE2OS4wMiBDMTQyLjE4LDE3Ni44MyAxNjMuMTIsMTg3LjkzIDE4MSwxOTguNiBDMjA1Ljg1LDIxMy40MiAyMzMuMTksMjMxLjY0IDI1MywyNDUuMiIgZmlsbD0ibm9uZSIgaWQ9ImlvLUdNTjEwIiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE7c3Ryb2tlLWRhc2hhcnJheTo3LDc7Ii8+PC9nPjwhLS1TUkM9W0pQMzFJaUQwNTROdHhvalVrd3lWdUNBekF4elhKMlBRSTFFOVNJNmJZcFNqTTM0QmdRclE1T2VXajVIZXQwWXI4bHNPcnNSWU5wWUpYRTlra0ZWQ2NTbEt1YkZQYWRaY1lzTzA0NGFkNWk2OUJ4NS1VOEhDWXl0dEk3X3NjRFByUjhDWjhqU01Vd3hxbklNc1NOa1RSZHZVejcyNmRKZ0FTdEdZQU1BdnV2M0xkQmx0aDlRaWZnbkl4bE9CaDFiTUk3R0hyOGg0N0FmZWZzSEFqZWo5X2ZlbVpMV2JoNnVBS2RnVXNHWEdGZU1EbmU3SHVKeGNpeVR5X1M1Z082dmRfTGltZVVzQ3M5SUxJMHNvdjRnX2hTMmNqWXJiOVYzeHpDcHFOZkJHMEdYMmVweUV1cFhpT1VaUHBLbnR2YVVvaVRCZ1lzZEFiQ0FfalFhVWhfSG1tbEowRDZWZ1dHblNqOThfXS0tPjwvZz48L3N2Zz4=" class="uml" alt="uml diagram" title="" /></p>
+<h3 id="83-ruby-io">8.3 Ruby での IO モナド実装<a class="headerlink" href="#83-ruby-io" title="Permanent link">&para;</a></h3>
+<p><strong>ソースファイル</strong>: <code>app/ruby/src/ch08_io.rb</code></p>
+<p>Ruby には Cats Effect のような IO ライブラリがないため、シンプルな IO クラスを実装します:</p>
+<div class="highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">IO</span>
+<span class="w">  </span><span class="k">def</span><span class="w"> </span><span class="nf">initialize</span><span class="p">(</span><span class="o">&amp;</span><span class="n">computation</span><span class="p">)</span>
+<span class="w">    </span><span class="vi">@computation</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">computation</span>
+<span class="w">  </span><span class="k">end</span>
+
+<span class="w">  </span><span class="c1"># 副作用のある計算から IO を作成（遅延評価）</span>
+<span class="w">  </span><span class="k">def</span><span class="w"> </span><span class="nc">self</span><span class="o">.</span><span class="nf">delay</span><span class="p">(</span><span class="o">&amp;</span><span class="n">block</span><span class="p">)</span>
+<span class="w">    </span><span class="kp">new</span><span class="p">(</span><span class="o">&amp;</span><span class="n">block</span><span class="p">)</span>
+<span class="w">  </span><span class="k">end</span>
+
+<span class="w">  </span><span class="c1"># 純粋な値から IO を作成（副作用なし）</span>
+<span class="w">  </span><span class="k">def</span><span class="w"> </span><span class="nc">self</span><span class="o">.</span><span class="nf">pure</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+<span class="w">    </span><span class="kp">new</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">value</span><span class="w"> </span><span class="p">}</span>
+<span class="w">  </span><span class="k">end</span>
+
+<span class="w">  </span><span class="c1"># IO を実行して結果を返す（安全でない！）</span>
+<span class="w">  </span><span class="k">def</span><span class="w"> </span><span class="nf">run!</span>
+<span class="w">    </span><span class="vi">@computation</span><span class="o">.</span><span class="n">call</span>
+<span class="w">  </span><span class="k">end</span>
+<span class="k">end</span>
+</code></pre></div>
+<h3 id="84">8.4 サイコロを振る例<a class="headerlink" href="#84" title="Permanent link">&para;</a></h3>
+<h4 id="_1">不純な関数（副作用あり）<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">cast_the_die_impure</span>
+<span class="w">  </span><span class="nb">rand</span><span class="p">(</span><span class="mi">1</span><span class="o">..</span><span class="mi">6</span><span class="p">)</span>
+<span class="k">end</span>
+
+<span class="c1"># 呼び出すたびに異なる値が返る</span>
+<span class="nb">puts</span><span class="w"> </span><span class="n">cast_the_die_impure</span><span class="w">  </span><span class="c1"># 3</span>
+<span class="nb">puts</span><span class="w"> </span><span class="n">cast_the_die_impure</span><span class="w">  </span><span class="c1"># 5</span>
+<span class="nb">puts</span><span class="w"> </span><span class="n">cast_the_die_impure</span><span class="w">  </span><span class="c1"># 1</span>
+</code></pre></div>
+<h4 id="io">IO を使った純粋な記述<a class="headerlink" href="#io" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">cast_the_die</span>
+<span class="w">  </span><span class="no">IO</span><span class="o">.</span><span class="n">delay</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nb">rand</span><span class="p">(</span><span class="mi">1</span><span class="o">..</span><span class="mi">6</span><span class="p">)</span><span class="w"> </span><span class="p">}</span>
+<span class="k">end</span>
+
+<span class="c1"># IO 値を作成（この時点では実行されない）</span>
+<span class="n">die_cast</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cast_the_die</span>
+<span class="nb">puts</span><span class="w"> </span><span class="n">die_cast</span><span class="w">  </span><span class="c1"># IO(...) - まだ実行されていない</span>
+
+<span class="c1"># 実際に実行</span>
+<span class="nb">puts</span><span class="w"> </span><span class="n">die_cast</span><span class="o">.</span><span class="n">run!</span><span class="w">  </span><span class="c1"># 4</span>
+</code></pre></div>
+<h3 id="85-io">8.5 IO の作成方法<a class="headerlink" href="#85-io" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>メソッド</th>
+<th>用途</th>
+<th>例</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>IO.delay { expr }</code></td>
+<td>副作用のある式をラップ</td>
+<td><code>IO.delay { puts "hello" }</code></td>
+</tr>
+<tr>
+<td><code>IO.pure(value)</code></td>
+<td>既存の値をラップ（副作用なし）</td>
+<td><code>IO.pure(42)</code></td>
+</tr>
+<tr>
+<td><code>IO.unit</code></td>
+<td>何もしない IO</td>
+<td><code>IO.unit</code> (= <code>IO.pure(nil)</code>)</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight"><pre><span></span><code><span class="c1"># IO.delay: 副作用を遅延実行</span>
+<span class="n">delayed_print</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="no">IO</span><span class="o">.</span><span class="n">delay</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nb">puts</span><span class="w"> </span><span class="s2">&quot;Hello&quot;</span><span class="w"> </span><span class="p">}</span>
+<span class="c1"># puts はまだ実行されていない</span>
+
+<span class="c1"># IO.pure: 既存の値をラップ</span>
+<span class="n">pure_value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="no">IO</span><span class="o">.</span><span class="n">pure</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
+<span class="c1"># 副作用なし、即座に 42 が確定</span>
+</code></pre></div>
+<h3 id="86-io">8.6 IO の合成<a class="headerlink" href="#86-io" title="Permanent link">&para;</a></h3>
+<p>IO 値は <code>bind</code> や <code>fmap</code> で合成できます。</p>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">cast_the_die_twice</span>
+<span class="w">  </span><span class="n">cast_the_die</span><span class="o">.</span><span class="n">bind</span><span class="w"> </span><span class="k">do</span><span class="w"> </span><span class="o">|</span><span class="n">first</span><span class="o">|</span>
+<span class="w">    </span><span class="n">cast_the_die</span><span class="o">.</span><span class="n">fmap</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="o">|</span><span class="n">second</span><span class="o">|</span><span class="w"> </span><span class="n">first</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">second</span><span class="w"> </span><span class="p">}</span>
+<span class="w">  </span><span class="k">end</span>
+<span class="k">end</span>
+
+<span class="c1"># まだ実行されていない</span>
+<span class="n">program</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cast_the_die_twice</span>
+
+<span class="c1"># 実行</span>
+<span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">program</span><span class="o">.</span><span class="n">run!</span>
+</code></pre></div>
+<p><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiBjb250ZW50U3R5bGVUeXBlPSJ0ZXh0L2NzcyIgZGF0YS1kaWFncmFtLXR5cGU9IkRFU0NSSVBUSU9OIiBoZWlnaHQ9IjI3OHB4IiBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSJub25lIiBzdHlsZT0id2lkdGg6MzAwcHg7aGVpZ2h0OjI3OHB4O2JhY2tncm91bmQ6I0ZGRkZGRjsiIHZlcnNpb249IjEuMSIgdmlld0JveD0iMCAwIDMwMCAyNzgiIHdpZHRoPSIzMDBweCIgem9vbUFuZFBhbj0ibWFnbmlmeSI+PGRlZnMvPjxnPjwhLS1jbHVzdGVyIElPID8/Py0tPjxnIGNsYXNzPSJjbHVzdGVyIiBkYXRhLWVudGl0eT0iSU8gLi4uIiBkYXRhLXNvdXJjZS1saW5lPSIzIiBkYXRhLXVpZD0iZW50MDAwMiIgaWQ9ImNsdXN0ZXJfSU8gLi4uIj48cmVjdCBmaWxsPSIjRkZGRkZGIiBoZWlnaHQ9IjE3Mi41OSIgcng9IjIuNSIgcnk9IjIuNSIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxOyIgd2lkdGg9IjI4MiIgeD0iMTIiIHk9IjEyIi8+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9IlZlcmRhbmEiIGZvbnQtc2l6ZT0iMTQiIGZvbnQtd2VpZ2h0PSJib2xkIiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjYzLjk4NDIiIHg9IjEyMS4wMDc5IiB5PSIyNi45OTUxIj5JTyAmIzEyMzk4OyYjMjE1MTI7JiMyNTEwNDs8L3RleHQ+PC9nPjwhLS1lbnRpdHkgY2FzdDEtLT48ZyBjbGFzcz0iZW50aXR5IiBkYXRhLWVudGl0eT0iY2FzdDEiIGRhdGEtc291cmNlLWxpbmU9IjQiIGRhdGEtdWlkPSJlbnQwMDAzIiBpZD0iZW50aXR5X2Nhc3QxIj48cmVjdCBmaWxsPSIjRkZGRkZGIiBoZWlnaHQ9IjIyLjI5NjkiIHJ4PSIyLjUiIHJ5PSIyLjUiIHN0eWxlPSJzdHJva2U6IzAwMDAwMDtzdHJva2Utd2lkdGg6MTsiIHdpZHRoPSIxMDcuNDI0OCIgeD0iMjguMjkiIHk9IjQ3Ii8+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9IlZlcmRhbmEiIGZvbnQtc2l6ZT0iMTQiIGxlbmd0aEFkanVzdD0ic3BhY2luZyIgdGV4dExlbmd0aD0iODcuNDI0OCIgeD0iMzguMjkiIHk9IjYyLjk5NTEiPmNhc3RfdGhlX2RpZTwvdGV4dD48L2c+PCEtLWVudGl0eSBjYXN0Mi0tPjxnIGNsYXNzPSJlbnRpdHkiIGRhdGEtZW50aXR5PSJjYXN0MiIgZGF0YS1zb3VyY2UtbGluZT0iNSIgZGF0YS11aWQ9ImVudDAwMDQiIGlkPSJlbnRpdHlfY2FzdDIiPjxyZWN0IGZpbGw9IiNGRkZGRkYiIGhlaWdodD0iMjIuMjk2OSIgcng9IjIuNSIgcnk9IjIuNSIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxOyIgd2lkdGg9IjEwNy40MjQ4IiB4PSIxNzAuMjkiIHk9IjQ3Ii8+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9IlZlcmRhbmEiIGZvbnQtc2l6ZT0iMTQiIGxlbmd0aEFkanVzdD0ic3BhY2luZyIgdGV4dExlbmd0aD0iODcuNDI0OCIgeD0iMTgwLjI5IiB5PSI2Mi45OTUxIj5jYXN0X3RoZV9kaWU8L3RleHQ+PC9nPjwhLS1lbnRpdHkgY29tYmluZS0tPjxnIGNsYXNzPSJlbnRpdHkiIGRhdGEtZW50aXR5PSJjb21iaW5lIiBkYXRhLXNvdXJjZS1saW5lPSI2IiBkYXRhLXVpZD0iZW50MDAwNSIgaWQ9ImVudGl0eV9jb21iaW5lIj48cmVjdCBmaWxsPSIjRkZGRkZGIiBoZWlnaHQ9IjIyLjI5NjkiIHJ4PSIyLjUiIHJ5PSIyLjUiIHN0eWxlPSJzdHJva2U6IzAwMDAwMDtzdHJva2Utd2lkdGg6MTsiIHdpZHRoPSIxMTcuOTE4IiB4PSI3OC4wNCIgeT0iMTQ2LjMiLz48dGV4dCBmaWxsPSIjMDAwMDAwIiBmb250LWZhbWlseT0iVmVyZGFuYSIgZm9udC1zaXplPSIxNCIgbGVuZ3RoQWRqdXN0PSJzcGFjaW5nIiB0ZXh0TGVuZ3RoPSI5Ny45MTgiIHg9Ijg4LjA0IiB5PSIxNjIuMjk1MSI+Zmlyc3QgKyBzZWNvbmQ8L3RleHQ+PC9nPjxnIGNsYXNzPSJlbnRpdHkiIGRhdGEtZW50aXR5PSJHTU44IiBkYXRhLXNvdXJjZS1saW5lPSIxMyIgZGF0YS11aWQ9ImVudDAwMDkiIGlkPSJlbnRpdHlfR01OOCI+PHBhdGggZD0iTTc3Ljc2LDIzMS41OSBMNzcuNzYsMjcxLjg1NTYgQTAsMCAwIDAgMCA3Ny43NiwyNzEuODU1NiBMMTk2LjI0NzQsMjcxLjg1NTYgQTAsMCAwIDAgMCAxOTYuMjQ3NCwyNzEuODU1NiBMMTk2LjI0NzQsMjQxLjU5IEwxODYuMjQ3NCwyMzEuNTkgTDE0MSwyMzEuNTkgTDEzNywxNjkuMDMgTDEzMywyMzEuNTkgTDc3Ljc2LDIzMS41OSBBMCwwIDAgMCAwIDc3Ljc2LDIzMS41OSIgZmlsbD0iI0ZGRkZGRiIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxOyIvPjxwYXRoIGQ9Ik0xODYuMjQ3NCwyMzEuNTkgTDE4Ni4yNDc0LDI0MS41OSBMMTk2LjI0NzQsMjQxLjU5IEwxODYuMjQ3NCwyMzEuNTkiIGZpbGw9IiNGRkZGRkYiIHN0eWxlPSJzdHJva2U6IzAwMDAwMDtzdHJva2Utd2lkdGg6MTsiLz48dGV4dCBmaWxsPSIjMDAwMDAwIiBmb250LWZhbWlseT0iVmVyZGFuYSIgZm9udC1zaXplPSIxMyIgbGVuZ3RoQWRqdXN0PSJzcGFjaW5nIiB0ZXh0TGVuZ3RoPSI5Ny40ODc0IiB4PSI4My43NiIgeT0iMjQ4LjY1NjkiPmJpbmQgJiMxMjQ4MTsmIzEyNDU1OyYjMTI1NDA7JiMxMjUzMTsmIzEyMzkxOzwvdGV4dD48dGV4dCBmaWxsPSIjMDAwMDAwIiBmb250LWZhbWlseT0iVmVyZGFuYSIgZm9udC1zaXplPSIxMyIgbGVuZ3RoQWRqdXN0PSJzcGFjaW5nIiB0ZXh0TGVuZ3RoPSI5MS4wMDAxIiB4PSI4My43NiIgeT0iMjYzLjc4OTciPiYjMzg5MTg7JiMyNDIwNzsmIzIwMTg0OyYjMTIzNjk7JiMxMjM5MDsmIzIxNTEyOyYjMjUxMDQ7PC90ZXh0PjwvZz48IS0tbGluayBjYXN0MSB0byBjb21iaW5lLS0+PGcgY2xhc3M9ImxpbmsiIGRhdGEtZW50aXR5LTE9ImNhc3QxIiBkYXRhLWVudGl0eS0yPSJjb21iaW5lIiBkYXRhLXNvdXJjZS1saW5lPSI4IiBkYXRhLXVpZD0ibG5rNiIgaWQ9ImxpbmtfY2FzdDFfY29tYmluZSI+PHBhdGggZD0iTTg3Ljg5LDY5LjU2IEM5OC40Miw4OC4xOSAxMTcuNDE2NiwxMjEuODA3MiAxMjguMDM2NiwxNDAuNTg3MiIgZmlsbD0ibm9uZSIgaWQ9ImNhc3QxLXRvLWNvbWJpbmUiIHN0eWxlPSJzdHJva2U6IzAwMDAwMDtzdHJva2Utd2lkdGg6MTsiLz48cG9seWdvbiBmaWxsPSIjMDAwMDAwIiBwb2ludHM9IjEzMC45OSwxNDUuODEsMTMwLjA0MTcsMTM2LjAwNjksMTI4LjUyODgsMTQxLjQ1NzcsMTIzLjA3OCwxMzkuOTQ0OCwxMzAuOTksMTQ1LjgxIiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE7Ii8+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9IlZlcmRhbmEiIGZvbnQtc2l6ZT0iMTMiIGxlbmd0aEFkanVzdD0ic3BhY2luZyIgdGV4dExlbmd0aD0iMjguMzU1IiB4PSIxMTMuNzkiIHk9IjExMi4zNjY5Ij5iaW5kPC90ZXh0PjwvZz48IS0tbGluayBjYXN0MiB0byBjb21iaW5lLS0+PGcgY2xhc3M9ImxpbmsiIGRhdGEtZW50aXR5LTE9ImNhc3QyIiBkYXRhLWVudGl0eS0yPSJjb21iaW5lIiBkYXRhLXNvdXJjZS1saW5lPSI5IiBkYXRhLXVpZD0ibG5rNyIgaWQ9ImxpbmtfY2FzdDJfY29tYmluZSI+PHBhdGggZD0iTTIxNC42OSw2OS41NiBDMTk4LjAzLDg4LjE5IDE2Ny4zMTA0LDEyMi41NTgyIDE1MC41MTA0LDE0MS4zMzgyIiBmaWxsPSJub25lIiBpZD0iY2FzdDItdG8tY29tYmluZSIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxOyIvPjxwb2x5Z29uIGZpbGw9IiMwMDAwMDAiIHBvaW50cz0iMTQ2LjUxLDE0NS44MSwxNTUuNDkxNywxNDEuNzY5MiwxNDkuODQzNiwxNDIuMDgzNSwxNDkuNTI5MywxMzYuNDM1NCwxNDYuNTEsMTQ1LjgxIiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE7Ii8+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9IlZlcmRhbmEiIGZvbnQtc2l6ZT0iMTMiIGxlbmd0aEFkanVzdD0ic3BhY2luZyIgdGV4dExlbmd0aD0iMzMuNDU4NSIgeD0iMTg2LjcxIiB5PSIxMTIuMzY2OSI+Zm1hcDwvdGV4dD48L2c+PCEtLVNSQz1bS29wOUlDckRMSVo4SVNwQ3UtOGdJYXFrSVNuQnBxYkxLRkJxTHRaU2tFeGZYOHZkN0hFSzVBZ3ZhWEVCS1hJS2FYRUJJLUExTWs5SkNiRUw1MUFCNUswMlhsV2FaUTJJUVBiNW5JS0FzV2g1Z1NkdlVJYUd3VnBTZkNveUwydWtpMjRBa2hmc0MyNDVBbUtXYkdBTUM0QUpJQ2pEQkUyZ3ZVQkFvb3o5TEtaQUJvZDlwLUsyQUxQdXREcHVrNmR2dS1Pelp2aXRGc3ZTcGxMb0dUbEpOVnJGVGl6dXQzWm5TVUNvWTVVdUtlNGdHTGUxXS0tPjwvZz48L3N2Zz4=" class="uml" alt="uml diagram" title="" /></p>
+<h3 id="87">8.7 ミーティングスケジューリングの例<a class="headerlink" href="#87" title="Permanent link">&para;</a></h3>
+<p>より実践的な例として、ミーティングのスケジューリングを見てみましょう。</p>
+<div class="highlight"><pre><span></span><code><span class="no">MeetingTime</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="no">Struct</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="ss">:start_hour</span><span class="p">,</span><span class="w"> </span><span class="ss">:end_hour</span><span class="p">,</span><span class="w"> </span><span class="ss">keyword_init</span><span class="p">:</span><span class="w"> </span><span class="kp">true</span><span class="p">)</span>
+
+<span class="c1"># 副作用のある API 呼び出しを IO でラップ</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">calendar_entries</span><span class="p">(</span><span class="nb">name</span><span class="p">)</span>
+<span class="w">  </span><span class="no">IO</span><span class="o">.</span><span class="n">delay</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">calendar_entries_api_call</span><span class="p">(</span><span class="nb">name</span><span class="p">)</span><span class="w"> </span><span class="p">}</span>
+<span class="k">end</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">create_meeting</span><span class="p">(</span><span class="n">names</span><span class="p">,</span><span class="w"> </span><span class="n">meeting</span><span class="p">)</span>
+<span class="w">  </span><span class="no">IO</span><span class="o">.</span><span class="n">delay</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">create_meeting_api_call</span><span class="p">(</span><span class="n">names</span><span class="p">,</span><span class="w"> </span><span class="n">meeting</span><span class="p">)</span><span class="w"> </span><span class="p">}</span>
+<span class="k">end</span>
+</code></pre></div>
+<h4 id="_2">予定の取得<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">scheduled_meetings</span><span class="p">(</span><span class="n">person1</span><span class="p">,</span><span class="w"> </span><span class="n">person2</span><span class="p">)</span>
+<span class="w">  </span><span class="n">calendar_entries</span><span class="p">(</span><span class="n">person1</span><span class="p">)</span><span class="o">.</span><span class="n">bind</span><span class="w"> </span><span class="k">do</span><span class="w"> </span><span class="o">|</span><span class="n">entries1</span><span class="o">|</span>
+<span class="w">    </span><span class="n">calendar_entries</span><span class="p">(</span><span class="n">person2</span><span class="p">)</span><span class="o">.</span><span class="n">fmap</span><span class="w"> </span><span class="k">do</span><span class="w"> </span><span class="o">|</span><span class="n">entries2</span><span class="o">|</span>
+<span class="w">      </span><span class="n">entries1</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">entries2</span>
+<span class="w">    </span><span class="k">end</span>
+<span class="w">  </span><span class="k">end</span>
+<span class="k">end</span>
+</code></pre></div>
+<h4 id="_3">空き時間の計算（純粋関数）<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">possible_meetings</span><span class="p">(</span><span class="n">existing_meetings</span><span class="p">,</span><span class="w"> </span><span class="n">start_hour</span><span class="p">,</span><span class="w"> </span><span class="n">end_hour</span><span class="p">,</span><span class="w"> </span><span class="n">length_hours</span><span class="p">)</span>
+<span class="w">  </span><span class="n">slots</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">start_hour</span><span class="o">..</span><span class="p">(</span><span class="n">end_hour</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">length_hours</span><span class="p">))</span><span class="o">.</span><span class="n">map</span><span class="w"> </span><span class="k">do</span><span class="w"> </span><span class="o">|</span><span class="n">start</span><span class="o">|</span>
+<span class="w">    </span><span class="no">MeetingTime</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="ss">start_hour</span><span class="p">:</span><span class="w"> </span><span class="n">start</span><span class="p">,</span><span class="w"> </span><span class="ss">end_hour</span><span class="p">:</span><span class="w"> </span><span class="n">start</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">length_hours</span><span class="p">)</span>
+<span class="w">  </span><span class="k">end</span>
+
+<span class="w">  </span><span class="n">slots</span><span class="o">.</span><span class="n">select</span><span class="w"> </span><span class="k">do</span><span class="w"> </span><span class="o">|</span><span class="n">slot</span><span class="o">|</span>
+<span class="w">    </span><span class="n">existing_meetings</span><span class="o">.</span><span class="n">none?</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="o">|</span><span class="n">meeting</span><span class="o">|</span><span class="w"> </span><span class="n">meetings_overlap?</span><span class="p">(</span><span class="n">meeting</span><span class="p">,</span><span class="w"> </span><span class="n">slot</span><span class="p">)</span><span class="w"> </span><span class="p">}</span>
+<span class="w">  </span><span class="k">end</span>
+<span class="k">end</span>
+</code></pre></div>
+<h3 id="88-or_else">8.8 or_else によるエラーハンドリング<a class="headerlink" href="#88-or_else" title="Permanent link">&para;</a></h3>
+<p>IO の <code>or_else</code> メソッドで、失敗時のフォールバックを指定できます。</p>
+<div class="highlight"><pre><span></span><code><span class="n">year</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="no">IO</span><span class="o">.</span><span class="n">pure</span><span class="p">(</span><span class="mi">996</span><span class="p">)</span>
+<span class="n">no_year</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="no">IO</span><span class="o">.</span><span class="n">delay</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">raise</span><span class="w"> </span><span class="s1">&#39;no year&#39;</span><span class="w"> </span><span class="p">}</span>
+
+<span class="n">year</span><span class="o">.</span><span class="n">or_else</span><span class="p">(</span><span class="no">IO</span><span class="o">.</span><span class="n">pure</span><span class="p">(</span><span class="mi">2020</span><span class="p">))</span><span class="o">.</span><span class="n">run!</span><span class="w">     </span><span class="c1"># 996</span>
+<span class="n">no_year</span><span class="o">.</span><span class="n">or_else</span><span class="p">(</span><span class="no">IO</span><span class="o">.</span><span class="n">pure</span><span class="p">(</span><span class="mi">2020</span><span class="p">))</span><span class="o">.</span><span class="n">run!</span><span class="w">  </span><span class="c1"># 2020</span>
+</code></pre></div>
+<p><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiBjb250ZW50U3R5bGVUeXBlPSJ0ZXh0L2NzcyIgZGF0YS1kaWFncmFtLXR5cGU9IkRFU0NSSVBUSU9OIiBoZWlnaHQ9IjI3M3B4IiBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSJub25lIiBzdHlsZT0id2lkdGg6Mjk5cHg7aGVpZ2h0OjI3M3B4O2JhY2tncm91bmQ6I0ZGRkZGRjsiIHZlcnNpb249IjEuMSIgdmlld0JveD0iMCAwIDI5OSAyNzMiIHdpZHRoPSIyOTlweCIgem9vbUFuZFBhbj0ibWFnbmlmeSI+PGRlZnMvPjxnPjwhLS1jbHVzdGVyIG9yX2Vsc2UgPz8/LS0+PGcgY2xhc3M9ImNsdXN0ZXIiIGRhdGEtZW50aXR5PSJvcl9lbHNlIC4uLiIgZGF0YS1zb3VyY2UtbGluZT0iMyIgZGF0YS11aWQ9ImVudDAwMDIiIGlkPSJjbHVzdGVyX29yX2Vsc2UgLi4uIj48cmVjdCBmaWxsPSIjRkZGRkZGIiBoZWlnaHQ9IjI1NS44OSIgcng9IjIuNSIgcnk9IjIuNSIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxOyIgd2lkdGg9IjI4MSIgeD0iMTIiIHk9IjEyIi8+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9IlZlcmRhbmEiIGZvbnQtc2l6ZT0iMTQiIGZvbnQtd2VpZ2h0PSJib2xkIiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjEwMi41MTg0IiB4PSIxMDEuMjQwOCIgeT0iMjYuOTk1MSI+b3JfZWxzZSAmIzEyMzk4OyYjMjEyMDU7JiMyMDMxNjs8L3RleHQ+PC9nPjwhLS1lbnRpdHkgbWFpbi0tPjxnIGNsYXNzPSJlbnRpdHkiIGRhdGEtZW50aXR5PSJtYWluIiBkYXRhLXNvdXJjZS1saW5lPSI0IiBkYXRhLXVpZD0iZW50MDAwMyIgaWQ9ImVudGl0eV9tYWluIj48cmVjdCBmaWxsPSIjRkZGRkZGIiBoZWlnaHQ9IjIyLjI5NjkiIHJ4PSIyLjUiIHJ5PSIyLjUiIHN0eWxlPSJzdHJva2U6IzAwMDAwMDtzdHJva2Utd2lkdGg6MTsiIHdpZHRoPSI5NS41OTg0IiB4PSIxNDguMiIgeT0iNDciLz48dGV4dCBmaWxsPSIjMDAwMDAwIiBmb250LWZhbWlseT0iVmVyZGFuYSIgZm9udC1zaXplPSIxNCIgbGVuZ3RoQWRqdXN0PSJzcGFjaW5nIiB0ZXh0TGVuZ3RoPSI3NS41OTg0IiB4PSIxNTguMiIgeT0iNjIuOTk1MSI+JiMxMjUxMzsmIzEyNDUyOyYjMTI1MzE7JiMxMjM5ODsgSU88L3RleHQ+PC9nPjwhLS1lbnRpdHkgZmFsbGJhY2stLT48ZyBjbGFzcz0iZW50aXR5IiBkYXRhLWVudGl0eT0iZmFsbGJhY2siIGRhdGEtc291cmNlLWxpbmU9IjUiIGRhdGEtdWlkPSJlbnQwMDA0IiBpZD0iZW50aXR5X2ZhbGxiYWNrIj48cmVjdCBmaWxsPSIjRkZGRkZGIiBoZWlnaHQ9IjIyLjI5NjkiIHJ4PSIyLjUiIHJ5PSIyLjUiIHN0eWxlPSJzdHJva2U6IzAwMDAwMDtzdHJva2Utd2lkdGg6MTsiIHdpZHRoPSIxMzcuNTk4MiIgeD0iMjguMiIgeT0iMTQ2LjMiLz48dGV4dCBmaWxsPSIjMDAwMDAwIiBmb250LWZhbWlseT0iVmVyZGFuYSIgZm9udC1zaXplPSIxNCIgbGVuZ3RoQWRqdXN0PSJzcGFjaW5nIiB0ZXh0TGVuZ3RoPSIxMTcuNTk4MiIgeD0iMzguMiIgeT0iMTYyLjI5NTEiPiYjMTI1MDE7JiMxMjQ1NzsmIzEyNTQwOyYjMTI1MjM7JiMxMjQ5NjsmIzEyNDgzOyYjMTI0NjM7IElPPC90ZXh0PjwvZz48IS0tZW50aXR5IHJlc3VsdC0tPjxnIGNsYXNzPSJlbnRpdHkiIGRhdGEtZW50aXR5PSJyZXN1bHQiIGRhdGEtc291cmNlLWxpbmU9IjYiIGRhdGEtdWlkPSJlbnQwMDA1IiBpZD0iZW50aXR5X3Jlc3VsdCI+PHJlY3QgZmlsbD0iI0ZGRkZGRiIgaGVpZ2h0PSIyMi4yOTY5IiByeD0iMi41IiByeT0iMi41IiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE7IiB3aWR0aD0iNDcuOTk5OSIgeD0iMTQzIiB5PSIyMjkuNTkiLz48dGV4dCBmaWxsPSIjMDAwMDAwIiBmb250LWZhbWlseT0iVmVyZGFuYSIgZm9udC1zaXplPSIxNCIgbGVuZ3RoQWRqdXN0PSJzcGFjaW5nIiB0ZXh0TGVuZ3RoPSIyNy45OTk5IiB4PSIxNTMiIHk9IjI0NS41ODUxIj4mIzMyMDgwOyYjMjY1MjQ7PC90ZXh0PjwvZz48IS0tbGluayBtYWluIHRvIHJlc3VsdC0tPjxnIGNsYXNzPSJsaW5rIiBkYXRhLWVudGl0eS0xPSJtYWluIiBkYXRhLWVudGl0eS0yPSJyZXN1bHQiIGRhdGEtc291cmNlLWxpbmU9IjgiIGRhdGEtdWlkPSJsbms2IiBpZD0ibGlua19tYWluX3Jlc3VsdCI+PHBhdGggZD0iTTE5Ny42Nyw2OS42OCBDMTk4Ljg3LDc3Ljc2IDIwMC4zNyw4OS4yIDIwMSw5OS4zIEMyMDQuMDksMTQ5LjEyIDE4NC4yMzM1LDIwMC44NTI1IDE3NC4xNzM1LDIyMy44NjI1IiBmaWxsPSJub25lIiBpZD0ibWFpbi10by1yZXN1bHQiIHN0eWxlPSJzdHJva2U6IzAwMDAwMDtzdHJva2Utd2lkdGg6MTsiLz48cG9seWdvbiBmaWxsPSIjMDAwMDAwIiBwb2ludHM9IjE3MS43NywyMjkuMzYsMTc5LjA0MDMsMjIyLjcxNiwxNzMuNzcyOSwyMjQuNzc4NywxNzEuNzEwMywyMTkuNTExMywxNzEuNzcsMjI5LjM2IiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE7Ii8+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9IlZlcmRhbmEiIGZvbnQtc2l6ZT0iMTMiIGxlbmd0aEFkanVzdD0ic3BhY2luZyIgdGV4dExlbmd0aD0iMzkiIHg9IjE5OC41NiIgeT0iMTYyLjAwNjkiPiYjMjUxMDQ7JiMyMTE1MTsmIzI2MTc4OzwvdGV4dD48L2c+PCEtLWxpbmsgbWFpbiB0byBmYWxsYmFjay0tPjxnIGNsYXNzPSJsaW5rIiBkYXRhLWVudGl0eS0xPSJtYWluIiBkYXRhLWVudGl0eS0yPSJmYWxsYmFjayIgZGF0YS1zb3VyY2UtbGluZT0iOSIgZGF0YS11aWQ9ImxuazciIGlkPSJsaW5rX21haW5fZmFsbGJhY2siPjxwYXRoIGQ9Ik0xODUuNDEsNjkuNTYgQzE2Ni40NSw4OC4xOSAxMzEuMjA5NCwxMjIuODI0NSAxMTIuMDk5NCwxNDEuNjA0NSIgZmlsbD0ibm9uZSIgaWQ9Im1haW4tdG8tZmFsbGJhY2siIHN0eWxlPSJzdHJva2U6IzAwMDAwMDtzdHJva2Utd2lkdGg6MTsiLz48cG9seWdvbiBmaWxsPSIjMDAwMDAwIiBwb2ludHM9IjEwNy44MiwxNDUuODEsMTE3LjA0MjgsMTQyLjM1NDcsMTExLjM4NjIsMTQyLjMwNTQsMTExLjQzNTUsMTM2LjY0ODgsMTA3LjgyLDE0NS44MSIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxOyIvPjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJWZXJkYW5hIiBmb250LXNpemU9IjEzIiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjM5IiB4PSIxNTMuNDMiIHk9IjExMi4zNjY5Ij4mIzIyODMzOyYjMjU5NDM7JiMyNjE3ODs8L3RleHQ+PC9nPjwhLS1saW5rIGZhbGxiYWNrIHRvIHJlc3VsdC0tPjxnIGNsYXNzPSJsaW5rIiBkYXRhLWVudGl0eS0xPSJmYWxsYmFjayIgZGF0YS1lbnRpdHktMj0icmVzdWx0IiBkYXRhLXNvdXJjZS1saW5lPSIxMCIgZGF0YS11aWQ9ImxuazgiIGlkPSJsaW5rX2ZhbGxiYWNrX3Jlc3VsdCI+PHBhdGggZD0iTTEwNi4xNSwxNjkuMDcgQzExOS41NywxODQuNjUgMTQwLjUxNDIsMjA4Ljk4MzkgMTUzLjkzNDIsMjI0LjU2MzkiIGZpbGw9Im5vbmUiIGlkPSJmYWxsYmFjay10by1yZXN1bHQiIHN0eWxlPSJzdHJva2U6IzAwMDAwMDtzdHJva2Utd2lkdGg6MTsiLz48cG9seWdvbiBmaWxsPSIjMDAwMDAwIiBwb2ludHM9IjE1Ny44NSwyMjkuMTEsMTU1LjAwNywyMTkuNjgwNCwxNTQuNTg2OCwyMjUuMzIxNiwxNDguOTQ1NiwyMjQuOTAxNCwxNTcuODUsMjI5LjExIiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE7Ii8+PC9nPjwhLS1TUkM9W0tvcDlJQ3JETElaOElTcEN1LThnSWFxa0lTbkJwcWJMS0NlbFlhX0RBS3ZMVURvdXhjZHRyMlR4dm9XZkw3Q2I5blFiQTJXelJieHVrNmQ5dS1SREczYTVKdHliWFNIWVhMb0dWZlpxckNUREFueXR4dGRTbEZmbnl1SjdwU3NGY3pSM3JBS2J2a0dhOUlQZEd6Sy10cGhYc1Jtdk85Y1lyRUJJZDE4a0JmMTkyaGd3VGIwMTFJazVQbnFKZGRSRFZwUXAySTQ3Q21PZS10SjluY1RKZnVEYXVPODh0TG9yMDAwMF0tLT48L2c+PC9zdmc+" class="uml" alt="uml diagram" title="" /></p>
+<h4 id="_4">リトライ戦略<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="c1"># API 呼び出しを3回までリトライ</span>
+<span class="n">calendar_entries</span><span class="p">(</span><span class="s1">&#39;Alice&#39;</span><span class="p">)</span>
+<span class="w">  </span><span class="o">.</span><span class="n">or_else</span><span class="p">(</span><span class="n">calendar_entries</span><span class="p">(</span><span class="s1">&#39;Alice&#39;</span><span class="p">))</span>
+<span class="w">  </span><span class="o">.</span><span class="n">or_else</span><span class="p">(</span><span class="n">calendar_entries</span><span class="p">(</span><span class="s1">&#39;Alice&#39;</span><span class="p">))</span>
+<span class="w">  </span><span class="o">.</span><span class="n">or_else</span><span class="p">(</span><span class="no">IO</span><span class="o">.</span><span class="n">pure</span><span class="p">(</span><span class="o">[]</span><span class="p">))</span><span class="w">  </span><span class="c1"># 全部失敗したら空リスト</span>
+</code></pre></div>
+<h4 id="_5">汎用リトライ関数<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">retry_action</span><span class="p">(</span><span class="n">action</span><span class="p">,</span><span class="w"> </span><span class="n">max_retries</span><span class="p">)</span>
+<span class="w">  </span><span class="p">(</span><span class="mi">0</span><span class="o">...</span><span class="n">max_retries</span><span class="p">)</span><span class="o">.</span><span class="n">reduce</span><span class="p">(</span><span class="n">action</span><span class="p">)</span><span class="w"> </span><span class="k">do</span><span class="w"> </span><span class="o">|</span><span class="n">program</span><span class="p">,</span><span class="w"> </span><span class="n">_</span><span class="o">|</span>
+<span class="w">    </span><span class="n">program</span><span class="o">.</span><span class="n">or_else</span><span class="p">(</span><span class="n">action</span><span class="p">)</span>
+<span class="w">  </span><span class="k">end</span>
+<span class="k">end</span>
+
+<span class="c1"># 使用例</span>
+<span class="n">retry_action</span><span class="p">(</span><span class="n">calendar_entries</span><span class="p">(</span><span class="s1">&#39;Alice&#39;</span><span class="p">),</span><span class="w"> </span><span class="mi">10</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="89-sequence-io">8.9 sequence による IO のリスト処理<a class="headerlink" href="#89-sequence-io" title="Permanent link">&para;</a></h3>
+<p><code>[IO[A]]</code> を <code>IO[[A]]</code> に変換するには <code>sequence</code> を使います。</p>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">sequence</span><span class="p">(</span><span class="n">io_array</span><span class="p">)</span>
+<span class="w">  </span><span class="n">io_array</span><span class="o">.</span><span class="n">reduce</span><span class="p">(</span><span class="no">IO</span><span class="o">.</span><span class="n">pure</span><span class="p">(</span><span class="o">[]</span><span class="p">))</span><span class="w"> </span><span class="k">do</span><span class="w"> </span><span class="o">|</span><span class="n">acc</span><span class="p">,</span><span class="w"> </span><span class="n">io</span><span class="o">|</span>
+<span class="w">    </span><span class="n">acc</span><span class="o">.</span><span class="n">bind</span><span class="w"> </span><span class="k">do</span><span class="w"> </span><span class="o">|</span><span class="n">results</span><span class="o">|</span>
+<span class="w">      </span><span class="n">io</span><span class="o">.</span><span class="n">fmap</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="o">|</span><span class="n">result</span><span class="o">|</span><span class="w"> </span><span class="n">results</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="o">[</span><span class="n">result</span><span class="o">]</span><span class="w"> </span><span class="p">}</span>
+<span class="w">    </span><span class="k">end</span>
+<span class="w">  </span><span class="k">end</span>
+<span class="k">end</span>
+
+<span class="n">actions</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">[</span><span class="no">IO</span><span class="o">.</span><span class="n">pure</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span><span class="w"> </span><span class="no">IO</span><span class="o">.</span><span class="n">pure</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span><span class="w"> </span><span class="no">IO</span><span class="o">.</span><span class="n">pure</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span><span class="o">]</span>
+<span class="n">combined</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">sequence</span><span class="p">(</span><span class="n">actions</span><span class="p">)</span>
+
+<span class="n">combined</span><span class="o">.</span><span class="n">run!</span><span class="w">  </span><span class="c1"># [1, 2, 3]</span>
+</code></pre></div>
+<h4 id="_6">複数人の予定を取得<a class="headerlink" href="#_6" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">scheduled_meetings_for_all</span><span class="p">(</span><span class="n">attendees</span><span class="p">)</span>
+<span class="w">  </span><span class="n">traverse</span><span class="p">(</span><span class="n">attendees</span><span class="p">)</span><span class="w"> </span><span class="k">do</span><span class="w"> </span><span class="o">|</span><span class="n">attendee</span><span class="o">|</span>
+<span class="w">    </span><span class="n">retry_with_default</span><span class="p">(</span><span class="n">calendar_entries</span><span class="p">(</span><span class="n">attendee</span><span class="p">),</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="o">[]</span><span class="p">)</span>
+<span class="w">  </span><span class="k">end</span><span class="o">.</span><span class="n">fmap</span><span class="p">(</span><span class="o">&amp;</span><span class="ss">:flatten</span><span class="p">)</span>
+<span class="k">end</span>
+</code></pre></div>
+<hr />
+<h2 id="9">第9章: ストリーム処理<a class="headerlink" href="#9" title="Permanent link">&para;</a></h2>
+<h3 id="91">9.1 ストリームとは<a class="headerlink" href="#91" title="Permanent link">&para;</a></h3>
+<p><strong>ストリーム</strong>は、要素の（潜在的に無限の）シーケンスを表します。Ruby では <code>Enumerator::Lazy</code> を使用します。</p>
+<p><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiBjb250ZW50U3R5bGVUeXBlPSJ0ZXh0L2NzcyIgZGF0YS1kaWFncmFtLXR5cGU9IkRFU0NSSVBUSU9OIiBoZWlnaHQ9IjI0MHB4IiBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSJub25lIiBzdHlsZT0id2lkdGg6NjgycHg7aGVpZ2h0OjI0MHB4O2JhY2tncm91bmQ6I0ZGRkZGRjsiIHZlcnNpb249IjEuMSIgdmlld0JveD0iMCAwIDY4MiAyNDAiIHdpZHRoPSI2ODJweCIgem9vbUFuZFBhbj0ibWFnbmlmeSI+PGRlZnMvPjxnPjwhLS1jbHVzdGVyIEFycmF5IHZzIExhenlTdHJlYW0tLT48ZyBjbGFzcz0iY2x1c3RlciIgZGF0YS1lbnRpdHk9IkFycmF5IHZzIExhenlTdHJlYW0iIGRhdGEtc291cmNlLWxpbmU9IjMiIGRhdGEtdWlkPSJlbnQwMDAyIiBpZD0iY2x1c3Rlcl9BcnJheSB2cyBMYXp5U3RyZWFtIj48cmVjdCBmaWxsPSIjRkZGRkZGIiBoZWlnaHQ9IjIyMi41OSIgcng9IjIuNSIgcnk9IjIuNSIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxOyIgd2lkdGg9IjY2NCIgeD0iMTIiIHk9IjEyIi8+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9IlZlcmRhbmEiIGZvbnQtc2l6ZT0iMTQiIGZvbnQtd2VpZ2h0PSJib2xkIiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjE2My4yNzY0IiB4PSIyNjIuMzYxOCIgeT0iMjYuOTk1MSI+QXJyYXkgdnMgTGF6eVN0cmVhbTwvdGV4dD48L2c+PCEtLWNsdXN0ZXIgbGlzdC0tPjxnIGNsYXNzPSJjbHVzdGVyIiBkYXRhLWVudGl0eT0ibGlzdCIgZGF0YS1zb3VyY2UtbGluZT0iNCIgZGF0YS11aWQ9ImVudDAwMDMiIGlkPSJjbHVzdGVyX2xpc3QiPjxyZWN0IGZpbGw9IiNGRkZGRkYiIGhlaWdodD0iMTU1LjU5IiByeD0iMi41IiByeT0iMi41IiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE7IiB3aWR0aD0iMjc1IiB4PSIzNiIgeT0iNTUiLz48dGV4dCBmaWxsPSIjMDAwMDAwIiBmb250LWZhbWlseT0iVmVyZGFuYSIgZm9udC1zaXplPSIxNCIgZm9udC13ZWlnaHQ9ImJvbGQiIGxlbmd0aEFkanVzdD0ic3BhY2luZyIgdGV4dExlbmd0aD0iNDMuMjE2OCIgeD0iMTUxLjg5MTYiIHk9IjY5Ljk5NTEiPkFycmF5PC90ZXh0PjwvZz48IS0tY2x1c3RlciBzdHJlYW0tLT48ZyBjbGFzcz0iY2x1c3RlciIgZGF0YS1lbnRpdHk9InN0cmVhbSIgZGF0YS1zb3VyY2UtbGluZT0iMTAiIGRhdGEtdWlkPSJlbnQwMDA3IiBpZD0iY2x1c3Rlcl9zdHJlYW0iPjxyZWN0IGZpbGw9IiNGRkZGRkYiIGhlaWdodD0iMTU1LjU5IiByeD0iMi41IiByeT0iMi41IiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE7IiB3aWR0aD0iMzE3IiB4PSIzMzUiIHk9IjU1Ii8+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9IlZlcmRhbmEiIGZvbnQtc2l6ZT0iMTQiIGZvbnQtd2VpZ2h0PSJib2xkIiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjkyLjg1MjUiIHg9IjQ0Ny4wNzM3IiB5PSI2OS45OTUxIj5MYXp5U3RyZWFtPC90ZXh0PjwvZz48IS0tZW50aXR5ID8/Pz8/Pz8/Pz8tLT48ZyBjbGFzcz0iZW50aXR5IiBkYXRhLWVudGl0eT0iLi4uLi4uLi4uLiIgZGF0YS1zb3VyY2UtbGluZT0iNSIgZGF0YS11aWQ9ImVudDAwMDQiIGlkPSJlbnRpdHlfLi4uLi4uLi4uLiI+PHJlY3QgZmlsbD0iI0ZGRkZGRiIgaGVpZ2h0PSIyMi4yOTY5IiByeD0iMi41IiByeT0iMi41IiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE7IiB3aWR0aD0iMTU5Ljk5OTQiIHg9IjUyIiB5PSI5MCIvPjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJWZXJkYW5hIiBmb250LXNpemU9IjE0IiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjEzOS45OTk0IiB4PSI2MiIgeT0iMTA1Ljk5NTEiPiYjMjA4NDA7JiMzNTIwMTsmIzMyMDMyOyYjMTIzNjQ7JiMxMjUxMzsmIzEyNTE0OyYjMTI1MjI7JiMxMjM5NTsmIzIzMzg0OyYjMjIzMTI7PC90ZXh0PjwvZz48IS0tZW50aXR5ID8/LS0+PGcgY2xhc3M9ImVudGl0eSIgZGF0YS1lbnRpdHk9Ii4uIiBkYXRhLXNvdXJjZS1saW5lPSI2IiBkYXRhLXVpZD0iZW50MDAwNSIgaWQ9ImVudGl0eV8uLiI+PHJlY3QgZmlsbD0iI0ZGRkZGRiIgaGVpZ2h0PSIyMi4yOTY5IiByeD0iMi41IiByeT0iMi41IiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE7IiB3aWR0aD0iNDcuOTk5OSIgeD0iMjQ3IiB5PSI5MCIvPjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJWZXJkYW5hIiBmb250LXNpemU9IjE0IiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjI3Ljk5OTkiIHg9IjI1NyIgeT0iMTA1Ljk5NTEiPiYjMjYzNzc7JiMzODQ4MDs8L3RleHQ+PC9nPjwhLS1lbnRpdHkgPz8/Pz8tLT48ZyBjbGFzcz0iZW50aXR5IiBkYXRhLWVudGl0eT0iLi4uLi4iIGRhdGEtc291cmNlLWxpbmU9IjciIGRhdGEtdWlkPSJlbnQwMDA2IiBpZD0iZW50aXR5Xy4uLi4uIj48cmVjdCBmaWxsPSIjRkZGRkZGIiBoZWlnaHQ9IjIyLjI5NjkiIHJ4PSIyLjUiIHJ5PSIyLjUiIHN0eWxlPSJzdHJva2U6IzAwMDAwMDtzdHJva2Utd2lkdGg6MTsiIHdpZHRoPSI4OS45OTk3IiB4PSI4NyIgeT0iMTcyLjI5Ii8+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9IlZlcmRhbmEiIGZvbnQtc2l6ZT0iMTQiIGxlbmd0aEFkanVzdD0ic3BhY2luZyIgdGV4dExlbmd0aD0iNjkuOTk5NyIgeD0iOTciIHk9IjE4OC4yODUxIj4mIzIxMzYzOyYjMjQyMzE7JiMxMjM5NTsmIzM1NDEzOyYjMjAzODU7PC90ZXh0PjwvZz48IS0tZW50aXR5ID8/Pz8/Pz8/Pz8tLT48ZyBjbGFzcz0iZW50aXR5IiBkYXRhLWVudGl0eT0iLi4uLi4uLi4uLiIgZGF0YS1zb3VyY2UtbGluZT0iMTEiIGRhdGEtdWlkPSJlbnQwMDA4IiBpZD0iZW50aXR5Xy4uLi4uLi4uLi4iPjxyZWN0IGZpbGw9IiNGRkZGRkYiIGhlaWdodD0iMjIuMjk2OSIgcng9IjIuNSIgcnk9IjIuNSIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxOyIgd2lkdGg9IjE1OS45OTk0IiB4PSIzNTEiIHk9IjkwIi8+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9IlZlcmRhbmEiIGZvbnQtc2l6ZT0iMTQiIGxlbmd0aEFkanVzdD0ic3BhY2luZyIgdGV4dExlbmd0aD0iMTM5Ljk5OTQiIHg9IjM2MSIgeT0iMTA1Ljk5NTEiPiYjMjQ1MTc7JiMzNTIwMTsmIzEyMzk0OyYjMjYxNzg7JiMxMjM5NTsmIzM1MjAxOyYjMzIwMzI7JiMxMjQzNDsmIzI5OTgzOyYjMjUxMDQ7PC90ZXh0PjwvZz48IS0tZW50aXR5ID8/Pz8/LS0+PGcgY2xhc3M9ImVudGl0eSIgZGF0YS1lbnRpdHk9Ii4uLi4uIiBkYXRhLXNvdXJjZS1saW5lPSIxMiIgZGF0YS11aWQ9ImVudDAwMDkiIGlkPSJlbnRpdHlfLi4uLi4iPjxyZWN0IGZpbGw9IiNGRkZGRkYiIGhlaWdodD0iMjIuMjk2OSIgcng9IjIuNSIgcnk9IjIuNSIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxOyIgd2lkdGg9Ijg5Ljk5OTciIHg9IjU0NiIgeT0iOTAiLz48dGV4dCBmaWxsPSIjMDAwMDAwIiBmb250LWZhbWlseT0iVmVyZGFuYSIgZm9udC1zaXplPSIxNCIgbGVuZ3RoQWRqdXN0PSJzcGFjaW5nIiB0ZXh0TGVuZ3RoPSI2OS45OTk3IiB4PSI1NTYiIHk9IjEwNS45OTUxIj4mIzI4OTYxOyYjMzg0ODA7JiMxMjQxODsmIzIxNDg3OyYjMzMwMjE7PC90ZXh0PjwvZz48IS0tZW50aXR5ID8/Pz8tLT48ZyBjbGFzcz0iZW50aXR5IiBkYXRhLWVudGl0eT0iLi4uLiIgZGF0YS1zb3VyY2UtbGluZT0iMTMiIGRhdGEtdWlkPSJlbnQwMDEwIiBpZD0iZW50aXR5Xy4uLi4iPjxyZWN0IGZpbGw9IiNGRkZGRkYiIGhlaWdodD0iMjIuMjk2OSIgcng9IjIuNSIgcnk9IjIuNSIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxOyIgd2lkdGg9Ijc1Ljk5OTgiIHg9IjM5MyIgeT0iMTcyLjI5Ii8+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9IlZlcmRhbmEiIGZvbnQtc2l6ZT0iMTQiIGxlbmd0aEFkanVzdD0ic3BhY2luZyIgdGV4dExlbmd0aD0iNTUuOTk5OCIgeD0iNDAzIiB5PSIxODguMjg1MSI+JiMzNjkzMzsmIzI0MzEwOyYjMzU0MTM7JiMyMDM4NTs8L3RleHQ+PC9nPjwhLS1TUkM9W0tvcDlJQ3JETElaOElTcEN1LThnSWFxa0lTbkJwcWJMSzc4aUFhZ2lMMldoTGwxOWhBZUNCWWJBSlNuTEtnWjZLQTZhYTVZaWE5RFBOMEFLSXF1aUliNUdVamd3dWlNb25rVFI1Wm5reDdkU2xGMW55d0I3cFFpVUR3di1rZFI2cXBhaGJBMmdkaXRmVjNicDBlcHRqN1ZwcXJ0QldPZlVoOXB3UER6MjlRdlE1QlNXRW01ZU5KNk9ZUjFtVm9sR21pVURndnhEUjA4UDBSNnlRVEJwQVZFVlRTMmpVRHdvNDZaWHV3UWNmX3RoTnBKbFhHY19SNm56a2RpUm1qZlEwMDAwXS0tPjwvZz48L3N2Zz4=" class="uml" alt="uml diagram" title="" /></p>
+<h3 id="92-lazystream">9.2 LazyStream の実装<a class="headerlink" href="#92-lazystream" title="Permanent link">&para;</a></h3>
+<p><strong>ソースファイル</strong>: <code>app/ruby/src/ch09_streams.rb</code></p>
+<p>Ruby の <code>Enumerator::Lazy</code> をラップした <code>LazyStream</code> クラスを実装します:</p>
+<div class="highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">LazyStream</span>
+<span class="w">  </span><span class="k">def</span><span class="w"> </span><span class="nf">initialize</span><span class="p">(</span><span class="n">enumerator</span><span class="p">)</span>
+<span class="w">    </span><span class="vi">@enumerator</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">enumerator</span><span class="o">.</span><span class="n">lazy</span>
+<span class="w">  </span><span class="k">end</span>
+
+<span class="w">  </span><span class="k">def</span><span class="w"> </span><span class="nc">self</span><span class="o">.</span><span class="nf">from_array</span><span class="p">(</span><span class="n">array</span><span class="p">)</span>
+<span class="w">    </span><span class="kp">new</span><span class="p">(</span><span class="n">array</span><span class="o">.</span><span class="n">each</span><span class="p">)</span>
+<span class="w">  </span><span class="k">end</span>
+
+<span class="w">  </span><span class="k">def</span><span class="w"> </span><span class="nc">self</span><span class="o">.</span><span class="nf">repeat</span><span class="p">(</span><span class="o">*</span><span class="n">values</span><span class="p">)</span>
+<span class="w">    </span><span class="n">enum</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="no">Enumerator</span><span class="o">.</span><span class="n">new</span><span class="w"> </span><span class="k">do</span><span class="w"> </span><span class="o">|</span><span class="n">yielder</span><span class="o">|</span>
+<span class="w">      </span><span class="kp">loop</span><span class="w"> </span><span class="k">do</span>
+<span class="w">        </span><span class="n">values</span><span class="o">.</span><span class="n">each</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="o">|</span><span class="n">v</span><span class="o">|</span><span class="w"> </span><span class="n">yielder</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">v</span><span class="w"> </span><span class="p">}</span>
+<span class="w">      </span><span class="k">end</span>
+<span class="w">    </span><span class="k">end</span>
+<span class="w">    </span><span class="kp">new</span><span class="p">(</span><span class="n">enum</span><span class="p">)</span>
+<span class="w">  </span><span class="k">end</span>
+
+<span class="w">  </span><span class="k">def</span><span class="w"> </span><span class="nf">take</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+<span class="w">    </span><span class="no">LazyStream</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="vi">@enumerator</span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="n">n</span><span class="p">))</span>
+<span class="w">  </span><span class="k">end</span>
+
+<span class="w">  </span><span class="k">def</span><span class="w"> </span><span class="nf">to_array</span>
+<span class="w">    </span><span class="vi">@enumerator</span><span class="o">.</span><span class="n">to_a</span>
+<span class="w">  </span><span class="k">end</span>
+<span class="k">end</span>
+</code></pre></div>
+<h3 id="93">9.3 純粋なストリーム<a class="headerlink" href="#93" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># 有限ストリーム</span>
+<span class="n">numbers</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="no">LazyStream</span><span class="o">.</span><span class="n">from_array</span><span class="p">(</span><span class="o">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="o">]</span><span class="p">)</span>
+<span class="n">numbers</span><span class="o">.</span><span class="n">to_array</span><span class="w">  </span><span class="c1"># [1, 2, 3]</span>
+
+<span class="c1"># フィルタリング</span>
+<span class="n">odd_numbers</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">numbers</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="o">&amp;</span><span class="ss">:odd?</span><span class="p">)</span>
+<span class="n">odd_numbers</span><span class="o">.</span><span class="n">to_array</span><span class="w">  </span><span class="c1"># [1, 3]</span>
+</code></pre></div>
+<h3 id="94">9.4 無限ストリーム<a class="headerlink" href="#94" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># repeat で無限に繰り返し</span>
+<span class="n">infinite_123s</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="no">LazyStream</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">)</span>
+
+<span class="c1"># take で有限個を取得</span>
+<span class="n">infinite_123s</span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span><span class="o">.</span><span class="n">to_array</span><span class="w">  </span><span class="c1"># [1, 2, 3, 1, 2, 3, 1, 2]</span>
+</code></pre></div>
+<p><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiBjb250ZW50U3R5bGVUeXBlPSJ0ZXh0L2NzcyIgZGF0YS1kaWFncmFtLXR5cGU9IkRFU0NSSVBUSU9OIiBoZWlnaHQ9IjQyM3B4IiBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSJub25lIiBzdHlsZT0id2lkdGg6MjU4cHg7aGVpZ2h0OjQyM3B4O2JhY2tncm91bmQ6I0ZGRkZGRjsiIHZlcnNpb249IjEuMSIgdmlld0JveD0iMCAwIDI1OCA0MjMiIHdpZHRoPSIyNThweCIgem9vbUFuZFBhbj0ibWFnbmlmeSI+PGRlZnMvPjxnPjwhLS1jbHVzdGVyID8/Pz8/Pz8tLT48ZyBjbGFzcz0iY2x1c3RlciIgZGF0YS1lbnRpdHk9Ii4uLi4uLi4iIGRhdGEtc291cmNlLWxpbmU9IjMiIGRhdGEtdWlkPSJlbnQwMDAyIiBpZD0iY2x1c3Rlcl8uLi4uLi4uIj48cmVjdCBmaWxsPSIjRkZGRkZGIiBoZWlnaHQ9IjMyMC4xOCIgcng9IjIuNSIgcnk9IjIuNSIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxOyIgd2lkdGg9IjI0MCIgeD0iMTIiIHk9IjEyIi8+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9IlZlcmRhbmEiIGZvbnQtc2l6ZT0iMTQiIGZvbnQtd2VpZ2h0PSJib2xkIiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9Ijk3Ljk5OTYiIHg9IjgzLjAwMDIiIHk9IjI2Ljk5NTEiPiYjMjg5NjE7JiMzODQ4MDsmIzEyNDczOyYjMTI0ODg7JiMxMjUyMjsmIzEyNTQwOyYjMTI1MTI7PC90ZXh0PjwvZz48IS0tZW50aXR5IHN0cmVhbS0tPjxnIGNsYXNzPSJlbnRpdHkiIGRhdGEtZW50aXR5PSJzdHJlYW0iIGRhdGEtc291cmNlLWxpbmU9IjQiIGRhdGEtdWlkPSJlbnQwMDAzIiBpZD0iZW50aXR5X3N0cmVhbSI+PHJlY3QgZmlsbD0iI0ZGRkZGRiIgaGVpZ2h0PSIyMi4yOTY5IiByeD0iMi41IiByeT0iMi41IiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE7IiB3aWR0aD0iMjA4LjgwODYiIHg9IjI3LjYiIHk9IjQ3Ii8+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9IlZlcmRhbmEiIGZvbnQtc2l6ZT0iMTQiIGxlbmd0aEFkanVzdD0ic3BhY2luZyIgdGV4dExlbmd0aD0iMTg4LjgwODYiIHg9IjM3LjYiIHk9IjYyLjk5NTEiPkxhenlTdHJlYW0ucmVwZWF0KDEsIDIsIDMpPC90ZXh0PjwvZz48IS0tZW50aXR5IGluZmluaXRlLS0+PGcgY2xhc3M9ImVudGl0eSIgZGF0YS1lbnRpdHk9ImluZmluaXRlIiBkYXRhLXNvdXJjZS1saW5lPSI1IiBkYXRhLXVpZD0iZW50MDAwNCIgaWQ9ImVudGl0eV9pbmZpbml0ZSI+PHJlY3QgZmlsbD0iI0ZGRkZGRiIgaGVpZ2h0PSIyMi4yOTY5IiByeD0iMi41IiByeT0iMi41IiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE7IiB3aWR0aD0iMTkzLjYxOTEiIHg9IjM1LjE5IiB5PSIxMjkuMjkiLz48dGV4dCBmaWxsPSIjMDAwMDAwIiBmb250LWZhbWlseT0iVmVyZGFuYSIgZm9udC1zaXplPSIxNCIgbGVuZ3RoQWRqdXN0PSJzcGFjaW5nIiB0ZXh0TGVuZ3RoPSIxNzMuNjE5MSIgeD0iNDUuMTkiIHk9IjE0NS4yODUxIj4xLCAyLCAzLCAxLCAyLCAzLCAxLCAyLCAzLCAuLi48L3RleHQ+PC9nPjwhLS1lbnRpdHkgdGFrZS0tPjxnIGNsYXNzPSJlbnRpdHkiIGRhdGEtZW50aXR5PSJ0YWtlIiBkYXRhLXNvdXJjZS1saW5lPSI2IiBkYXRhLXVpZD0iZW50MDAwNSIgaWQ9ImVudGl0eV90YWtlIj48cmVjdCBmaWxsPSIjRkZGRkZGIiBoZWlnaHQ9IjIyLjI5NjkiIHJ4PSIyLjUiIHJ5PSIyLjUiIHN0eWxlPSJzdHJva2U6IzAwMDAwMDtzdHJva2Utd2lkdGg6MTsiIHdpZHRoPSI3MC42MjAxIiB4PSI5Ni42OSIgeT0iMjExLjU5Ii8+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9IlZlcmRhbmEiIGZvbnQtc2l6ZT0iMTQiIGxlbmd0aEFkanVzdD0ic3BhY2luZyIgdGV4dExlbmd0aD0iNTAuNjIwMSIgeD0iMTA2LjY5IiB5PSIyMjcuNTg1MSI+dGFrZSg4KTwvdGV4dD48L2c+PCEtLWVudGl0eSByZXN1bHQtLT48ZyBjbGFzcz0iZW50aXR5IiBkYXRhLWVudGl0eT0icmVzdWx0IiBkYXRhLXNvdXJjZS1saW5lPSI3IiBkYXRhLXVpZD0iZW50MDAwNiIgaWQ9ImVudGl0eV9yZXN1bHQiPjxyZWN0IGZpbGw9IiNGRkZGRkYiIGhlaWdodD0iMjIuMjk2OSIgcng9IjIuNSIgcnk9IjIuNSIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxOyIgd2lkdGg9IjE2NC40ODQ0IiB4PSI0OS43NiIgeT0iMjkzLjg5Ii8+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9IlZlcmRhbmEiIGZvbnQtc2l6ZT0iMTQiIGxlbmd0aEFkanVzdD0ic3BhY2luZyIgdGV4dExlbmd0aD0iMTQ0LjQ4NDQiIHg9IjU5Ljc2IiB5PSIzMDkuODg1MSI+WzEsIDIsIDMsIDEsIDIsIDMsIDEsIDJdPC90ZXh0PjwvZz48ZyBjbGFzcz0iZW50aXR5IiBkYXRhLWVudGl0eT0iR01OMTAiIGRhdGEtc291cmNlLWxpbmU9IjE1IiBkYXRhLXVpZD0iZW50MDAxMSIgaWQ9ImVudGl0eV9HTU4xMCI+PHBhdGggZD0iTTU2LjUsMzc2LjE4IEw1Ni41LDQxNi40NDU2IEEwLDAgMCAwIDAgNTYuNSw0MTYuNDQ1NiBMMjA3LjUwMDIsNDE2LjQ0NTYgQTAsMCAwIDAgMCAyMDcuNTAwMiw0MTYuNDQ1NiBMMjA3LjUwMDIsMzg2LjE4IEwxOTcuNTAwMiwzNzYuMTggTDEzNiwzNzYuMTggTDEzMiwzMTYuNjMgTDEyOCwzNzYuMTggTDU2LjUsMzc2LjE4IEEwLDAgMCAwIDAgNTYuNSwzNzYuMTgiIGZpbGw9IiNGRkZGRkYiIHN0eWxlPSJzdHJva2U6IzAwMDAwMDtzdHJva2Utd2lkdGg6MTsiLz48cGF0aCBkPSJNMTk3LjUwMDIsMzc2LjE4IEwxOTcuNTAwMiwzODYuMTggTDIwNy41MDAyLDM4Ni4xOCBMMTk3LjUwMDIsMzc2LjE4IiBmaWxsPSIjRkZGRkZGIiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE7Ii8+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9IlZlcmRhbmEiIGZvbnQtc2l6ZT0iMTMiIGxlbmd0aEFkanVzdD0ic3BhY2luZyIgdGV4dExlbmd0aD0iMTMwLjAwMDIiIHg9IjYyLjUiIHk9IjM5My4yNDY5Ij4mIzI4OTYxOyYjMzg0ODA7JiMxMjM5ODsmIzEyNDczOyYjMTI0ODg7JiMxMjUyMjsmIzEyNTQwOyYjMTI1MTI7JiMxMjM2MzsmIzEyNDI1OzwvdGV4dD48dGV4dCBmaWxsPSIjMDAwMDAwIiBmb250LWZhbWlseT0iVmVyZGFuYSIgZm9udC1zaXplPSIxMyIgbGVuZ3RoQWRqdXN0PSJzcGFjaW5nIiB0ZXh0TGVuZ3RoPSIxMDQuMDAwMSIgeD0iNjIuNSIgeT0iNDA4LjM3OTciPiYjMjQ1MTc7JiMzNTIwMTsmIzEyMzk0OyYjMjA5OTg7JiMxMjM4NDsmIzEyMzY5OyYjMjE0NjI7JiMyNDQ3MTs8L3RleHQ+PC9nPjwhLS1saW5rIHN0cmVhbSB0byBpbmZpbml0ZS0tPjxnIGNsYXNzPSJsaW5rIiBkYXRhLWVudGl0eS0xPSJzdHJlYW0iIGRhdGEtZW50aXR5LTI9ImluZmluaXRlIiBkYXRhLXNvdXJjZS1saW5lPSI5IiBkYXRhLXVpZD0ibG5rNyIgaWQ9Imxpbmtfc3RyZWFtX2luZmluaXRlIj48cGF0aCBkPSJNMTMyLDY5LjY0IEMxMzIsODUuMDMgMTMyLDEwNy41NSAxMzIsMTIyLjk0IiBmaWxsPSJub25lIiBpZD0ic3RyZWFtLXRvLWluZmluaXRlIiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE7Ii8+PHBvbHlnb24gZmlsbD0iIzAwMDAwMCIgcG9pbnRzPSIxMzIsMTI4Ljk0LDEzNiwxMTkuOTQsMTMyLDEyMy45NCwxMjgsMTE5Ljk0LDEzMiwxMjguOTQiIHN0eWxlPSJzdHJva2U6IzAwMDAwMDtzdHJva2Utd2lkdGg6MTsiLz48L2c+PCEtLWxpbmsgaW5maW5pdGUgdG8gdGFrZS0tPjxnIGNsYXNzPSJsaW5rIiBkYXRhLWVudGl0eS0xPSJpbmZpbml0ZSIgZGF0YS1lbnRpdHktMj0idGFrZSIgZGF0YS1zb3VyY2UtbGluZT0iMTAiIGRhdGEtdWlkPSJsbms4IiBpZD0ibGlua19pbmZpbml0ZV90YWtlIj48cGF0aCBkPSJNMTMyLDE1MS45NCBDMTMyLDE2Ny4zMyAxMzIsMTg5Ljg1IDEzMiwyMDUuMjQiIGZpbGw9Im5vbmUiIGlkPSJpbmZpbml0ZS10by10YWtlIiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE7Ii8+PHBvbHlnb24gZmlsbD0iIzAwMDAwMCIgcG9pbnRzPSIxMzIsMjExLjI0LDEzNiwyMDIuMjQsMTMyLDIwNi4yNCwxMjgsMjAyLjI0LDEzMiwyMTEuMjQiIHN0eWxlPSJzdHJva2U6IzAwMDAwMDtzdHJva2Utd2lkdGg6MTsiLz48L2c+PCEtLWxpbmsgdGFrZSB0byByZXN1bHQtLT48ZyBjbGFzcz0ibGluayIgZGF0YS1lbnRpdHktMT0idGFrZSIgZGF0YS1lbnRpdHktMj0icmVzdWx0IiBkYXRhLXNvdXJjZS1saW5lPSIxMSIgZGF0YS11aWQ9ImxuazkiIGlkPSJsaW5rX3Rha2VfcmVzdWx0Ij48cGF0aCBkPSJNMTMyLDIzNC4yNCBDMTMyLDI0OS42MyAxMzIsMjcyLjE1IDEzMiwyODcuNTQiIGZpbGw9Im5vbmUiIGlkPSJ0YWtlLXRvLXJlc3VsdCIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxOyIvPjxwb2x5Z29uIGZpbGw9IiMwMDAwMDAiIHBvaW50cz0iMTMyLDI5My41NCwxMzYsMjg0LjU0LDEzMiwyODguNTQsMTI4LDI4NC41NCwxMzIsMjkzLjU0IiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE7Ii8+PC9nPjwhLS1TUkM9W0tvcDlJQ3JETElaOElTcEN1LThnSWFxa0lTbkJwcWJMSzdoVWlsM2JwMGNGY3RPLVJrdnV0QnBnU1ZFVW55cUJiMUlna1A4SllyOEtiN21JZ29nM0l1Zkk0dEZyWWI4QktYREJEMG5yNThucTU4bXJiSEdJWW5NQW1MOUdqTDBQN0dMQ1hmd1U3Ylh6UGJ2UVBidmNJSWZLSHFiWVRnZzYxU0dlNDFpZzc4dFRmNVlta2dCS3VqQVM0WXVrWURLQWtoZnMyNURYM0IwZXM0MEcwVVAxalRMb1NVTmIwbkthdlBVS3ZFVG9HTnRWazB1ajAxdXRUWnprd2tId2toX3JuUkI2bnVzaGRkUXFGTXU0WWF2eXNaX2p3UnhmTkFidkFHZVdTbTAwXS0tPjwvZz48L3N2Zz4=" class="uml" alt="uml diagram" title="" /></p>
+<h3 id="95">9.5 便利なストリーム生成メソッド<a class="headerlink" href="#95" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># 整数ストリーム（無限）</span>
+<span class="no">LazyStream</span><span class="o">.</span><span class="n">from</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span><span class="o">.</span><span class="n">to_array</span><span class="w">  </span><span class="c1"># [1, 2, 3, 4, 5]</span>
+
+<span class="c1"># iterate で漸化式</span>
+<span class="no">LazyStream</span><span class="o">.</span><span class="n">iterate</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="o">|</span><span class="n">n</span><span class="o">|</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="p">}</span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span><span class="o">.</span><span class="n">to_array</span><span class="w">  </span><span class="c1"># [1, 2, 4, 8, 16]</span>
+
+<span class="c1"># continually でブロックを繰り返し実行</span>
+<span class="n">counter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span>
+<span class="no">LazyStream</span><span class="o">.</span><span class="n">continually</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">counter</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="p">}</span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span><span class="o">.</span><span class="n">to_array</span><span class="w">  </span><span class="c1"># [1, 2, 3]</span>
+</code></pre></div>
+<h3 id="96-io">9.6 IO を含むストリーム<a class="headerlink" href="#96-io" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">IOStream</span>
+<span class="w">  </span><span class="k">def</span><span class="w"> </span><span class="nf">initialize</span><span class="p">(</span><span class="o">&amp;</span><span class="n">stream_fn</span><span class="p">)</span>
+<span class="w">    </span><span class="vi">@stream_fn</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">stream_fn</span>
+<span class="w">  </span><span class="k">end</span>
+
+<span class="w">  </span><span class="c1"># IO アクションから無限ストリームを作成</span>
+<span class="w">  </span><span class="k">def</span><span class="w"> </span><span class="nc">self</span><span class="o">.</span><span class="nf">repeat_eval</span><span class="p">(</span><span class="n">io_action</span><span class="p">)</span>
+<span class="w">    </span><span class="n">enum</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="no">Enumerator</span><span class="o">.</span><span class="n">new</span><span class="w"> </span><span class="k">do</span><span class="w"> </span><span class="o">|</span><span class="n">yielder</span><span class="o">|</span>
+<span class="w">      </span><span class="kp">loop</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">yielder</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">io_action</span><span class="o">.</span><span class="n">run!</span><span class="w"> </span><span class="p">}</span>
+<span class="w">    </span><span class="k">end</span>
+<span class="w">    </span><span class="kp">new</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">enum</span><span class="o">.</span><span class="n">lazy</span><span class="w"> </span><span class="p">}</span>
+<span class="w">  </span><span class="k">end</span>
+
+<span class="w">  </span><span class="c1"># リストにコンパイル（IO を返す）</span>
+<span class="w">  </span><span class="k">def</span><span class="w"> </span><span class="nf">compile_to_list</span>
+<span class="w">    </span><span class="no">IO</span><span class="o">.</span><span class="n">delay</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="vi">@stream_fn</span><span class="o">.</span><span class="n">call</span><span class="o">.</span><span class="n">to_a</span><span class="w"> </span><span class="p">}</span>
+<span class="w">  </span><span class="k">end</span>
+<span class="k">end</span>
+
+<span class="c1"># 無限にサイコロを振るストリーム</span>
+<span class="n">infinite_die_casts</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="no">IOStream</span><span class="o">.</span><span class="n">repeat_eval</span><span class="p">(</span><span class="n">cast_the_die</span><span class="p">)</span>
+</code></pre></div>
+<h4 id="_7">ストリームの実行<a class="headerlink" href="#_7" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="c1"># 最初の3回を取得</span>
+<span class="n">first_three</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">infinite_die_casts</span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span><span class="o">.</span><span class="n">compile_to_list</span>
+<span class="n">first_three</span><span class="o">.</span><span class="n">run!</span><span class="w">  </span><span class="c1"># [4, 2, 6]</span>
+
+<span class="c1"># 6 が出るまで振り続ける</span>
+<span class="n">six</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">infinite_die_casts</span><span class="o">.</span><span class="n">filter</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="o">|</span><span class="n">n</span><span class="o">|</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">6</span><span class="w"> </span><span class="p">}</span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">compile_to_list</span>
+<span class="n">six</span><span class="o">.</span><span class="n">run!</span><span class="w">  </span><span class="c1"># [6]</span>
+</code></pre></div>
+<h3 id="97">9.7 ストリームの主要操作<a class="headerlink" href="#97" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>操作</th>
+<th>説明</th>
+<th>例</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>take(n)</code></td>
+<td>最初の n 要素を取得</td>
+<td><code>stream.take(3)</code></td>
+</tr>
+<tr>
+<td><code>filter(p)</code></td>
+<td>条件を満たす要素のみ</td>
+<td><code>stream.filter(&amp;:even?)</code></td>
+</tr>
+<tr>
+<td><code>fmap(f)</code></td>
+<td>各要素を変換</td>
+<td><code>stream.fmap { \|x\| x * 2 }</code></td>
+</tr>
+<tr>
+<td><code>append(s)</code></td>
+<td>別のストリームを結合</td>
+<td><code>stream1.append(stream2)</code></td>
+</tr>
+<tr>
+<td><code>repeat</code></td>
+<td>無限に繰り返し</td>
+<td><code>stream.repeat</code></td>
+</tr>
+<tr>
+<td><code>sliding(n)</code></td>
+<td>スライディングウィンドウ</td>
+<td><code>stream.sliding(3)</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="98">9.8 通貨交換レートの例<a class="headerlink" href="#98" title="Permanent link">&para;</a></h3>
+<p>為替レートを監視して、上昇トレンドを検出する例です。</p>
+<h4 id="_8">トレンド判定（純粋関数）<a class="headerlink" href="#_8" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">trending?</span><span class="p">(</span><span class="n">rates</span><span class="p">)</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="kp">false</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">rates</span><span class="o">.</span><span class="n">size</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="mi">1</span>
+
+<span class="w">  </span><span class="n">rates</span><span class="o">.</span><span class="n">each_cons</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">all?</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="o">|</span><span class="n">prev</span><span class="p">,</span><span class="w"> </span><span class="n">curr</span><span class="o">|</span><span class="w"> </span><span class="n">curr</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="n">prev</span><span class="w"> </span><span class="p">}</span>
+<span class="k">end</span>
+
+<span class="n">trending?</span><span class="p">(</span><span class="o">[</span><span class="mi">0</span><span class="o">.</span><span class="mi">81</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="o">.</span><span class="mi">82</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="o">.</span><span class="mi">83</span><span class="o">]</span><span class="p">)</span><span class="w">  </span><span class="c1"># true (上昇トレンド)</span>
+<span class="n">trending?</span><span class="p">(</span><span class="o">[</span><span class="mi">0</span><span class="o">.</span><span class="mi">81</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="o">.</span><span class="mi">84</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="o">.</span><span class="mi">83</span><span class="o">]</span><span class="p">)</span><span class="w">  </span><span class="c1"># false</span>
+</code></pre></div>
+<h4 id="_9">レートのストリーム<a class="headerlink" href="#_9" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">rates_stream</span><span class="p">(</span><span class="n">from_currency</span><span class="p">,</span><span class="w"> </span><span class="n">to_currency</span><span class="p">)</span>
+<span class="w">  </span><span class="no">IOStream</span><span class="o">.</span><span class="n">repeat_eval</span><span class="p">(</span><span class="n">exchange_table</span><span class="p">(</span><span class="n">from_currency</span><span class="p">))</span>
+<span class="w">    </span><span class="o">.</span><span class="n">fmap</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="o">|</span><span class="n">table</span><span class="o">|</span><span class="w"> </span><span class="n">extract_single_currency_rate</span><span class="p">(</span><span class="n">to_currency</span><span class="p">,</span><span class="w"> </span><span class="n">table</span><span class="p">)</span><span class="w"> </span><span class="p">}</span>
+<span class="w">    </span><span class="o">.</span><span class="n">filter</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="o">|</span><span class="n">rate</span><span class="o">|</span><span class="w"> </span><span class="o">!</span><span class="n">rate</span><span class="o">.</span><span class="n">nil?</span><span class="w"> </span><span class="p">}</span>
+<span class="k">end</span>
+</code></pre></div>
+<h3 id="99">9.9 スライディングウィンドウ<a class="headerlink" href="#99" title="Permanent link">&para;</a></h3>
+<p><code>sliding</code> で連続する要素をグループ化できます。</p>
+<div class="highlight"><pre><span></span><code><span class="n">stream</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="no">LazyStream</span><span class="o">.</span><span class="n">from_array</span><span class="p">(</span><span class="o">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="o">]</span><span class="p">)</span>
+
+<span class="n">stream</span><span class="o">.</span><span class="n">sliding</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span><span class="o">.</span><span class="n">to_array</span>
+<span class="c1"># [[1, 2, 3], [2, 3, 4], [3, 4, 5]]</span>
+</code></pre></div>
+<p><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiBjb250ZW50U3R5bGVUeXBlPSJ0ZXh0L2NzcyIgZGF0YS1kaWFncmFtLXR5cGU9IkRFU0NSSVBUSU9OIiBoZWlnaHQ9IjE3M3B4IiBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSJub25lIiBzdHlsZT0id2lkdGg6MzQ2cHg7aGVpZ2h0OjE3M3B4O2JhY2tncm91bmQ6I0ZGRkZGRjsiIHZlcnNpb249IjEuMSIgdmlld0JveD0iMCAwIDM0NiAxNzMiIHdpZHRoPSIzNDZweCIgem9vbUFuZFBhbj0ibWFnbmlmeSI+PGRlZnMvPjxnPjwhLS1jbHVzdGVyIHNsaWRpbmcoMykgPz8/LS0+PGcgY2xhc3M9ImNsdXN0ZXIiIGRhdGEtZW50aXR5PSJzbGlkaW5nLjMuIC4uLiIgZGF0YS1zb3VyY2UtbGluZT0iMyIgZGF0YS11aWQ9ImVudDAwMDIiIGlkPSJjbHVzdGVyX3NsaWRpbmcuMy4gLi4uIj48cmVjdCBmaWxsPSIjRkZGRkZGIiBoZWlnaHQ9IjE1NS41OSIgcng9IjIuNSIgcnk9IjIuNSIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxOyIgd2lkdGg9IjMyOCIgeD0iMTIiIHk9IjEyIi8+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9IlZlcmRhbmEiIGZvbnQtc2l6ZT0iMTQiIGZvbnQtd2VpZ2h0PSJib2xkIiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjEyMi4xNTEyIiB4PSIxMTQuOTI0NCIgeT0iMjYuOTk1MSI+c2xpZGluZygzKSAmIzEyMzk4OyYjMjEyMDU7JiMyMDMxNjs8L3RleHQ+PC9nPjwhLS1lbnRpdHkgaW5wdXQtLT48ZyBjbGFzcz0iZW50aXR5IiBkYXRhLWVudGl0eT0iaW5wdXQiIGRhdGEtc291cmNlLWxpbmU9IjQiIGRhdGEtdWlkPSJlbnQwMDAzIiBpZD0iZW50aXR5X2lucHV0Ij48cmVjdCBmaWxsPSIjRkZGRkZGIiBoZWlnaHQ9IjIyLjI5NjkiIHJ4PSIyLjUiIHJ5PSIyLjUiIHN0eWxlPSJzdHJva2U6IzAwMDAwMDtzdHJva2Utd2lkdGg6MTsiIHdpZHRoPSIxMTEuMDYxNSIgeD0iMTIwLjQ3IiB5PSI0NyIvPjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJWZXJkYW5hIiBmb250LXNpemU9IjE0IiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjkxLjA2MTUiIHg9IjEzMC40NyIgeT0iNjIuOTk1MSI+WzEsIDIsIDMsIDQsIDVdPC90ZXh0PjwvZz48IS0tZW50aXR5IHcxLS0+PGcgY2xhc3M9ImVudGl0eSIgZGF0YS1lbnRpdHk9IncxIiBkYXRhLXNvdXJjZS1saW5lPSI1IiBkYXRhLXVpZD0iZW50MDAwNCIgaWQ9ImVudGl0eV93MSI+PHJlY3QgZmlsbD0iI0ZGRkZGRiIgaGVpZ2h0PSIyMi4yOTY5IiByeD0iMi41IiByeT0iMi41IiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE7IiB3aWR0aD0iNzUuNDQ2MyIgeD0iMjguMjgiIHk9IjEyOS4yOSIvPjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJWZXJkYW5hIiBmb250LXNpemU9IjE0IiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjU1LjQ0NjMiIHg9IjM4LjI4IiB5PSIxNDUuMjg1MSI+WzEsIDIsIDNdPC90ZXh0PjwvZz48IS0tZW50aXR5IHcyLS0+PGcgY2xhc3M9ImVudGl0eSIgZGF0YS1lbnRpdHk9IncyIiBkYXRhLXNvdXJjZS1saW5lPSI2IiBkYXRhLXVpZD0iZW50MDAwNSIgaWQ9ImVudGl0eV93MiI+PHJlY3QgZmlsbD0iI0ZGRkZGRiIgaGVpZ2h0PSIyMi4yOTY5IiByeD0iMi41IiByeT0iMi41IiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE7IiB3aWR0aD0iNzUuNDQ2MyIgeD0iMTM4LjI4IiB5PSIxMjkuMjkiLz48dGV4dCBmaWxsPSIjMDAwMDAwIiBmb250LWZhbWlseT0iVmVyZGFuYSIgZm9udC1zaXplPSIxNCIgbGVuZ3RoQWRqdXN0PSJzcGFjaW5nIiB0ZXh0TGVuZ3RoPSI1NS40NDYzIiB4PSIxNDguMjgiIHk9IjE0NS4yODUxIj5bMiwgMywgNF08L3RleHQ+PC9nPjwhLS1lbnRpdHkgdzMtLT48ZyBjbGFzcz0iZW50aXR5IiBkYXRhLWVudGl0eT0idzMiIGRhdGEtc291cmNlLWxpbmU9IjciIGRhdGEtdWlkPSJlbnQwMDA2IiBpZD0iZW50aXR5X3czIj48cmVjdCBmaWxsPSIjRkZGRkZGIiBoZWlnaHQ9IjIyLjI5NjkiIHJ4PSIyLjUiIHJ5PSIyLjUiIHN0eWxlPSJzdHJva2U6IzAwMDAwMDtzdHJva2Utd2lkdGg6MTsiIHdpZHRoPSI3NS40NDYzIiB4PSIyNDguMjgiIHk9IjEyOS4yOSIvPjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJWZXJkYW5hIiBmb250LXNpemU9IjE0IiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjU1LjQ0NjMiIHg9IjI1OC4yOCIgeT0iMTQ1LjI4NTEiPlszLCA0LCA1XTwvdGV4dD48L2c+PCEtLWxpbmsgaW5wdXQgdG8gdzEtLT48ZyBjbGFzcz0ibGluayIgZGF0YS1lbnRpdHktMT0iaW5wdXQiIGRhdGEtZW50aXR5LTI9IncxIiBkYXRhLXNvdXJjZS1saW5lPSI5IiBkYXRhLXVpZD0ibG5rNyIgaWQ9ImxpbmtfaW5wdXRfdzEiPjxwYXRoIGQ9Ik0xNjEuNjIsNjkuNjQgQzE0MC41NCw4NS4wMyAxMDYuMzE2NywxMTAuMDEzMiA4NS4yMjY3LDEyNS40MDMyIiBmaWxsPSJub25lIiBpZD0iaW5wdXQtdG8tdzEiIHN0eWxlPSJzdHJva2U6IzAwMDAwMDtzdHJva2Utd2lkdGg6MTsiLz48cG9seWdvbiBmaWxsPSIjMDAwMDAwIiBwb2ludHM9IjgwLjM4LDEyOC45NCw5MC4wMDgsMTI2Ljg2NTksODQuNDE5LDEyNS45OTI3LDg1LjI5MjIsMTIwLjQwMzYsODAuMzgsMTI4Ljk0IiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE7Ii8+PC9nPjwhLS1saW5rIGlucHV0IHRvIHcyLS0+PGcgY2xhc3M9ImxpbmsiIGRhdGEtZW50aXR5LTE9ImlucHV0IiBkYXRhLWVudGl0eS0yPSJ3MiIgZGF0YS1zb3VyY2UtbGluZT0iMTAiIGRhdGEtdWlkPSJsbms4IiBpZD0ibGlua19pbnB1dF93MiI+PHBhdGggZD0iTTE3Niw2OS42NCBDMTc2LDg1LjAzIDE3NiwxMDcuNTUgMTc2LDEyMi45NCIgZmlsbD0ibm9uZSIgaWQ9ImlucHV0LXRvLXcyIiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE7Ii8+PHBvbHlnb24gZmlsbD0iIzAwMDAwMCIgcG9pbnRzPSIxNzYsMTI4Ljk0LDE4MCwxMTkuOTQsMTc2LDEyMy45NCwxNzIsMTE5Ljk0LDE3NiwxMjguOTQiIHN0eWxlPSJzdHJva2U6IzAwMDAwMDtzdHJva2Utd2lkdGg6MTsiLz48L2c+PCEtLWxpbmsgaW5wdXQgdG8gdzMtLT48ZyBjbGFzcz0ibGluayIgZGF0YS1lbnRpdHktMT0iaW5wdXQiIGRhdGEtZW50aXR5LTI9InczIiBkYXRhLXNvdXJjZS1saW5lPSIxMSIgZGF0YS11aWQ9ImxuazkiIGlkPSJsaW5rX2lucHV0X3czIj48cGF0aCBkPSJNMTkwLjM4LDY5LjY0IEMyMTEuNDYsODUuMDMgMjQ1LjY4MzMsMTEwLjAxMzIgMjY2Ljc3MzMsMTI1LjQwMzIiIGZpbGw9Im5vbmUiIGlkPSJpbnB1dC10by13MyIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxOyIvPjxwb2x5Z29uIGZpbGw9IiMwMDAwMDAiIHBvaW50cz0iMjcxLjYyLDEyOC45NCwyNjYuNzA3OCwxMjAuNDAzNiwyNjcuNTgxLDEyNS45OTI3LDI2MS45OTIsMTI2Ljg2NTksMjcxLjYyLDEyOC45NCIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxOyIvPjwvZz48IS0tU1JDPVtLb3A5SUNyRExJWjhJU3BDdS04Z0lhcWtJU25CcHFiTEsyaEVvS3A5cDRsTkNEUEtVRG91eGNkdHIyVHh2b1dmTDdDYjluUWJBMlg1Ni1lZTZFYWU2RWllY0VXZWNDT2dBSUdNQXNKYzVQSU1lQ2IzUENlRE9TOUdGTDFYOHZXbVlaZGJuYm5TT0JDS1Q3TmpHN2dIRTRSODc2RWtNVzAwXS0tPjwvZz48L3N2Zz4=" class="uml" alt="uml diagram" title="" /></p>
+<h4 id="_10">トレンド検出<a class="headerlink" href="#_10" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">detect_trend</span><span class="p">(</span><span class="n">values</span><span class="p">,</span><span class="w"> </span><span class="n">window_size</span><span class="p">)</span>
+<span class="w">  </span><span class="no">LazyStream</span><span class="o">.</span><span class="n">from_array</span><span class="p">(</span><span class="n">values</span><span class="p">)</span>
+<span class="w">    </span><span class="o">.</span><span class="n">sliding</span><span class="p">(</span><span class="n">window_size</span><span class="p">)</span>
+<span class="w">    </span><span class="o">.</span><span class="n">fmap</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="o">|</span><span class="n">window</span><span class="o">|</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="ss">window</span><span class="p">:</span><span class="w"> </span><span class="n">window</span><span class="p">,</span><span class="w"> </span><span class="ss">trending</span><span class="p">:</span><span class="w"> </span><span class="n">trending?</span><span class="p">(</span><span class="n">window</span><span class="p">)</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">}</span>
+<span class="k">end</span>
+
+<span class="n">detect_trend</span><span class="p">(</span><span class="o">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="o">]</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">)</span><span class="o">.</span><span class="n">to_array</span>
+<span class="c1"># [{window: [1,2,3], trending: true},</span>
+<span class="c1">#  {window: [2,3,4], trending: true},</span>
+<span class="c1">#  {window: [3,4,3], trending: false}]</span>
+</code></pre></div>
+<h3 id="910">9.10 ストリームの結合<a class="headerlink" href="#910" title="Permanent link">&para;</a></h3>
+<p>2つのストリームを <code>zip</code> で結合できます。</p>
+<div class="highlight"><pre><span></span><code><span class="n">stream1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="no">LazyStream</span><span class="o">.</span><span class="n">from_array</span><span class="p">(</span><span class="o">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="o">]</span><span class="p">)</span>
+<span class="n">stream2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="no">LazyStream</span><span class="o">.</span><span class="n">from_array</span><span class="p">(</span><span class="o">[</span><span class="s1">&#39;a&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;b&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;c&#39;</span><span class="o">]</span><span class="p">)</span>
+
+<span class="n">stream1</span><span class="o">.</span><span class="n">zip</span><span class="p">(</span><span class="n">stream2</span><span class="p">)</span><span class="o">.</span><span class="n">to_array</span>
+<span class="c1"># [[1, &#39;a&#39;], [2, &#39;b&#39;], [3, &#39;c&#39;]]</span>
+
+<span class="c1"># 左の値のみ保持</span>
+<span class="n">stream1</span><span class="o">.</span><span class="n">zip_left</span><span class="p">(</span><span class="n">stream2</span><span class="p">)</span><span class="o">.</span><span class="n">to_array</span><span class="w">  </span><span class="c1"># [1, 2, 3]</span>
+</code></pre></div>
+<p><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiBjb250ZW50U3R5bGVUeXBlPSJ0ZXh0L2NzcyIgZGF0YS1kaWFncmFtLXR5cGU9IkRFU0NSSVBUSU9OIiBoZWlnaHQ9IjI1NXB4IiBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSJub25lIiBzdHlsZT0id2lkdGg6MzY5cHg7aGVpZ2h0OjI1NXB4O2JhY2tncm91bmQ6I0ZGRkZGRjsiIHZlcnNpb249IjEuMSIgdmlld0JveD0iMCAwIDM2OSAyNTUiIHdpZHRoPSIzNjlweCIgem9vbUFuZFBhbj0ibWFnbmlmeSI+PGRlZnMvPjxnPjwhLS1jbHVzdGVyIHppcCA/Pz8tLT48ZyBjbGFzcz0iY2x1c3RlciIgZGF0YS1lbnRpdHk9InppcCAuLi4iIGRhdGEtc291cmNlLWxpbmU9IjMiIGRhdGEtdWlkPSJlbnQwMDAyIiBpZD0iY2x1c3Rlcl96aXAgLi4uIj48cmVjdCBmaWxsPSIjRkZGRkZGIiBoZWlnaHQ9IjIzNy44OSIgcng9IjIuNSIgcnk9IjIuNSIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxOyIgd2lkdGg9IjM1MSIgeD0iMTIiIHk9IjEyIi8+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9IlZlcmRhbmEiIGZvbnQtc2l6ZT0iMTQiIGZvbnQtd2VpZ2h0PSJib2xkIiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjY5Ljg0MjYiIHg9IjE1Mi41Nzg3IiB5PSIyNi45OTUxIj56aXAgJiMxMjM5ODsmIzIxMjA1OyYjMjAzMTY7PC90ZXh0PjwvZz48IS0tZW50aXR5IHMxLS0+PGcgY2xhc3M9ImVudGl0eSIgZGF0YS1lbnRpdHk9InMxIiBkYXRhLXNvdXJjZS1saW5lPSI0IiBkYXRhLXVpZD0iZW50MDAwMyIgaWQ9ImVudGl0eV9zMSI+PHJlY3QgZmlsbD0iI0ZGRkZGRiIgaGVpZ2h0PSIyMi4yOTY5IiByeD0iMi41IiByeT0iMi41IiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE7IiB3aWR0aD0iMTQyLjg4OTYiIHg9IjI3LjU2IiB5PSI0NyIvPjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJWZXJkYW5hIiBmb250LXNpemU9IjE0IiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjEyMi44ODk2IiB4PSIzNy41NiIgeT0iNjIuOTk1MSI+c3RyZWFtMTogWzEsIDIsIDNdPC90ZXh0PjwvZz48IS0tZW50aXR5IHMyLS0+PGcgY2xhc3M9ImVudGl0eSIgZGF0YS1lbnRpdHk9InMyIiBkYXRhLXNvdXJjZS1saW5lPSI1IiBkYXRhLXVpZD0iZW50MDAwNCIgaWQ9ImVudGl0eV9zMiI+PHJlY3QgZmlsbD0iI0ZGRkZGRiIgaGVpZ2h0PSIyMi4yOTY5IiByeD0iMi41IiByeT0iMi41IiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE7IiB3aWR0aD0iMTQxLjMzMTEiIHg9IjIwNS4zMyIgeT0iNDciLz48dGV4dCBmaWxsPSIjMDAwMDAwIiBmb250LWZhbWlseT0iVmVyZGFuYSIgZm9udC1zaXplPSIxNCIgbGVuZ3RoQWRqdXN0PSJzcGFjaW5nIiB0ZXh0TGVuZ3RoPSIxMjEuMzMxMSIgeD0iMjE1LjMzIiB5PSI2Mi45OTUxIj5zdHJlYW0yOiBbYSwgYiwgY108L3RleHQ+PC9nPjwhLS1lbnRpdHkgemlwLS0+PGcgY2xhc3M9ImVudGl0eSIgZGF0YS1lbnRpdHk9InppcCIgZGF0YS1zb3VyY2UtbGluZT0iNiIgZGF0YS11aWQ9ImVudDAwMDUiIGlkPSJlbnRpdHlfemlwIj48cmVjdCBmaWxsPSIjRkZGRkZGIiBoZWlnaHQ9IjIyLjI5NjkiIHJ4PSIyLjUiIHJ5PSIyLjUiIHN0eWxlPSJzdHJva2U6IzAwMDAwMDtzdHJva2Utd2lkdGg6MTsiIHdpZHRoPSI0MC4xMjUiIHg9IjE2Ni45NCIgeT0iMTI5LjMiLz48dGV4dCBmaWxsPSIjMDAwMDAwIiBmb250LWZhbWlseT0iVmVyZGFuYSIgZm9udC1zaXplPSIxNCIgbGVuZ3RoQWRqdXN0PSJzcGFjaW5nIiB0ZXh0TGVuZ3RoPSIyMC4xMjUiIHg9IjE3Ni45NCIgeT0iMTQ1LjI5NTEiPnppcDwvdGV4dD48L2c+PCEtLWVudGl0eSByZXN1bHQtLT48ZyBjbGFzcz0iZW50aXR5IiBkYXRhLWVudGl0eT0icmVzdWx0IiBkYXRhLXNvdXJjZS1saW5lPSI3IiBkYXRhLXVpZD0iZW50MDAwNiIgaWQ9ImVudGl0eV9yZXN1bHQiPjxyZWN0IGZpbGw9IiNGRkZGRkYiIGhlaWdodD0iMjIuMjk2OSIgcng9IjIuNSIgcnk9IjIuNSIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxOyIgd2lkdGg9IjE0Ni43MzE0IiB4PSIxMTMuNjMiIHk9IjIxMS41OSIvPjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJWZXJkYW5hIiBmb250LXNpemU9IjE0IiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjEyNi43MzE0IiB4PSIxMjMuNjMiIHk9IjIyNy41ODUxIj5bWzEsYV0sIFsyLGJdLCBbMyxjXV08L3RleHQ+PC9nPjwhLS1saW5rIHMxIHRvIHppcC0tPjxnIGNsYXNzPSJsaW5rIiBkYXRhLWVudGl0eS0xPSJzMSIgZGF0YS1lbnRpdHktMj0iemlwIiBkYXRhLXNvdXJjZS1saW5lPSI5IiBkYXRhLXVpZD0ibG5rNyIgaWQ9ImxpbmtfczFfemlwIj48cGF0aCBkPSJNMTEwLjUsNjkuNjUgQzEyNy4zNyw4NS4wMyAxNTQuMTk4NiwxMDkuNTA0OSAxNzEuMDU4NiwxMjQuODk0OSIgZmlsbD0ibm9uZSIgaWQ9InMxLXRvLXppcCIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxOyIvPjxwb2x5Z29uIGZpbGw9IiMwMDAwMDAiIHBvaW50cz0iMTc1LjQ5LDEyOC45NCwxNzEuNTM5NiwxMTkuOTE4MSwxNzEuNzk3MSwxMjUuNTY5MSwxNjYuMTQ2MiwxMjUuODI2NywxNzUuNDksMTI4Ljk0IiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE7Ii8+PC9nPjwhLS1saW5rIHMyIHRvIHppcC0tPjxnIGNsYXNzPSJsaW5rIiBkYXRhLWVudGl0eS0xPSJzMiIgZGF0YS1lbnRpdHktMj0iemlwIiBkYXRhLXNvdXJjZS1saW5lPSIxMCIgZGF0YS11aWQ9ImxuazgiIGlkPSJsaW5rX3MyX3ppcCI+PHBhdGggZD0iTTI2NC4zNiw2OS42NSBDMjQ3LjMxLDg1LjAzIDIyMC4xNTUxLDEwOS41MzEgMjAzLjA5NTEsMTI0LjkyMSIgZmlsbD0ibm9uZSIgaWQ9InMyLXRvLXppcCIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxOyIvPjxwb2x5Z29uIGZpbGw9IiMwMDAwMDAiIHBvaW50cz0iMTk4LjY0LDEyOC45NCwyMDguMDAyLDEyNS44ODE2LDIwMi4zNTI2LDEyNS41OTA5LDIwMi42NDMzLDExOS45NDE1LDE5OC42NCwxMjguOTQiIHN0eWxlPSJzdHJva2U6IzAwMDAwMDtzdHJva2Utd2lkdGg6MTsiLz48L2c+PCEtLWxpbmsgemlwIHRvIHJlc3VsdC0tPjxnIGNsYXNzPSJsaW5rIiBkYXRhLWVudGl0eS0xPSJ6aXAiIGRhdGEtZW50aXR5LTI9InJlc3VsdCIgZGF0YS1zb3VyY2UtbGluZT0iMTEiIGRhdGEtdWlkPSJsbms5IiBpZD0ibGlua196aXBfcmVzdWx0Ij48cGF0aCBkPSJNMTg3LDE1MS45NCBDMTg3LDE2Ny4zMyAxODcsMTg5Ljg1IDE4NywyMDUuMjQiIGZpbGw9Im5vbmUiIGlkPSJ6aXAtdG8tcmVzdWx0IiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE7Ii8+PHBvbHlnb24gZmlsbD0iIzAwMDAwMCIgcG9pbnRzPSIxODcsMjExLjI0LDE5MSwyMDIuMjQsMTg3LDIwNi4yNCwxODMsMjAyLjI0LDE4NywyMTEuMjQiIHN0eWxlPSJzdHJva2U6IzAwMDAwMDtzdHJva2Utd2lkdGg6MTsiLz48L2c+PCEtLVNSQz1bS29wOUlDckRMSVo4SVNwQ3UtOGdJYXFrSVNuQnBxYkxLQWhBQjUxdXRCWmtRVlZLOXRsZEEyYktTb0tkNWdLZUExTU41QUtjdlhmUUFLR1J3WVdPd0lXT25vZWY5MU9oNTFrWW8xaTF2SERyNTk5cTU5QVh5YVBHVVEybk8wNFczSE05MWZnSzZBa1o0NnNhYW1JWVo3TUlPbzZRWWJBQkl0REFrQllBM0hMcVRVdDBNZWdEdTRvRzBxNWlnQWZRMDAwMF0tLT48L2c+PC9zdmc+" class="uml" alt="uml diagram" title="" /></p>
+<h3 id="911">9.11 便利なストリーム関数<a class="headerlink" href="#911" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># フィボナッチ数列</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">fibonacci</span>
+<span class="w">  </span><span class="n">enum</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="no">Enumerator</span><span class="o">.</span><span class="n">new</span><span class="w"> </span><span class="k">do</span><span class="w"> </span><span class="o">|</span><span class="n">yielder</span><span class="o">|</span>
+<span class="w">    </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span>
+<span class="w">    </span><span class="kp">loop</span><span class="w"> </span><span class="k">do</span>
+<span class="w">      </span><span class="n">yielder</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">a</span>
+<span class="w">      </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">b</span><span class="p">,</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">b</span>
+<span class="w">    </span><span class="k">end</span>
+<span class="w">  </span><span class="k">end</span>
+<span class="w">  </span><span class="no">LazyStream</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">enum</span><span class="p">)</span>
+<span class="k">end</span>
+
+<span class="n">fibonacci</span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span><span class="o">.</span><span class="n">to_array</span><span class="w">  </span><span class="c1"># [0, 1, 1, 2, 3, 5, 8, 13, 21, 34]</span>
+
+<span class="c1"># 素数</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">primes</span>
+<span class="w">  </span><span class="no">LazyStream</span><span class="o">.</span><span class="n">from</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="o">|</span><span class="n">n</span><span class="o">|</span><span class="w"> </span><span class="n">prime?</span><span class="p">(</span><span class="n">n</span><span class="p">)</span><span class="w"> </span><span class="p">}</span>
+<span class="k">end</span>
+
+<span class="n">primes</span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span><span class="o">.</span><span class="n">to_array</span><span class="w">  </span><span class="c1"># [2, 3, 5, 7, 11, 13, 17, 19, 23, 29]</span>
+
+<span class="c1"># 累積和</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">running_sum</span><span class="p">(</span><span class="n">stream</span><span class="p">)</span>
+<span class="w">  </span><span class="nb">scan</span><span class="p">(</span><span class="n">stream</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="o">|</span><span class="n">acc</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="o">|</span><span class="w"> </span><span class="n">acc</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="p">}</span>
+<span class="k">end</span>
+
+<span class="n">running_sum</span><span class="p">(</span><span class="no">LazyStream</span><span class="o">.</span><span class="n">from_array</span><span class="p">(</span><span class="o">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="o">]</span><span class="p">))</span><span class="o">.</span><span class="n">to_array</span>
+<span class="c1"># [0, 1, 3, 6, 10, 15]</span>
+</code></pre></div>
+<hr />
+<h2 id="_11">まとめ<a class="headerlink" href="#_11" title="Permanent link">&para;</a></h2>
+<h3 id="part-iv">Part IV で学んだこと<a class="headerlink" href="#part-iv" title="Permanent link">&para;</a></h3>
+<p><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiBjb250ZW50U3R5bGVUeXBlPSJ0ZXh0L2NzcyIgZGF0YS1kaWFncmFtLXR5cGU9IkRFU0NSSVBUSU9OIiBoZWlnaHQ9IjM2MXB4IiBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSJub25lIiBzdHlsZT0id2lkdGg6MTA1MnB4O2hlaWdodDozNjFweDtiYWNrZ3JvdW5kOiNGRkZGRkY7IiB2ZXJzaW9uPSIxLjEiIHZpZXdCb3g9IjAgMCAxMDUyIDM2MSIgd2lkdGg9IjEwNTJweCIgem9vbUFuZFBhbj0ibWFnbmlmeSI+PGRlZnMvPjxnPjwhLS1jbHVzdGVyIFBhcnQgSVY6IElPID8/Pz8/Pz8tLT48ZyBjbGFzcz0iY2x1c3RlciIgZGF0YS1lbnRpdHk9IlBhcnQgSVYuIElPIC4uLi4uLi4iIGRhdGEtc291cmNlLWxpbmU9IjMiIGRhdGEtdWlkPSJlbnQwMDAyIiBpZD0iY2x1c3Rlcl9QYXJ0IElWLiBJTyAuLi4uLi4uIj48cmVjdCBmaWxsPSIjRkZGRkZGIiBoZWlnaHQ9IjM0My44OSIgcng9IjIuNSIgcnk9IjIuNSIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxOyIgd2lkdGg9IjEwMzQiIHg9IjEyIiB5PSIxMiIvPjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJWZXJkYW5hIiBmb250LXNpemU9IjE0IiBmb250LXdlaWdodD0iYm9sZCIgbGVuZ3RoQWRqdXN0PSJzcGFjaW5nIiB0ZXh0TGVuZ3RoPSIxODQuNjc5MyIgeD0iNDM2LjY2MDQiIHk9IjI2Ljk5NTEiPlBhcnQgSVY6IElPICYjMTIzOTI7JiMyMTEwMzsmIzIwMzE2OyYjMjk5OTI7JiMxMjM5ODsmIzMxNjQ5OyYjMjk3MDI7PC90ZXh0PjwvZz48IS0tY2x1c3RlciBjaDgtLT48ZyBjbGFzcz0iY2x1c3RlciIgZGF0YS1lbnRpdHk9ImNoOCIgZGF0YS1zb3VyY2UtbGluZT0iNCIgZGF0YS11aWQ9ImVudDAwMDMiIGlkPSJjbHVzdGVyX2NoOCI+PHJlY3QgZmlsbD0iI0ZGRkZGRiIgaGVpZ2h0PSIxNzguNTkiIHJ4PSIyLjUiIHJ5PSIyLjUiIHN0eWxlPSJzdHJva2U6IzAwMDAwMDtzdHJva2Utd2lkdGg6MTsiIHdpZHRoPSI0NjIiIHg9IjQ0IiB5PSI2MyIvPjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJWZXJkYW5hIiBmb250LXNpemU9IjE0IiBmb250LXdlaWdodD0iYm9sZCIgbGVuZ3RoQWRqdXN0PSJzcGFjaW5nIiB0ZXh0TGVuZ3RoPSIzNy43NDExIiB4PSIyNTYuMTI5NSIgeT0iNzcuOTk1MSI+JiMzMTUzMjs4JiMzMTQ1Njs8L3RleHQ+PC9nPjwhLS1jbHVzdGVyIGNoOS0tPjxnIGNsYXNzPSJjbHVzdGVyIiBkYXRhLWVudGl0eT0iY2g5IiBkYXRhLXNvdXJjZS1saW5lPSIxMyIgZGF0YS11aWQ9ImVudDAwMTAiIGlkPSJjbHVzdGVyX2NoOSI+PHJlY3QgZmlsbD0iI0ZGRkZGRiIgaGVpZ2h0PSIxNzEuNTkiIHJ4PSIyLjUiIHJ5PSIyLjUiIHN0eWxlPSJzdHJva2U6IzAwMDAwMDtzdHJva2Utd2lkdGg6MTsiIHdpZHRoPSI0NjgiIHg9IjU0NiIgeT0iMTUyLjMiLz48dGV4dCBmaWxsPSIjMDAwMDAwIiBmb250LWZhbWlseT0iVmVyZGFuYSIgZm9udC1zaXplPSIxNCIgZm9udC13ZWlnaHQ9ImJvbGQiIGxlbmd0aEFkanVzdD0ic3BhY2luZyIgdGV4dExlbmd0aD0iMzcuNzQxMSIgeD0iNzYxLjEyOTUiIHk9IjE2Ny4yOTUxIj4mIzMxNTMyOzkmIzMxNDU2OzwvdGV4dD48L2c+PCEtLWVudGl0eSBJTyA/Pz8tLT48ZyBjbGFzcz0iZW50aXR5IiBkYXRhLWVudGl0eT0iSU8gLi4uIiBkYXRhLXNvdXJjZS1saW5lPSI1IiBkYXRhLXVpZD0iZW50MDAwNCIgaWQ9ImVudGl0eV9JTyAuLi4iPjxyZWN0IGZpbGw9IiNGRkZGRkYiIGhlaWdodD0iMjIuMjk2OSIgcng9IjIuNSIgcnk9IjIuNSIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxOyIgd2lkdGg9IjgxLjU5ODQiIHg9IjY4LjIiIHk9IjEwNiIvPjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJWZXJkYW5hIiBmb250LXNpemU9IjE0IiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjYxLjU5ODQiIHg9Ijc4LjIiIHk9IjEyMS45OTUxIj5JTyAmIzEyNTE0OyYjMTI0OTA7JiMxMjQ4OTs8L3RleHQ+PC9nPjwhLS1lbnRpdHkgSU8uZGVsYXkgLyBJTy5wdXJlLS0+PGcgY2xhc3M9ImVudGl0eSIgZGF0YS1lbnRpdHk9IklPLmRlbGF5IC4gSU8ucHVyZSIgZGF0YS1zb3VyY2UtbGluZT0iNiIgZGF0YS11aWQ9ImVudDAwMDUiIGlkPSJlbnRpdHlfSU8uZGVsYXkgLiBJTy5wdXJlIj48cmVjdCBmaWxsPSIjRkZGRkZGIiBoZWlnaHQ9IjIyLjI5NjkiIHJ4PSIyLjUiIHJ5PSIyLjUiIHN0eWxlPSJzdHJva2U6IzAwMDAwMDtzdHJva2Utd2lkdGg6MTsiIHdpZHRoPSIxNDMuMTk3MyIgeD0iMTg0LjQiIHk9IjEwNiIvPjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJWZXJkYW5hIiBmb250LXNpemU9IjE0IiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjEyMy4xOTczIiB4PSIxOTQuNCIgeT0iMTIxLjk5NTEiPklPLmRlbGF5IC8gSU8ucHVyZTwvdGV4dD48L2c+PCEtLWVudGl0eSBiaW5kIC8gZm1hcC0tPjxnIGNsYXNzPSJlbnRpdHkiIGRhdGEtZW50aXR5PSJiaW5kIC4gZm1hcCIgZGF0YS1zb3VyY2UtbGluZT0iNyIgZGF0YS11aWQ9ImVudDAwMDYiIGlkPSJlbnRpdHlfYmluZCAuIGZtYXAiPjxyZWN0IGZpbGw9IiNGRkZGRkYiIGhlaWdodD0iMjIuMjk2OSIgcng9IjIuNSIgcnk9IjIuNSIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxOyIgd2lkdGg9IjEwMC4xODU1IiB4PSIzNjIuOTEiIHk9IjEwNiIvPjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJWZXJkYW5hIiBmb250LXNpemU9IjE0IiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjgwLjE4NTUiIHg9IjM3Mi45MSIgeT0iMTIxLjk5NTEiPmJpbmQgLyBmbWFwPC90ZXh0PjwvZz48IS0tZW50aXR5IG9yX2Vsc2UtLT48ZyBjbGFzcz0iZW50aXR5IiBkYXRhLWVudGl0eT0ib3JfZWxzZSIgZGF0YS1zb3VyY2UtbGluZT0iOCIgZGF0YS11aWQ9ImVudDAwMDciIGlkPSJlbnRpdHlfb3JfZWxzZSI+PHJlY3QgZmlsbD0iI0ZGRkZGRiIgaGVpZ2h0PSIyMi4yOTY5IiByeD0iMi41IiByeT0iMi41IiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE7IiB3aWR0aD0iNjkuNzMxNCIgeD0iNzQuMTMiIHk9IjE5NS4zIi8+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9IlZlcmRhbmEiIGZvbnQtc2l6ZT0iMTQiIGxlbmd0aEFkanVzdD0ic3BhY2luZyIgdGV4dExlbmd0aD0iNDkuNzMxNCIgeD0iODQuMTMiIHk9IjIxMS4yOTUxIj5vcl9lbHNlPC90ZXh0PjwvZz48IS0tZW50aXR5IHJldHJ5LS0+PGcgY2xhc3M9ImVudGl0eSIgZGF0YS1lbnRpdHk9InJldHJ5IiBkYXRhLXNvdXJjZS1saW5lPSI5IiBkYXRhLXVpZD0iZW50MDAwOCIgaWQ9ImVudGl0eV9yZXRyeSI+PHJlY3QgZmlsbD0iI0ZGRkZGRiIgaGVpZ2h0PSIyMi4yOTY5IiByeD0iMi41IiByeT0iMi41IiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE7IiB3aWR0aD0iNTMuODk5NCIgeD0iMTc5LjA1IiB5PSIxOTUuMyIvPjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJWZXJkYW5hIiBmb250LXNpemU9IjE0IiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjMzLjg5OTQiIHg9IjE4OS4wNSIgeT0iMjExLjI5NTEiPnJldHJ5PC90ZXh0PjwvZz48IS0tZW50aXR5IHNlcXVlbmNlLS0+PGcgY2xhc3M9ImVudGl0eSIgZGF0YS1lbnRpdHk9InNlcXVlbmNlIiBkYXRhLXNvdXJjZS1saW5lPSIxMCIgZGF0YS11aWQ9ImVudDAwMDkiIGlkPSJlbnRpdHlfc2VxdWVuY2UiPjxyZWN0IGZpbGw9IiNGRkZGRkYiIGhlaWdodD0iMjIuMjk2OSIgcng9IjIuNSIgcnk9IjIuNSIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxOyIgd2lkdGg9Ijg3LjQ2MzkiIHg9IjI2OC4yNyIgeT0iMTk1LjMiLz48dGV4dCBmaWxsPSIjMDAwMDAwIiBmb250LWZhbWlseT0iVmVyZGFuYSIgZm9udC1zaXplPSIxNCIgbGVuZ3RoQWRqdXN0PSJzcGFjaW5nIiB0ZXh0TGVuZ3RoPSI2Ny40NjM5IiB4PSIyNzguMjciIHk9IjIxMS4yOTUxIj5zZXF1ZW5jZTwvdGV4dD48L2c+PCEtLWVudGl0eSBMYXp5U3RyZWFtLS0+PGcgY2xhc3M9ImVudGl0eSIgZGF0YS1lbnRpdHk9IkxhenlTdHJlYW0iIGRhdGEtc291cmNlLWxpbmU9IjE0IiBkYXRhLXVpZD0iZW50MDAxMSIgaWQ9ImVudGl0eV9MYXp5U3RyZWFtIj48cmVjdCBmaWxsPSIjRkZGRkZGIiBoZWlnaHQ9IjIyLjI5NjkiIHJ4PSIyLjUiIHJ5PSIyLjUiIHN0eWxlPSJzdHJva2U6IzAwMDAwMDtzdHJva2Utd2lkdGg6MTsiIHdpZHRoPSIxMDIuOTc0NiIgeD0iNTY5LjUxIiB5PSIxOTUuMyIvPjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJWZXJkYW5hIiBmb250LXNpemU9IjE0IiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjgyLjk3NDYiIHg9IjU3OS41MSIgeT0iMjExLjI5NTEiPkxhenlTdHJlYW08L3RleHQ+PC9nPjwhLS1lbnRpdHkgPz8/Pz8/Py0tPjxnIGNsYXNzPSJlbnRpdHkiIGRhdGEtZW50aXR5PSIuLi4uLi4uIiBkYXRhLXNvdXJjZS1saW5lPSIxNSIgZGF0YS11aWQ9ImVudDAwMTIiIGlkPSJlbnRpdHlfLi4uLi4uLiI+PHJlY3QgZmlsbD0iI0ZGRkZGRiIgaGVpZ2h0PSIyMi4yOTY5IiByeD0iMi41IiByeT0iMi41IiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE7IiB3aWR0aD0iMTE3Ljk5OTYiIHg9IjcwNyIgeT0iMTk1LjMiLz48dGV4dCBmaWxsPSIjMDAwMDAwIiBmb250LWZhbWlseT0iVmVyZGFuYSIgZm9udC1zaXplPSIxNCIgbGVuZ3RoQWRqdXN0PSJzcGFjaW5nIiB0ZXh0TGVuZ3RoPSI5Ny45OTk2IiB4PSI3MTciIHk9IjIxMS4yOTUxIj4mIzI4OTYxOyYjMzg0ODA7JiMxMjQ3MzsmIzEyNDg4OyYjMTI1MjI7JiMxMjU0MDsmIzEyNTEyOzwvdGV4dD48L2c+PCEtLWVudGl0eSByZXBlYXQgLyB0YWtlLS0+PGcgY2xhc3M9ImVudGl0eSIgZGF0YS1lbnRpdHk9InJlcGVhdCAuIHRha2UiIGRhdGEtc291cmNlLWxpbmU9IjE2IiBkYXRhLXVpZD0iZW50MDAxMyIgaWQ9ImVudGl0eV9yZXBlYXQgLiB0YWtlIj48cmVjdCBmaWxsPSIjRkZGRkZGIiBoZWlnaHQ9IjIyLjI5NjkiIHJ4PSIyLjUiIHJ5PSIyLjUiIHN0eWxlPSJzdHJva2U6IzAwMDAwMDtzdHJva2Utd2lkdGg6MTsiIHdpZHRoPSIxMTAuMzQzOCIgeD0iODU5LjgzIiB5PSIxOTUuMyIvPjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJWZXJkYW5hIiBmb250LXNpemU9IjE0IiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjkwLjM0MzgiIHg9Ijg2OS44MyIgeT0iMjExLjI5NTEiPnJlcGVhdCAvIHRha2U8L3RleHQ+PC9nPjwhLS1lbnRpdHkgc2xpZGluZy0tPjxnIGNsYXNzPSJlbnRpdHkiIGRhdGEtZW50aXR5PSJzbGlkaW5nIiBkYXRhLXNvdXJjZS1saW5lPSIxNyIgZGF0YS11aWQ9ImVudDAwMTQiIGlkPSJlbnRpdHlfc2xpZGluZyI+PHJlY3QgZmlsbD0iI0ZGRkZGRiIgaGVpZ2h0PSIyMi4yOTY5IiByeD0iMi41IiByeT0iMi41IiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE7IiB3aWR0aD0iNjUuNjA5NCIgeD0iNTg4LjIiIHk9IjI3Ny41OSIvPjx0ZXh0IGZpbGw9IiMwMDAwMDAiIGZvbnQtZmFtaWx5PSJWZXJkYW5hIiBmb250LXNpemU9IjE0IiBsZW5ndGhBZGp1c3Q9InNwYWNpbmciIHRleHRMZW5ndGg9IjQ1LjYwOTQiIHg9IjU5OC4yIiB5PSIyOTMuNTg1MSI+c2xpZGluZzwvdGV4dD48L2c+PCEtLWVudGl0eSB6aXAtLT48ZyBjbGFzcz0iZW50aXR5IiBkYXRhLWVudGl0eT0iemlwIiBkYXRhLXNvdXJjZS1saW5lPSIxOCIgZGF0YS11aWQ9ImVudDAwMTUiIGlkPSJlbnRpdHlfemlwIj48cmVjdCBmaWxsPSIjRkZGRkZGIiBoZWlnaHQ9IjIyLjI5NjkiIHJ4PSIyLjUiIHJ5PSIyLjUiIHN0eWxlPSJzdHJva2U6IzAwMDAwMDtzdHJva2Utd2lkdGg6MTsiIHdpZHRoPSI0MC4xMjUiIHg9IjY4OC45NCIgeT0iMjc3LjU5Ii8+PHRleHQgZmlsbD0iIzAwMDAwMCIgZm9udC1mYW1pbHk9IlZlcmRhbmEiIGZvbnQtc2l6ZT0iMTQiIGxlbmd0aEFkanVzdD0ic3BhY2luZyIgdGV4dExlbmd0aD0iMjAuMTI1IiB4PSI2OTguOTQiIHk9IjI5My41ODUxIj56aXA8L3RleHQ+PC9nPjwhLS1saW5rIGNoOCB0byBjaDktLT48ZyBjbGFzcz0ibGluayIgZGF0YS1lbnRpdHktMT0iY2g4IiBkYXRhLWVudGl0eS0yPSJjaDkiIGRhdGEtc291cmNlLWxpbmU9IjIyIiBkYXRhLXVpZD0ibG5rMTYiIGlkPSJsaW5rX2NoOF9jaDkiPjxwYXRoIGQ9Ik01MDYuMDAyLDExOC4xODE2IEM1MDYuNTIwNiwxMTguMTg0IDUwNy4wNjMsMTE4LjE4NjUgNTA3LjYyODcsMTE4LjE4OTEgQzUwOC43NjAyLDExOC4xOTQ1IDUwOS45ODUxLDExOC4yMDA0IDUxMS4zMDAxLDExOC4yMDcxIEM1MTMuOTMwMSwxMTguMjIwNCA1MTYuOTIwMywxMTguMjM2NCA1MjAuMjQzNSwxMTguMjU1NiBDNTMzLjUzNjQsMTE4LjMzMjMgNTUyLjE1NzgsMTE4LjQ1OTIgNTc0LjM2ODEsMTE4LjY2MjggQzYxOC43ODg3LDExOS4wNyA2NzcuNTY1LDExOS43ODM4IDczNi43OCwxMjEuMDE1IEM4NTUuMjEsMTIzLjQ3NzUgOTc1LjM5NSwxMjguMDEgOTg2LDEzNi4zIEM5ODkuMDUyNSwxMzguNjg1IDk5MS42NTkxLDE0MS41MDYzIDk5My44ODI5LDE0NC42MjMxIEM5OTQuOTk0OCwxNDYuMTgxNiA5OTYuMDExMSwxNDcuODEzOSA5OTYuOTM5NSwxNDkuNTAyNiBDOTk3LjQwMzgsMTUwLjM0NjkgOTk1LjIzMTYsMTQ1LjgwNDkgOTk1LjY1MjksMTQ2LjY3NTIiIGZpbGw9Im5vbmUiIGlkPSJjaDgtdG8tY2g5IiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjE7Ii8+PHBvbHlnb24gZmlsbD0iIzAwMDAwMCIgcG9pbnRzPSI5OTguMjY3NCwxNTIuMDc1Niw5OTcuOTQ2LDE0Mi4yMzIsOTk2LjA4ODcsMTQ3LjU3NTMsOTkwLjc0NTQsMTQ1LjcxOCw5OTguMjY3NCwxNTIuMDc1NiIgc3R5bGU9InN0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxOyIvPjwvZz48IS0tU1JDPVtLb3A5SUNyRExJWjhJU3BDdS04Z0lhcWtJU25CcHFiTEswZjhCMmZIeTBvcEtsM3FMdFpTa0U5ZnZfZWRVLVN5ZHhCWVNVRXd2LWlNRmZfR2ZnSEdaUXAtIC1QZXI1aXpOQnIxSUkybk1JQ3dtMDRlYzluUWJBMlkxajNTbFVqcFN6Ull2S21ha2ZmVUljZkRPZ1EwRkQ1c2xlQkdlNUlRSmI5Y04wWEhEb3FxaVcwZGI1eU1kdlhKM0xISWJiWEhMbVpaNWdPTWJnTmQ5R0NiUUJaSjdNMjhTT21idFo0ellMTUxtSUw1Z09ZeENYRVNqMnJfRWRGMnVRVVZadmV4N3BRaVVELXp2dEJtME9MVDFRYzg5cTNxYllUYm0xbkpkUEFQYXZnTjNrNU1QMUkzUldWUTNWQXNoUW1VbzQwMDBdLS0+PC9nPjwvc3ZnPg==" class="uml" alt="uml diagram" title="" /></p>
+<h3 id="io-lazystream">IO と LazyStream の比較<a class="headerlink" href="#io-lazystream" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>特性</th>
+<th>IO</th>
+<th>LazyStream</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>要素数</td>
+<td>1つ</td>
+<td>0個以上（無限も可）</td>
+</tr>
+<tr>
+<td>実行</td>
+<td><code>run!</code></td>
+<td><code>to_array</code></td>
+</tr>
+<tr>
+<td>用途</td>
+<td>単一の副作用</td>
+<td>連続した値の処理</td>
+</tr>
+</tbody>
+</table>
+<h3 id="ruby-scala">Ruby と Scala の対応<a class="headerlink" href="#ruby-scala" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Scala (Cats Effect / fs2)</th>
+<th>Ruby</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>IO[A]</code></td>
+<td><code>IO</code> クラス</td>
+</tr>
+<tr>
+<td><code>IO.delay(expr)</code></td>
+<td><code>IO.delay { expr }</code></td>
+</tr>
+<tr>
+<td><code>IO.pure(value)</code></td>
+<td><code>IO.pure(value)</code></td>
+</tr>
+<tr>
+<td><code>flatMap</code></td>
+<td><code>bind</code></td>
+</tr>
+<tr>
+<td><code>map</code></td>
+<td><code>fmap</code></td>
+</tr>
+<tr>
+<td><code>unsafeRunSync()</code></td>
+<td><code>run!</code></td>
+</tr>
+<tr>
+<td><code>Stream[Pure, A]</code></td>
+<td><code>LazyStream</code></td>
+</tr>
+<tr>
+<td><code>Stream.eval(io)</code></td>
+<td><code>IOStream.eval(io)</code></td>
+</tr>
+<tr>
+<td><code>.compile.toList</code></td>
+<td><code>.compile_to_list</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="_12">キーポイント<a class="headerlink" href="#_12" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>IO モナド</strong>: 副作用を「記述」として扱い、実行を遅延させる</li>
+<li><strong>IO.delay</strong>: 副作用のある式を IO にラップ</li>
+<li><strong>or_else</strong>: 失敗時のフォールバックを指定</li>
+<li><strong>sequence</strong>: <code>[IO[A]]</code> → <code>IO[[A]]</code></li>
+<li><strong>LazyStream</strong>: 潜在的に無限のシーケンスを遅延評価で処理</li>
+<li><strong>sliding</strong>: 連続する要素をグループ化してパターンを検出</li>
+</ol>
+<h3 id="_13">次のステップ<a class="headerlink" href="#_13" title="Permanent link">&para;</a></h3>
+<p>Part V では、以下のトピックを学びます:</p>
+<ul>
+<li>並行・並列処理</li>
+<li>共有状態管理</li>
+</ul>
+<hr />
+<h2 id="_14">演習問題<a class="headerlink" href="#_14" title="Permanent link">&para;</a></h2>
+<h3 id="1-io">問題 1: IO の基本<a class="headerlink" href="#1-io" title="Permanent link">&para;</a></h3>
+<p>以下の関数を実装してください。</p>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">print_and_return</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+<span class="w">  </span><span class="c1"># メッセージをコンソールに出力し、同じメッセージを返す IO</span>
+<span class="w">  </span><span class="sc">??</span><span class="p">?</span>
+<span class="k">end</span>
+
+<span class="c1"># 期待される動作</span>
+<span class="c1"># print_and_return(&quot;Hello&quot;).run! は</span>
+<span class="c1"># &quot;Hello&quot; をコンソールに出力し、&quot;Hello&quot; を返す</span>
+</code></pre></div>
+<details>
+<summary>解答</summary>
+
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">print_and_return</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+<span class="w">  </span><span class="no">IO</span><span class="o">.</span><span class="n">delay</span><span class="w"> </span><span class="k">do</span>
+<span class="w">    </span><span class="nb">puts</span><span class="w"> </span><span class="n">message</span>
+<span class="w">    </span><span class="n">message</span>
+<span class="w">  </span><span class="k">end</span>
+<span class="k">end</span>
+
+<span class="c1"># または</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">print_and_return</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+<span class="w">  </span><span class="no">IO</span><span class="o">.</span><span class="n">delay</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nb">puts</span><span class="w"> </span><span class="n">message</span><span class="w"> </span><span class="p">}</span><span class="o">.</span><span class="n">fmap</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">message</span><span class="w"> </span><span class="p">}</span>
+<span class="k">end</span>
+</code></pre></div>
+
+</details>
+
+<h3 id="2-io">問題 2: IO の合成<a class="headerlink" href="#2-io" title="Permanent link">&para;</a></h3>
+<p>以下の関数を実装してください。2つの IO を順番に実行し、結果を結合します。</p>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">combine_io</span><span class="p">(</span><span class="n">io1</span><span class="p">,</span><span class="w"> </span><span class="n">io2</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">fn</span><span class="p">)</span>
+<span class="w">  </span><span class="sc">??</span><span class="p">?</span>
+<span class="k">end</span>
+
+<span class="c1"># 期待される動作</span>
+<span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">combine_io</span><span class="p">(</span><span class="no">IO</span><span class="o">.</span><span class="n">pure</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span><span class="w"> </span><span class="no">IO</span><span class="o">.</span><span class="n">pure</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="o">|</span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="o">|</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="p">}</span>
+<span class="n">result</span><span class="o">.</span><span class="n">run!</span><span class="w">  </span><span class="c1"># 3</span>
+</code></pre></div>
+<details>
+<summary>解答</summary>
+
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">combine_io</span><span class="p">(</span><span class="n">io1</span><span class="p">,</span><span class="w"> </span><span class="n">io2</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">fn</span><span class="p">)</span>
+<span class="w">  </span><span class="n">io1</span><span class="o">.</span><span class="n">bind</span><span class="w"> </span><span class="k">do</span><span class="w"> </span><span class="o">|</span><span class="n">a</span><span class="o">|</span>
+<span class="w">    </span><span class="n">io2</span><span class="o">.</span><span class="n">fmap</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="o">|</span><span class="n">b</span><span class="o">|</span><span class="w"> </span><span class="n">fn</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="p">)</span><span class="w"> </span><span class="p">}</span>
+<span class="w">  </span><span class="k">end</span>
+<span class="k">end</span>
+</code></pre></div>
+
+</details>
+
+<h3 id="3">問題 3: リトライ<a class="headerlink" href="#3" title="Permanent link">&para;</a></h3>
+<p>以下の関数を実装してください。指定回数リトライし、全部失敗したらデフォルト値を返します。</p>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">retry_with_default</span><span class="p">(</span><span class="n">action</span><span class="p">,</span><span class="w"> </span><span class="n">max_retries</span><span class="p">,</span><span class="w"> </span><span class="n">default</span><span class="p">)</span>
+<span class="w">  </span><span class="sc">??</span><span class="p">?</span>
+<span class="k">end</span>
+</code></pre></div>
+<details>
+<summary>解答</summary>
+
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">retry_with_default</span><span class="p">(</span><span class="n">action</span><span class="p">,</span><span class="w"> </span><span class="n">max_retries</span><span class="p">,</span><span class="w"> </span><span class="n">default</span><span class="p">)</span>
+<span class="w">  </span><span class="p">(</span><span class="mi">0</span><span class="o">...</span><span class="n">max_retries</span><span class="p">)</span>
+<span class="w">    </span><span class="o">.</span><span class="n">reduce</span><span class="p">(</span><span class="n">action</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="o">|</span><span class="n">program</span><span class="p">,</span><span class="w"> </span><span class="n">_</span><span class="o">|</span><span class="w"> </span><span class="n">program</span><span class="o">.</span><span class="n">or_else</span><span class="p">(</span><span class="n">action</span><span class="p">)</span><span class="w"> </span><span class="p">}</span>
+<span class="w">    </span><span class="o">.</span><span class="n">or_else</span><span class="p">(</span><span class="no">IO</span><span class="o">.</span><span class="n">pure</span><span class="p">(</span><span class="n">default</span><span class="p">))</span>
+<span class="k">end</span>
+</code></pre></div>
+
+</details>
+
+<h3 id="4">問題 4: ストリーム操作<a class="headerlink" href="#4" title="Permanent link">&para;</a></h3>
+<p>以下のストリームを作成してください。</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># 1. 1から10までの偶数のストリーム</span>
+<span class="n">evens</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="sc">??</span><span class="p">?</span>
+
+<span class="c1"># 2. 無限に交互に true/false を返すストリーム</span>
+<span class="n">alternating</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="sc">??</span><span class="p">?</span>
+
+<span class="c1"># 3. 最初の5つの要素の合計を計算</span>
+<span class="n">sum</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="no">LazyStream</span><span class="o">.</span><span class="n">from_array</span><span class="p">(</span><span class="o">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="mi">6</span><span class="p">,</span><span class="w"> </span><span class="mi">7</span><span class="p">,</span><span class="w"> </span><span class="mi">8</span><span class="p">,</span><span class="w"> </span><span class="mi">9</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="o">]</span><span class="p">)</span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span><span class="o">.</span><span class="sc">??</span><span class="p">?</span>
+</code></pre></div>
+<details>
+<summary>解答</summary>
+
+<div class="highlight"><pre><span></span><code><span class="c1"># 1. 1から10までの偶数</span>
+<span class="n">evens</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="no">LazyStream</span><span class="o">.</span><span class="n">from_range</span><span class="p">(</span><span class="mi">1</span><span class="o">..</span><span class="mi">10</span><span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="o">&amp;</span><span class="ss">:even?</span><span class="p">)</span>
+<span class="c1"># または</span>
+<span class="n">evens</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="no">LazyStream</span><span class="o">.</span><span class="n">from_array</span><span class="p">(</span><span class="o">[</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">6</span><span class="p">,</span><span class="w"> </span><span class="mi">8</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="o">]</span><span class="p">)</span>
+
+<span class="c1"># 2. 無限に交互に true/false</span>
+<span class="n">alternating</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="no">LazyStream</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="kp">true</span><span class="p">,</span><span class="w"> </span><span class="kp">false</span><span class="p">)</span>
+
+<span class="c1"># 3. 最初の5つの要素の合計</span>
+<span class="n">sum</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="no">LazyStream</span><span class="o">.</span><span class="n">from_array</span><span class="p">(</span><span class="o">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="mi">6</span><span class="p">,</span><span class="w"> </span><span class="mi">7</span><span class="p">,</span><span class="w"> </span><span class="mi">8</span><span class="p">,</span><span class="w"> </span><span class="mi">9</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="o">]</span><span class="p">)</span>
+<span class="w">  </span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+<span class="w">  </span><span class="o">.</span><span class="n">to_array</span>
+<span class="w">  </span><span class="o">.</span><span class="n">sum</span><span class="w">  </span><span class="c1"># 15</span>
+
+<span class="c1"># または fold を使用</span>
+<span class="n">sum</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="no">LazyStream</span><span class="o">.</span><span class="n">from_array</span><span class="p">(</span><span class="o">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="mi">6</span><span class="p">,</span><span class="w"> </span><span class="mi">7</span><span class="p">,</span><span class="w"> </span><span class="mi">8</span><span class="p">,</span><span class="w"> </span><span class="mi">9</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="o">]</span><span class="p">)</span>
+<span class="w">  </span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+<span class="w">  </span><span class="o">.</span><span class="n">fold</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="o">|</span><span class="n">acc</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="o">|</span><span class="w"> </span><span class="n">acc</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="p">}</span><span class="w">  </span><span class="c1"># 15</span>
+</code></pre></div>
+
+</details>
+
+<h3 id="5">問題 5: トレンド検出<a class="headerlink" href="#5" title="Permanent link">&para;</a></h3>
+<p>以下の関数を実装してください。直近3つの値が全て同じかどうかを判定します。</p>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">stable?</span><span class="p">(</span><span class="n">values</span><span class="p">)</span>
+<span class="w">  </span><span class="sc">??</span><span class="p">?</span>
+<span class="k">end</span>
+
+<span class="c1"># 期待される動作</span>
+<span class="n">stable?</span><span class="p">(</span><span class="o">[</span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="o">]</span><span class="p">)</span><span class="w">    </span><span class="c1"># true</span>
+<span class="n">stable?</span><span class="p">(</span><span class="o">[</span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="mi">6</span><span class="o">]</span><span class="p">)</span><span class="w">    </span><span class="c1"># false</span>
+<span class="n">stable?</span><span class="p">(</span><span class="o">[</span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="mi">6</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="o">]</span><span class="p">)</span><span class="w">    </span><span class="c1"># false</span>
+<span class="n">stable?</span><span class="p">(</span><span class="o">[</span><span class="mi">5</span><span class="o">]</span><span class="p">)</span><span class="w">          </span><span class="c1"># false (3つ未満は false)</span>
+</code></pre></div>
+<details>
+<summary>解答</summary>
+
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">stable?</span><span class="p">(</span><span class="n">values</span><span class="p">)</span>
+<span class="w">  </span><span class="n">values</span><span class="o">.</span><span class="n">size</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">values</span><span class="o">.</span><span class="n">uniq</span><span class="o">.</span><span class="n">size</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">1</span>
+<span class="k">end</span>
+
+<span class="c1"># または</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">stable?</span><span class="p">(</span><span class="n">values</span><span class="p">)</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="kp">false</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">values</span><span class="o">.</span><span class="n">size</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">3</span>
+
+<span class="w">  </span><span class="n">values</span><span class="o">.</span><span class="n">each_cons</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">all?</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="o">|</span><span class="n">prev</span><span class="p">,</span><span class="w"> </span><span class="n">curr</span><span class="o">|</span><span class="w"> </span><span class="n">prev</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">curr</span><span class="w"> </span><span class="p">}</span>
+<span class="k">end</span>
+</code></pre></div>
+
+</details>
+
+<h3 id="6">問題 6: フィボナッチ数列<a class="headerlink" href="#6" title="Permanent link">&para;</a></h3>
+<p><code>iterate</code> を使ってフィボナッチ数列のストリームを作成してください。</p>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">fibonacci_stream</span>
+<span class="w">  </span><span class="sc">??</span><span class="p">?</span>
+<span class="k">end</span>
+
+<span class="n">fibonacci_stream</span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span><span class="o">.</span><span class="n">to_array</span>
+<span class="c1"># [0, 1, 1, 2, 3, 5, 8, 13, 21, 34]</span>
+</code></pre></div>
+<details>
+<summary>解答</summary>
+
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">fibonacci_stream</span>
+<span class="w">  </span><span class="n">enum</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="no">Enumerator</span><span class="o">.</span><span class="n">new</span><span class="w"> </span><span class="k">do</span><span class="w"> </span><span class="o">|</span><span class="n">yielder</span><span class="o">|</span>
+<span class="w">    </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span>
+<span class="w">    </span><span class="kp">loop</span><span class="w"> </span><span class="k">do</span>
+<span class="w">      </span><span class="n">yielder</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">a</span>
+<span class="w">      </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">b</span><span class="p">,</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">b</span>
+<span class="w">    </span><span class="k">end</span>
+<span class="w">  </span><span class="k">end</span>
+<span class="w">  </span><span class="no">LazyStream</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">enum</span><span class="p">)</span>
+<span class="k">end</span>
+
+<span class="c1"># または iterate を使用（ペアを使う）</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">fibonacci_stream</span>
+<span class="w">  </span><span class="no">LazyStream</span><span class="o">.</span><span class="n">iterate</span><span class="p">(</span><span class="o">[</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="o">]</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="o">|</span><span class="n">pair</span><span class="o">|</span><span class="w"> </span><span class="o">[</span><span class="n">pair</span><span class="o">[</span><span class="mi">1</span><span class="o">]</span><span class="p">,</span><span class="w"> </span><span class="n">pair</span><span class="o">[</span><span class="mi">0</span><span class="o">]</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">pair</span><span class="o">[</span><span class="mi">1</span><span class="o">]]</span><span class="w"> </span><span class="p">}</span>
+<span class="w">    </span><span class="o">.</span><span class="n">fmap</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="o">|</span><span class="n">pair</span><span class="o">|</span><span class="w"> </span><span class="n">pair</span><span class="o">[</span><span class="mi">0</span><span class="o">]</span><span class="w"> </span><span class="p">}</span>
+<span class="k">end</span>
+</code></pre></div>
+
+</details>
+
+<h3 id="7">問題 7: 移動平均<a class="headerlink" href="#7" title="Permanent link">&para;</a></h3>
+<p>スライディングウィンドウを使って移動平均を計算してください。</p>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">moving_average</span><span class="p">(</span><span class="n">values</span><span class="p">,</span><span class="w"> </span><span class="n">window_size</span><span class="p">)</span>
+<span class="w">  </span><span class="sc">??</span><span class="p">?</span>
+<span class="k">end</span>
+
+<span class="n">moving_average</span><span class="p">(</span><span class="o">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="o">]</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">)</span><span class="o">.</span><span class="n">to_array</span>
+<span class="c1"># [2.0, 3.0, 4.0]  # (1+2+3)/3, (2+3+4)/3, (3+4+5)/3</span>
+</code></pre></div>
+<details>
+<summary>解答</summary>
+
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">moving_average</span><span class="p">(</span><span class="n">values</span><span class="p">,</span><span class="w"> </span><span class="n">window_size</span><span class="p">)</span>
+<span class="w">  </span><span class="no">LazyStream</span><span class="o">.</span><span class="n">from_array</span><span class="p">(</span><span class="n">values</span><span class="p">)</span>
+<span class="w">    </span><span class="o">.</span><span class="n">sliding</span><span class="p">(</span><span class="n">window_size</span><span class="p">)</span>
+<span class="w">    </span><span class="o">.</span><span class="n">fmap</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="o">|</span><span class="n">window</span><span class="o">|</span><span class="w"> </span><span class="n">window</span><span class="o">.</span><span class="n">sum</span><span class="o">.</span><span class="n">to_f</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">window</span><span class="o">.</span><span class="n">size</span><span class="w"> </span><span class="p">}</span>
+<span class="k">end</span>
+</code></pre></div>
+
+</details>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+    <a href="https://github.com/k2works" target="_blank" rel="noopener" title="GitHub Repository/claude-code-booster" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.sections", "toc.integrate", "search.suggest", "search.highlight"], "search": "../../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.e71a0d61.min.js"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+      
+        <script src="../../docs/assets/js/extra.js"></script>
+      
+    
+  </body>
+</html>
