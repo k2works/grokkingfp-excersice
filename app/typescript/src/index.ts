@@ -72,3 +72,134 @@ export {
   // 2.10 Timestamp formatting
   formatTimestamp,
 } from './ch02_pure_functions.js'
+
+// Chapter 3: Immutable Data
+export {
+  // 3.1 Immutable list operations
+  appended,
+  appendedAll,
+  prepended,
+  // 3.2 Slice operations
+  firstN,
+  firstTwo,
+  lastN,
+  lastTwo,
+  moveFirstTwoToEnd,
+  insertBeforeLast,
+  insertAtMiddle,
+  // 3.3 Itinerary replanning
+  replan,
+  // 3.4 String operations
+  abbreviate,
+  substring,
+  // 3.5 Immutable objects
+  type Point as PointCh03,
+  createPoint as createPointCh03,
+  withX,
+  withY,
+  type City,
+  createCity,
+  withPopulation,
+  // 3.6 ReadonlySet
+  addToSet,
+  removeFromSet,
+  // 3.7 ReadonlyMap
+  updateMap,
+  removeKey,
+  // 3.8 fp-ts immutable operations
+  appendWithFpts,
+  prependWithFpts,
+  concatWithFpts,
+} from './ch03_immutable_data.js'
+
+// Chapter 4: Higher-Order Functions
+export {
+  // 4.1 Sorting functions
+  score,
+  rankedWords,
+  sortByLength,
+  sortByLengthDesc,
+  numberOfS,
+  sortByNumberOfS,
+  // 4.2 Map
+  getLengths,
+  getScores,
+  doubleAll as doubleAllCh04,
+  negateAll,
+  // 4.3 Filter
+  filterShortWords,
+  filterOdd,
+  filterLargerThan,
+  highScoringWords,
+  // 4.4 Reduce
+  sumAll,
+  totalLength,
+  totalSCount,
+  findMax,
+  cumulativeScore,
+  // 4.5 Functions returning functions
+  largerThan,
+  divisibleBy,
+  shorterThan,
+  containsSMoreThan,
+  // 4.6 Word scoring
+  bonus,
+  penalty,
+  wordScoreWithBonus,
+  wordScoreWithBonusAndPenalty,
+  highScoringWordsWithThreshold,
+  // 4.7 Generic higher-order functions
+  myMap,
+  myFilter,
+  myReduce,
+  // 4.8 Programming languages
+  type ProgrammingLanguage,
+  createLanguage,
+  sortByYear,
+  getNames,
+  filterYoungLanguages,
+} from './ch04_higher_order.js'
+
+// Chapter 5: flatMap
+export {
+  // 5.1 Flatten and flatMap
+  flatten,
+  flatMap,
+  chainExample,
+  // 5.2 Book and Movie
+  type Book,
+  type Movie,
+  createBook,
+  createMovie,
+  bookAdaptations,
+  getAllAuthors,
+  getAllMovies,
+  recommendationFeed,
+  // 5.3 Friend recommendations
+  recommendedBooks,
+  getRecommendedAuthors,
+  // 5.4 Point generation
+  type Point,
+  type Point3d,
+  createPoint,
+  createPoint3d,
+  generatePoints,
+  generatePoints3d,
+  // 5.5 List size changes
+  duplicateEach,
+  withIncremented,
+  filterEvenViaChain,
+  filterViaChain,
+  // 5.6 Option combination
+  compactOptions,
+  filterMapExample,
+  // 5.7 sequenceT
+  combineOptions,
+  cartesianProduct,
+  // 5.8 traverse
+  traverseOption,
+  // 5.9 Circle points
+  isInside,
+  allCombinations,
+  insidePoints,
+} from './ch05_flatmap.js'
