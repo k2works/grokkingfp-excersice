@@ -417,3 +417,63 @@ export {
   fibonacci,
   primes,
 } from './ch09_streams.js'
+
+// Chapter 10: Concurrency
+export {
+  // 10.1 Ref (atomic shared state)
+  type Ref,
+  createRef,
+  type RefIO,
+  createRefIO,
+  // 10.2 Parallel execution
+  parSequence,
+  parSequenceTE,
+  race,
+  raceSuccess,
+  parTraverse,
+  parTraverseTE,
+  // 10.3 Delay and sleep
+  delay,
+  sleep,
+  after,
+  // 10.4 Fiber (lightweight threads)
+  type Fiber,
+  start,
+  type CancellableTask,
+  cancellable,
+  // 10.5 Forever execution
+  forever,
+  repeatN,
+  repeatWhile,
+  type CancellableForever,
+  startForever,
+  // 10.6 Check-in processing
+  type City,
+  type CityStats,
+  createCity,
+  createCityStats,
+  topCities,
+  storeCheckIn,
+  updateRanking,
+  type ProcessingCheckIns,
+  startProcessingCheckIns,
+  processCheckIn,
+  // 10.7 Parallel dice
+  castTheDieTask,
+  castDiceParallel,
+  castDiceParallelSum,
+  castDiceAndStore,
+  // 10.8 Timeout and race
+  timeout,
+  timeoutWithDefault,
+  raceTwo,
+  // 10.9 Parallel Map/Reduce
+  parMapReduce,
+  parFilter,
+  // 10.10 Utilities
+  collectWithInterval,
+  collectForDuration,
+  type Semaphore,
+  createSemaphore,
+  parSequenceN,
+} from './ch10_concurrent.js'
