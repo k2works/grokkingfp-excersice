@@ -107,6 +107,7 @@ results <- mapConcurrently id [return 1, return 2, return 3]
 ```
 
 Scala との対応:
+
 - Scala の `parSequence` → Haskell の `mapConcurrently id`
 - Scala の `parTraverse` → Haskell の `mapConcurrently`
 

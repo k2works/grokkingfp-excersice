@@ -79,6 +79,7 @@ data TravelGuide = TravelGuide
 ```
 
 Scala との対応:
+
 - `opaque type LocationId` → `newtype LocationId`
 - `case class` → `data` with record syntax
 - `Option[String]` → `Maybe String`
@@ -116,6 +117,7 @@ end note
 ```
 
 Scala との対応:
+
 - `trait DataAccess` → `data DataAccess = DataAccess { ... }`
 - メソッド → レコードのフィールド（関数型）
 
@@ -401,6 +403,7 @@ end note
 ```
 
 Scala との対応:
+
 - `Resource[IO, A]` → `bracket acquire release use`
 - `Resource.make(acquire)(release)` → `bracket acquire release`
 
@@ -519,6 +522,7 @@ end note
 ```
 
 Scala との対応:
+
 - ScalaCheck `Gen[A]` → QuickCheck `Arbitrary a`
 - `forAll` → `property`
 

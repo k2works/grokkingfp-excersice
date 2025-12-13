@@ -12,6 +12,7 @@
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/grokkingfp-java.main.iml" filepath="$PROJECT_DIR$/.idea/modules/grokkingfp-java.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/grokkingfp-java.test.iml" filepath="$PROJECT_DIR$/.idea/modules/grokkingfp-java.test.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/python/python.iml" filepath="$PROJECT_DIR$/app/python/python.iml" />
+      <module fileurl="file://$PROJECT_DIR$/app/ruby/ruby.iml" filepath="$PROJECT_DIR$/app/ruby/ruby.iml" />
     </modules>
   </component>
 </project>
