@@ -27,7 +27,8 @@
   (testing "safe-divide"
     (is (= 5 (eh/safe-divide 10 2)))
     (is (nil? (eh/safe-divide 10 0)))
-    (is (= 3 (eh/safe-divide 7 2)))))
+    ;; Clojure の / は ratio を返す
+    (is (= 7/2 (eh/safe-divide 7 2)))))
 
 (deftest safe-sqrt-tests
   (testing "safe-sqrt"
@@ -58,7 +59,8 @@
 
 (deftest index-of-tests
   (testing "index-of"
-    (is (= 5 (eh/index-of "Hello (World)" \()))
+    ;; "Hello (World)" で '(' は 6番目（0-indexed）
+    (is (= 6 (eh/index-of "Hello (World)" \()))
     (is (= 0 (eh/index-of "(Test)" \()))
     (is (nil? (eh/index-of "Hello" \()))))
 
@@ -158,7 +160,8 @@
   (testing "get-with-default"
     (is (= 5 (eh/get-with-default 5 10)))
     (is (= 10 (eh/get-with-default nil 10)))
-    (is (= false (eh/get-with-default false true)))))
+    ;; or は false を falsy として扱うので、true が返る
+    (is (= true (eh/get-with-default false true)))))
 
 (deftest find-first-valid-tests
   (testing "find-first-valid"

@@ -198,13 +198,14 @@
 (deftest all-files-tests
   (testing "all-files"
     (let [files (fm/all-files fm/file-system)]
-      (is (= 4 (count files)))
+      ;; readme.md, guide.md, core.clj, helpers.clj, project.clj = 5 files
+      (is (= 5 (count files)))
       (is (every? #(= :file (:type %)) files)))))
 
 (deftest files-with-path-tests
   (testing "files-with-path"
     (let [files (fm/files-with-path fm/file-system "")]
-      (is (= 4 (count files)))
+      (is (= 5 (count files)))
       (is (some #(= "/root/docs/readme.md" (:path %)) files))
       (is (some #(= "/root/src/utils/helpers.clj" (:path %)) files)))))
 

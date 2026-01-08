@@ -50,7 +50,7 @@
       (is (= 10 (:value result)))))
 
   (testing "result-flatmap - 成功→エラー"
-    (let [result (rt/result-flatmap #(rt/error "failed") (rt/ok 5))]
+    (let [result (rt/result-flatmap (fn [_] (rt/error "failed")) (rt/ok 5))]
       (is (rt/error? result))))
 
   (testing "result-flatmap - エラー→関数未実行"

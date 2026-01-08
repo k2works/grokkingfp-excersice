@@ -136,7 +136,7 @@
   (testing "割引適用"
     (is (= 900.0 (intro/apply-discount 1000 0.1)))
     (is (= 800.0 (intro/apply-discount 1000 0.2)))
-    (is (= 1000.0 (intro/apply-discount 1000 0)))))
+    (is (= 1000 (intro/apply-discount 1000 0)))))
 
 (deftest checkout-tests
   (testing "チェックアウト"

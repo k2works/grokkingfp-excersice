@@ -182,8 +182,7 @@
 
 (deftest composition-tests
   (testing "process-numbers"
-    (is (= 14 (pf/process-numbers [1 -2 3])))  ; 1^2 + 3^2 = 1 + 9 = 10... wait
-    ; 正の数のみ: [1, 3]、square: [1, 9]、sum: 10
+    ;; 正の数のみ: [1, 3]、square: [1, 9]、sum: 10
     (is (= 10 (pf/process-numbers [1 -2 3]))))
 
   (testing "process-string"
