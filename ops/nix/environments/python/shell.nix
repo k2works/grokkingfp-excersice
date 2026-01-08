@@ -6,6 +6,7 @@ packages.mkShell {
   inherit (baseShell) pure;
   buildInputs = baseShell.buildInputs ++ (with packages; [
     (python3.withPackages (ps: with ps; [
+      uv
       mkdocs
       mkdocs-material
       pymdown-extensions

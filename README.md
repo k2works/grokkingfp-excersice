@@ -66,6 +66,15 @@ mkdocs serve
 sh <(curl -L https://nixos.org/nix/install) --daemon
 ```
 
+#### Flakes の有効化
+
+Nix インストール後、Flakes 機能を有効化します：
+
+```bash
+mkdir -p ~/.config/nix
+echo 'experimental-features = nix-command flakes' > ~/.config/nix/nix.conf
+```
+
 #### 開発環境の起動
 
 ```bash
