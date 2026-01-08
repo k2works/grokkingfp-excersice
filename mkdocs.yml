@@ -41,6 +41,7 @@ markdown_extensions:
         - PLANTUML_SERVER_URL
         - http://www.plantuml.com/plantuml
       format: svg
+  - attr_list
 
 extra_javascript:
   - https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js
@@ -55,6 +56,9 @@ extra:
 
 plugins:
   - search
+
+exclude_docs: |
+  wiki
 
 nav:
   - Home: index.md

@@ -5,8 +5,8 @@
  */
 
 import gulp from 'gulp';
-import mkdocsTasks from './scripts/mkdocs.js';
-import journalTasks from './scripts/journal.js';
+import mkdocsTasks from './ops/scripts/mkdocs.js';
+import journalTasks from './ops/scripts/journal.js';
 
 // Load gulp tasks from script modules
 mkdocsTasks(gulp);

@@ -8,7 +8,8 @@
     "docs:serve": "gulp mkdocs:serve",
     "docs:stop": "gulp mkdocs:stop",
     "docs:build": "gulp mkdocs:build",
-    "claude:yol": "claude --dangerously-skip-permissions"
+    "claude:yol": "claude --dangerously-skip-permissions",
+    "copilot:yol": "copilot --allow-all-tools"
   },
   "repository": {
     "type": "git",
