@@ -49,6 +49,7 @@ module Ch10.ConcurrentProcessing
 import Control.Concurrent (threadDelay, forkIO, killThread, ThreadId)
 import Control.Concurrent.MVar
 import Control.Concurrent.Async (async, wait, cancel, race, Async, mapConcurrently, forConcurrently)
+import Control.Monad (forever)
 import Data.IORef
 import Data.List (sortBy)
 import Data.Map.Strict (Map)
@@ -277,4 +278,4 @@ withTimeout ms = timeout (ms * 1000)
 
 -- | キャンセルされるまで繰り返し実行
 repeatUntilCancelled :: IO () -> IO ThreadId
-repeatUntilCancelled action = forkIO $ action >> repeatUntilCancelled action
+repeatUntilCancelled action = forkIO $ forever action

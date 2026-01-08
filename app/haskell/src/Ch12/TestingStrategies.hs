@@ -211,7 +211,7 @@ travelGuideWithReport da attractionName = do
             artistsResult <- findArtistsFromLocation da locId' 2
             moviesResult <- findMoviesAboutLocation da locId' 2
 
-            let errors = collectErrors [artistsResult, moviesResult]
+            let errors = collectErrors' artistsResult ++ collectErrors' moviesResult
             let artists = either (const []) id artistsResult
             let movies = either (const []) id moviesResult
             let subjects = map artistName artists ++ map movieName movies
@@ -222,8 +222,8 @@ travelGuideWithReport da attractionName = do
                 , tgSearchReport = SearchReport (length attractions) errors
                 }
   where
-    collectErrors :: [Either String a] -> [String]
-    collectErrors = foldr (\r acc -> either (:acc) (const acc) r) []
+    collectErrors' :: Either String a -> [String]
+    collectErrors' = either (:[]) (const [])
 
 -- ============================================
 -- キャッシュ

@@ -250,41 +250,38 @@ transferStock fromInv toInv item amount = atomically $ do
 -- 並行キュー
 -- ============================================
 
--- | トランザクショナルキュー
-type TQueue a = Control.Concurrent.STM.TQueue a
-
 -- | 新しいキューを作成
-newTQueue :: IO (TQueue a)
-newTQueue = newTQueueIO
+newTQueue' :: IO (Control.Concurrent.STM.TQueue a)
+newTQueue' = newTQueueIO
 
 -- | キューに書き込み
-writeTQueue :: TQueue a -> a -> IO ()
-writeTQueue q item = atomically $ Control.Concurrent.STM.writeTQueue q item
+writeTQueue' :: Control.Concurrent.STM.TQueue a -> a -> IO ()
+writeTQueue' q item = atomically $ Control.Concurrent.STM.writeTQueue q item
 
 -- | キューから読み取り（ブロッキング）
-readTQueue :: TQueue a -> IO a
-readTQueue q = atomically $ Control.Concurrent.STM.readTQueue q
+readTQueue' :: Control.Concurrent.STM.TQueue a -> IO a
+readTQueue' q = atomically $ Control.Concurrent.STM.readTQueue q
 
 -- | キューから読み取り（ノンブロッキング）
-tryReadTQueue :: TQueue a -> IO (Maybe a)
-tryReadTQueue q = atomically $ Control.Concurrent.STM.tryReadTQueue q
+tryReadTQueue' :: Control.Concurrent.STM.TQueue a -> IO (Maybe a)
+tryReadTQueue' q = atomically $ Control.Concurrent.STM.tryReadTQueue q
 
 -- | キューが空かどうか
-isEmptyTQueue :: TQueue a -> IO Bool
-isEmptyTQueue q = atomically $ Control.Concurrent.STM.isEmptyTQueue q
+isEmptyTQueue' :: Control.Concurrent.STM.TQueue a -> IO Bool
+isEmptyTQueue' q = atomically $ Control.Concurrent.STM.isEmptyTQueue q
 
 -- ============================================
 -- Producer-Consumer パターン
 -- ============================================
 
 -- | Producer を実行
-producer :: TQueue Int -> Int -> IO ()
-producer q n = mapM_ (\i -> writeTQueue q i >> threadDelay 10000) [1..n]
+producer :: Control.Concurrent.STM.TQueue Int -> Int -> IO ()
+producer q n = mapM_ (\i -> writeTQueue' q i >> threadDelay 10000) [1..n]
 
 -- | Consumer を実行
-consumer :: TQueue Int -> TVar Int -> Int -> IO ()
+consumer :: Control.Concurrent.STM.TQueue Int -> TVar Int -> Int -> IO ()
 consumer q sumVar n = replicateM_ n $ do
-    item <- readTQueue q
+    item <- readTQueue' q
     atomically $ modifyTVar' sumVar (+ item)
 
 -- | Producer-Consumer パターンを実行
@@ -294,7 +291,7 @@ consumer q sumVar n = replicateM_ n $ do
 -- 55
 producerConsumer :: Int -> IO Int
 producerConsumer n = do
-    q <- newTQueue
+    q <- newTQueue'
     sumVar <- newTVarIO 0
 
     -- Producer と Consumer を並行実行
