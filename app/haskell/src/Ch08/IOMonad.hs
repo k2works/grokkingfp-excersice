@@ -1,3 +1,4 @@
+{-# LANGUAGE ScopedTypeVariables #-}
 {-|
 Module      : Ch08.IOMonad
 Description : 第8章: IO モナドの導入
@@ -150,7 +151,7 @@ sequenceIO (x:xs) = do
 -- | IO アクションをリトライ
 --
 -- 失敗した場合、指定回数までリトライする
-retryIO :: Int -> IO a -> IO (Maybe a)
+retryIO :: forall a. Int -> IO a -> IO (Maybe a)
 retryIO 0 _      = return Nothing
 retryIO n action = do
     result <- try action :: IO (Either SomeException a)
@@ -170,7 +171,7 @@ retryWithDefault maxRetries defaultVal action = do
 --
 -- >>> catchIO (return 42) >>= print
 -- Right 42
-catchIO :: IO a -> IO (Either String a)
+catchIO :: forall a. IO a -> IO (Either String a)
 catchIO action = do
     result <- try action :: IO (Either SomeException a)
     return $ case result of
