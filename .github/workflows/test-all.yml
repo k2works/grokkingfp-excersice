@@ -50,6 +50,7 @@ jobs:
       - name: Run Java tests
         run: |
           cd app/java
+          chmod +x gradlew
           nix develop ../../#java --command ./gradlew test
 
   rust:
