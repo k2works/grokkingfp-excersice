@@ -136,7 +136,7 @@ jobs:
       - name: Run Clojure tests
         run: |
           cd app/clojure
-          nix develop ../../#clojure --command clojure -X:test
+          nix develop ../../#clojure --command clojure -M:test
 
   elixir:
     name: Elixir Tests

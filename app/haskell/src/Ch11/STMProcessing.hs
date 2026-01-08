@@ -320,15 +320,19 @@ newBarrier total = do
 
 -- | バリアで待機
 waitBarrier :: Barrier -> IO ()
-waitBarrier barrier = atomically $ do
-    count <- readTVar (barrierCount barrier)
-    let newCount = count + 1
-    writeTVar (barrierCount barrier) newCount
-    if newCount >= barrierTotal barrier
-        then writeTVar (barrierReleased barrier) True
-        else do
-            released <- readTVar (barrierReleased barrier)
-            when (not released) retry
+waitBarrier barrier = do
+    -- 自分の到着を登録
+    atomically $ do
+        count <- readTVar (barrierCount barrier)
+        writeTVar (barrierCount barrier) (count + 1)
+
+    -- 全員が揃うのを待つ
+    atomically $ do
+        count <- readTVar (barrierCount barrier)
+        released <- readTVar (barrierReleased barrier)
+        if count >= barrierTotal barrier || released
+            then writeTVar (barrierReleased barrier) True
+            else retry
 
 -- | バリアをシグナル
 signalBarrier :: Barrier -> IO ()

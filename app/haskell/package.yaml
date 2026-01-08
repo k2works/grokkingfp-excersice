@@ -58,3 +58,5 @@ tests:
     - grokkingfp
     - hspec
     - QuickCheck
+    - stm
+    - text

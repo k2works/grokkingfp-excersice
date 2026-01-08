@@ -1,3 +1,4 @@
+{-# LANGUAGE ScopedTypeVariables #-}
 {-|
 Module      : Ch12.TestingStrategiesSpec
 Description : 第12章のテスト

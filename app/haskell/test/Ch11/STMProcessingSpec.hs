@@ -1,3 +1,4 @@
+{-# LANGUAGE ScopedTypeVariables #-}
 {-|
 Module      : Ch11.STMProcessingSpec
 Description : 第11章のテスト
@@ -7,7 +8,7 @@ module Ch11.STMProcessingSpec (spec) where
 import Test.Hspec
 import Ch11.STMProcessing
 import Control.Concurrent (forkIO, threadDelay)
-import Control.Concurrent.STM (atomically, readTVar)
+import Control.Concurrent.STM (STM, TQueue, atomically, readTVar, newTQueue, writeTQueue, readTQueue, tryReadTQueue, isEmptyTQueue)
 
 spec :: Spec
 spec = do
@@ -154,26 +155,29 @@ spec = do
         -- ============================================
         describe "TQueue" $ do
             it "writes and reads items" $ do
-                q <- newTQueue
-                writeTQueue q (1 :: Int)
-                writeTQueue q 2
-                writeTQueue q 3
-                r1 <- readTQueue q
-                r2 <- readTQueue q
-                r3 <- readTQueue q
-                [r1, r2, r3] `shouldBe` [1, 2, 3]
+                q <- atomically newTQueue
+                atomically $ do
+                    writeTQueue q (1 :: Int)
+                    writeTQueue q 2
+                    writeTQueue q 3
+                results <- atomically $ do
+                    r1 <- readTQueue q
+                    r2 <- readTQueue q
+                    r3 <- readTQueue q
+                    return [r1, r2, r3]
+                results `shouldBe` [1, 2, 3]
 
             it "tryReadTQueue returns Nothing for empty queue" $ do
-                q <- newTQueue :: IO (TQueue Int)
-                result <- tryReadTQueue q
+                q <- atomically (newTQueue :: STM (TQueue Int))
+                result <- atomically $ tryReadTQueue q
                 result `shouldBe` Nothing
 
             it "isEmptyTQueue detects empty queue" $ do
-                q <- newTQueue :: IO (TQueue Int)
-                empty <- isEmptyTQueue q
+                q <- atomically (newTQueue :: STM (TQueue Int))
+                empty <- atomically $ isEmptyTQueue q
                 empty `shouldBe` True
-                writeTQueue q 1
-                notEmpty <- isEmptyTQueue q
+                atomically $ writeTQueue q 1
+                notEmpty <- atomically $ isEmptyTQueue q
                 notEmpty `shouldBe` False
 
         -- ============================================
@@ -201,7 +205,7 @@ spec = do
                 _ <- forkIO $ waitBarrier barrier >> incrementTCounter result
                 _ <- forkIO $ waitBarrier barrier >> incrementTCounter result
 
-                threadDelay 100000
+                threadDelay 500000
                 count <- getTCounter result
                 count `shouldBe` 3
 

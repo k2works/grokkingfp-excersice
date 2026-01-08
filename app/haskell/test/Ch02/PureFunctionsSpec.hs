@@ -88,8 +88,8 @@ spec = do
             it "returns 3 for \"Scala\"" $ do
                 wordScoreWithoutA "Scala" `shouldBe` 3
 
-            it "returns 7 for \"Haskell\"" $ do
-                wordScoreWithoutA "Haskell" `shouldBe` 7
+            it "returns 6 for \"Haskell\"" $ do
+                wordScoreWithoutA "Haskell" `shouldBe` 6
 
             it "returns 0 for \"aaa\"" $ do
                 wordScoreWithoutA "aaa" `shouldBe` 0

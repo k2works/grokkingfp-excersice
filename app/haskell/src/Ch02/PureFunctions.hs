@@ -221,5 +221,5 @@ referentialTransparencyExample =
         score2 = wordScoreWithoutA "Scala"  -- 常に 3
         -- score1 と score2 は常に同じ値
         total1 = wordScoreWithoutA "Scala" + wordScoreWithoutA "Java"
-        total2 = 3 + 4  -- 置き換え可能
+        total2 = 3 + 2  -- "Scala" is 3, "Java" is 2 (J-v-)
     in score1 == score2 && total1 == total2
