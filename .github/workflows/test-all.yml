@@ -84,7 +84,7 @@ jobs:
       - name: Run Python tests
         run: |
           cd app/python
-          nix develop ../../#python --command bash -c "pip install -e .[test] -q && pytest"
+          nix develop ../../#python --command bash -c "uv sync && uv run pytest"
 
   typescript:
     name: TypeScript Tests
