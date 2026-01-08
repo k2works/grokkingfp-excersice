@@ -56,6 +56,56 @@ bundle exec rspec
 mkdocs serve
 ```
 
+### Nix 開発環境
+
+[Nix](https://nixos.org/) を使用して、各言語の開発環境を簡単にセットアップできます。
+
+#### Nix のインストール（WSL/Linux）
+
+```bash
+sh <(curl -L https://nixos.org/nix/install) --daemon
+```
+
+#### 開発環境の起動
+
+```bash
+# プロジェクトルートで実行
+nix develop .#scala      # Scala 環境（JDK21, sbt, scala_3, metals）
+nix develop .#java       # Java 環境（JDK21, gradle）
+nix develop .#rust       # Rust 環境（rustc, cargo, rust-analyzer）
+nix develop .#haskell    # Haskell 環境（ghc, stack, haskell-language-server）
+nix develop .#clojure    # Clojure 環境（JDK21, clojure, leiningen）
+nix develop .#elixir     # Elixir 環境（erlang, elixir, elixir-ls）
+nix develop .#fsharp     # F# 環境（dotnet-sdk_8, fsautocomplete）
+nix develop .#csharp     # C# 環境（dotnet-sdk_8, omnisharp-roslyn）
+nix develop .#ruby       # Ruby 環境（ruby_3_3, bundler, solargraph）
+nix develop .#typescript # TypeScript 環境（nodejs_22, typescript）
+nix develop .#python     # Python 環境（python3, mkdocs）
+nix develop .#node       # Node.js 環境（nodejs_22, npm, yarn）
+nix develop             # 共通環境（git, curl, vim, tmux）
+```
+
+#### 利用可能な環境一覧
+
+```bash
+nix flake show  # 全環境を表示
+```
+
+| 環境名 | 主要パッケージ | 対応プロジェクト |
+|--------|----------------|-----------------|
+| `scala` | JDK21, sbt, scala_3, metals | `app/scala` |
+| `java` | JDK21, gradle | `app/java` |
+| `rust` | rustc, cargo, clippy, rust-analyzer | `app/rust` |
+| `haskell` | ghc, stack, cabal, haskell-language-server | `app/haskell` |
+| `clojure` | JDK21, clojure, leiningen, clojure-lsp | `app/clojure` |
+| `elixir` | erlang, elixir, elixir-ls | `app/elixir` |
+| `fsharp` | dotnet-sdk_8, fsautocomplete | `app/fsharp` |
+| `csharp` | dotnet-sdk_8, omnisharp-roslyn | `app/csharp` |
+| `ruby` | ruby_3_3, bundler, solargraph | `app/ruby` |
+| `typescript` | nodejs_22, typescript, typescript-language-server | `app/typescript` |
+| `python` | python3, mkdocs, mkdocs-material | `app/python` |
+| `node` | nodejs_22, npm, yarn | ルート（MkDocs等） |
+
 ### 構築
 
 ```bash
