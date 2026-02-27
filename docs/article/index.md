@@ -3,6 +3,27 @@
 「Grokking Functional Programming」（Michal Plachta 著）の学習用リポジトリです。
 Scala、Java、F#、C#、Haskell、Clojure、Elixir、Rust、Python、TypeScript、Ruby の11言語で関数型プログラミングの実装例と日本語解説を提供します。
 
+## 11言語統合比較
+
+全 11 言語を横断的に比較する統合記事シリーズです。各章ごとに言語間の共通点と相違点を分析しています。
+
+- [統合記事 目次](all/index.md)
+
+| Part | 章 | タイトル | 統合記事 |
+|------|-----|---------|---------|
+| I | 01 | 関数型プログラミング入門 | [11言語比較](all/part-1-ch01-fp-introduction.md) |
+| I | 02 | 純粋関数と副作用 | [11言語比較](all/part-1-ch02-pure-functions.md) |
+| II | 03 | イミュータブルなデータ操作 | [11言語比較](all/part-2-ch03-immutable-data.md) |
+| II | 04 | 高階関数 | [11言語比較](all/part-2-ch04-higher-order-functions.md) |
+| II | 05 | flatMap とモナド的合成 | [11言語比較](all/part-2-ch05-flatmap.md) |
+| III | 06 | Option 型 | [11言語比較](all/part-3-ch06-option.md) |
+| III | 07 | Either 型と ADT | [11言語比較](all/part-3-ch07-either-adt.md) |
+| IV | 08 | IO モナドと副作用の分離 | [11言語比較](all/part-4-ch08-io-monad.md) |
+| IV | 09 | ストリーム処理 | [11言語比較](all/part-4-ch09-streams.md) |
+| V | 10 | 並行・並列処理 | [11言語比較](all/part-5-ch10-concurrency.md) |
+| VI | 11 | 実践アプリケーション | [11言語比較](all/part-6-ch11-application.md) |
+| VI | 12 | テスト戦略 | [11言語比較](all/part-6-ch12-testing.md) |
+
 ## 言語別解説
 
 ### Scala 版

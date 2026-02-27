@@ -62,6 +62,20 @@ exclude_docs: |
 
 nav:
   - Home: index.md
+  - 11言語統合比較:
+      - 目次: all/index.md
+      - 第1章 - FP入門: all/part-1-ch01-fp-introduction.md
+      - 第2章 - 純粋関数: all/part-1-ch02-pure-functions.md
+      - 第3章 - イミュータブルデータ: all/part-2-ch03-immutable-data.md
+      - 第4章 - 高階関数: all/part-2-ch04-higher-order-functions.md
+      - 第5章 - flatMap: all/part-2-ch05-flatmap.md
+      - 第6章 - Option型: all/part-3-ch06-option.md
+      - 第7章 - Either型とADT: all/part-3-ch07-either-adt.md
+      - 第8章 - IOモナド: all/part-4-ch08-io-monad.md
+      - 第9章 - ストリーム処理: all/part-4-ch09-streams.md
+      - 第10章 - 並行・並列処理: all/part-5-ch10-concurrency.md
+      - 第11章 - 実践アプリケーション: all/part-6-ch11-application.md
+      - 第12章 - テスト戦略: all/part-6-ch12-testing.md
   - Scala:
       - 概要: scala/index.md
       - Part I - 基礎: scala/part-1.md
