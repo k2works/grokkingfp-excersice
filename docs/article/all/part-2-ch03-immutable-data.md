@@ -1119,6 +1119,8 @@ rectangle "Level 4: 慣習的" #LightCoral {
 config:
   radar:
     curveTension: 0
+    marginLeft: 120
+    marginRight: 120
 ---
 radar-beta
   title 関数型ファースト言語
@@ -1138,6 +1140,8 @@ radar-beta
 config:
   radar:
     curveTension: 0
+    marginLeft: 120
+    marginRight: 120
 ---
 radar-beta
   title マルチパラダイム言語
@@ -1157,6 +1161,8 @@ radar-beta
 config:
   radar:
     curveTension: 0
+    marginLeft: 120
+    marginRight: 120
 ---
 radar-beta
   title OOP + FP ライブラリ言語

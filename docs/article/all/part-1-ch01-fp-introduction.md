@@ -411,6 +411,8 @@ Haskell・Scala・Elixir が命令型の例に Java を使うのは、これら�
 config:
   radar:
     curveTension: 0
+    marginLeft: 120
+    marginRight: 120
 ---
 radar-beta
   title 関数型ファースト言語
@@ -430,6 +432,8 @@ radar-beta
 config:
   radar:
     curveTension: 0
+    marginLeft: 120
+    marginRight: 120
 ---
 radar-beta
   title マルチパラダイム言語
@@ -449,6 +453,8 @@ Scala と Kotlin は `val` / `var` と「名前: 型」の構文を共有し、�
 config:
   radar:
     curveTension: 0
+    marginLeft: 120
+    marginRight: 120
 ---
 radar-beta
   title OOP + FP ライブラリ言語

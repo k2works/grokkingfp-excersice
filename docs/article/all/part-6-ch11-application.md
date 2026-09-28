@@ -741,6 +741,8 @@ Kotlin 版は DI コンテナを使わず、`travelGuideV3(dataAccess, name)` �
 config:
   radar:
     curveTension: 0
+    marginLeft: 120
+    marginRight: 120
 ---
 radar-beta
   title 関数型ファースト言語
@@ -760,6 +762,8 @@ radar-beta
 config:
   radar:
     curveTension: 0
+    marginLeft: 120
+    marginRight: 120
 ---
 radar-beta
   title マルチパラダイム言語
@@ -779,6 +783,8 @@ Scala と Kotlin はほぼ同じ形で、Kotlin は `suspend` 修飾子で副作
 config:
   radar:
     curveTension: 0
+    marginLeft: 120
+    marginRight: 120
 ---
 radar-beta
   title OOP + FP ライブラリ言語

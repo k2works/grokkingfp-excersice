@@ -602,6 +602,8 @@ FP の「副作用の明示的分離」原則が、テスト可能な設計を�
 config:
   radar:
     curveTension: 0
+    marginLeft: 120
+    marginRight: 120
 ---
 radar-beta
   title 関数型ファースト言語
@@ -621,6 +623,8 @@ Haskell は QuickCheck の `Arbitrary` 型クラスにより全軸で満点で�
 config:
   radar:
     curveTension: 0
+    marginLeft: 120
+    marginRight: 120
 ---
 radar-beta
   title マルチパラダイム言語
@@ -640,6 +644,8 @@ Scala と Kotlin は完全に重なります。ScalaCheck の `for` 内包表記
 config:
   radar:
     curveTension: 0
+    marginLeft: 120
+    marginRight: 120
 ---
 radar-beta
   title OOP + FP ライブラリ言語

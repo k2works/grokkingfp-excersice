@@ -6,9 +6,9 @@
 
 関数型プログラミングでは、値の有無を**型**で表現します。`Option`（Haskell では `Maybe`）型は、「値があるかもしれないし、ないかもしれない」を型レベルで表し、コンパイラによる安全性検査を可能にします。
 
-本章では、11 言語での Option/Maybe の実装を横断的に比較し、以下を明らかにします：
+本章では、12 言語での Option/Maybe の実装を横断的に比較し、以下を明らかにします：
 
-- Option 型の実装方式（言語組み込み vs ライブラリ vs nil ベース）の違い
+- Option 型の実装方式（言語組み込み vs ライブラリ vs nil ベース、そして両方を持つ Kotlin）の違い
 - 複数の Option を合成する方法（for / do / LINQ / ? 演算子）の多様性
 - フォールバック（orElse）と 2 つのエラーハンドリング戦略
 
@@ -37,7 +37,7 @@ rectangle "Option の世界" #LightGreen {
 
 ## 6.2 共通の本質：Option = Some | None
 
-11 言語すべてで共通する Option の構造は、**2 つのケース**の判別共用体です：
+12 言語すべてで共通する Option の構造は、**2 つのケース**の判別共用体です：
 
 1. **Some(value)**: 値が存在する
 2. **None**: 値が存在しない
@@ -120,6 +120,7 @@ none.map(_ * 2)    // None（安全に伝播）
 | 言語 | ライブラリ | 型名 | Some | None |
 |------|-----------|------|------|------|
 | **Scala** | 標準ライブラリ | `Option[A]` | `Some(a)` | `None` |
+| **Kotlin** | Arrow | `Option<A>` | `Some(a)` | `None` |
 | **Java** | Vavr | `Option<T>` | `Option.some(t)` | `Option.none()` |
 | **C#** | LanguageExt | `Option<T>` | `Some(t)` | `None` |
 | **TypeScript** | fp-ts | `Option<A>` | `O.some(a)` | `O.none` |
@@ -134,6 +135,17 @@ none.map(_ * 2)    // None（安全に伝播）
 |------|-----------|------------|
 | **Clojure** | `nil` | `some->` / `some->>` マクロ、`when-let` |
 | **Elixir** | `nil` | `with` 式、パターンマッチ |
+
+### Kotlin の位置付け：言語組み込みとライブラリの両方
+
+Kotlin は 3 つのアプローチのどれか 1 つには収まりません。`null` 自体は存在しますが、型システムが `String`（非 null）と `String?`（nullable）を区別するため、nullable 型 `A?` が **言語組み込みの Option** として働きます。さらに、Arrow が **ライブラリの `Option<A>`** も提供しています。
+
+| 仕組み | 分類 | 値がある | 値がない | 特徴 |
+|--------|------|---------|---------|------|
+| nullable 型 `A?` | 言語組み込み | `a` | `null` | ラッパーなし、`?.` / `?:` / スマートキャストの専用構文 |
+| Arrow `Option<A>` | ライブラリ提供 | `Some(a)` | `None` | 代数的データ型なのでネストできる、`option { }` DSL |
+
+Kotlin 版では nullable 型を第一の選択肢とし、Arrow の `Option` は「値として `null` を持ちうる型」を扱う場面の比較として使っています。
 
 ---
 
@@ -195,7 +207,7 @@ pub fn parse_show(raw_show: &str) -> Option<TvShow> {
 
 **共通パターン**: どの言語でも、1 つでも `None` / `Nothing` が返れば、以降の処理はスキップされ全体が `None` になります。これが**モナド的合成**（短絡評価）です。
 
-### 全 11 言語の実装
+### 全 12 言語の実装
 
 #### 関数型ファースト言語
 
@@ -316,6 +328,34 @@ def parseShow(rawShow: String): Option[TvShow] =
 ```
 
 Scala の for 内包表記は `flatMap` / `map` に脱糖され、Option のモナド的合成を最も読みやすく表現します。
+
+</details>
+
+<details>
+<summary>Kotlin 実装</summary>
+
+```kotlin
+data class TvShow(val title: String, val start: Int, val end: Int)
+
+fun parseShow(rawShow: String): TvShow? {
+    val name = extractName(rawShow) ?: return null
+    val yearStart = extractYearStart(rawShow) ?: extractSingleYear(rawShow) ?: return null
+    val yearEnd = extractYearEnd(rawShow) ?: extractSingleYear(rawShow) ?: return null
+    return TvShow(name, yearStart, yearEnd)
+}
+
+// ?.let の連鎖で書くこともできる（flatMap のネストに相当）
+fun parseShowWithLet(rawShow: String): TvShow? =
+    extractName(rawShow)?.let { name ->
+        (extractYearStart(rawShow) ?: extractSingleYear(rawShow))?.let { yearStart ->
+            (extractYearEnd(rawShow) ?: extractSingleYear(rawShow))?.let { yearEnd ->
+                TvShow(name, yearStart, yearEnd)
+            }
+        }
+    }
+```
+
+Kotlin は Option 型ではなく nullable 型 `TvShow?` を返します。エルビス演算子 `?:` の右辺に `return null` を置く早期リターンが、Scala の for 内包表記の「ネストの平坦化」を担います。`?:` を連ねるだけでフォールバックも 1 行で書けます。
 
 </details>
 
@@ -481,6 +521,7 @@ Option のモナド的合成を表現する構文は言語ごとに大きく異�
 | 言語 | 合成構文 | 可読性 |
 |------|---------|--------|
 | **Scala** | `for { x <- f1; y <- f2 } yield ...` | 高い |
+| **Kotlin** | `val x = f1 ?: return null; val y = f2 ?: return null` | 非常に高い |
 | **Haskell** | `do { x <- f1; y <- f2; return ... }` | 高い |
 | **Rust** | `let x = f1?; let y = f2?;` | 非常に高い |
 | **C#** | `from x in f1 from y in f2 select ...` | 高い |
@@ -492,7 +533,7 @@ Option のモナド的合成を表現する構文は言語ごとに大きく異�
 | **Python** | `f1.bind(lambda x: f2.bind(lambda y: ...))` | 低い |
 | **Ruby** | `f1.bind { \|x\| f2.fmap { \|y\| ... } }` | 低い |
 
-**発見**: Rust の `?` 演算子は全言語中で最も簡潔な短絡評価構文です。通常のコードに `?` を付けるだけで None 伝播を実現し、専用の糖衣構文や do 記法が不要です。
+**発見**: Rust の `?` 演算子は全言語中で最も簡潔な短絡評価構文です。通常のコードに `?` を付けるだけで None 伝播を実現し、専用の糖衣構文や do 記法が不要です。Kotlin の `?: return null` も同じ発想の早期リターンで、`return` が式であることを利用して nullable 型の短絡評価を平坦に書けます。
 
 ---
 
@@ -504,6 +545,7 @@ Option のモナド的合成を表現する構文は言語ごとに大きく異�
 |------|------|-----|
 | **Haskell** | `` `orElse` `` / `<\|>` | `extractYearStart raw \`orElse\` extractSingleYear raw` |
 | **Scala** | `.orElse(...)` | `extractYearStart(raw).orElse(extractSingleYear(raw))` |
+| **Kotlin** | `?:`（エルビス演算子） | `extractYearStart(raw) ?: extractSingleYear(raw)` |
 | **Rust** | `.or_else(\|\| ...)` | `extract_year_start(raw).or_else(\|\| extract_single_year(raw))` |
 | **F#** | `\|> Option.orElse` | `extractYearStart raw \|> Option.orElse (extractSingleYear raw)` |
 | **C#** | `\|\|` | `ExtractYearStart(raw) \|\| ExtractSingleYear(raw)` |
@@ -514,7 +556,7 @@ Option のモナド的合成を表現する構文は言語ごとに大きく異�
 | **Python** | `.lash(lambda _: ...)` | `extract_year_start(raw).lash(lambda _: extract_single_year(raw))` |
 | **Ruby** | `.or(...)` | `extract_year_start(raw).or(extract_single_year(raw))` |
 
-C# の `||` 演算子は最も簡潔で、ブーリアンの `or` と同じ感覚で Option のフォールバックを記述できます。
+C# の `||` 演算子は最も簡潔で、ブーリアンの `or` と同じ感覚で Option のフォールバックを記述できます。Kotlin のエルビス演算子 `?:` も同じく簡潔で、右辺を nullable 値にすれば `orElse`、非 null 値にすれば `getOrElse` として働きます。
 
 ---
 
@@ -535,6 +577,12 @@ val shows: List[TvShow] = rawShows.flatMap(parseShow)
 -- Haskell: catMaybes が Maybe のリストから Just の値だけを抽出
 parseShowsBestEffort :: [String] -> [TvShow]
 parseShowsBestEffort = catMaybes . map parseShow
+```
+
+```kotlin
+// Kotlin: mapNotNull は「変換して null を取り除く」標準ライブラリ関数
+fun parseShowsBestEffort(rawShows: List<String>): List<TvShow> =
+    rawShows.mapNotNull(::parseShow)
 ```
 
 ```clojure
@@ -571,10 +619,10 @@ const parseShows = (rawShows: readonly string[]): O.Option<readonly TvShow[]> =>
 
 ### 戦略比較表
 
-| 戦略 | Scala | Haskell | Clojure | Elixir | Rust | Python | TypeScript | Ruby |
-|------|-------|---------|---------|--------|------|--------|------------|------|
-| Best-effort | `flatMap` | `catMaybes` | `keep` | `Enum.reject(&is_nil/1)` | `filter_map` | `isinstance` | `RA.compact` | `select(&:some?)` |
-| All-or-nothing | `traverse` | `mapM` | 手動実装 | 手動実装 | `collect()` | 手動実装 | `RA.traverse` | 手動実装 |
+| 戦略 | Scala | Kotlin | Haskell | Clojure | Elixir | Rust | Python | TypeScript | Ruby |
+|------|-------|--------|---------|---------|--------|------|--------|------------|------|
+| Best-effort | `flatMap` | `mapNotNull` | `catMaybes` | `keep` | `Enum.reject(&is_nil/1)` | `filter_map` | `isinstance` | `RA.compact` | `select(&:some?)` |
+| All-or-nothing | `traverse` | 手動実装（`takeIf` / `fold`） | `mapM` | 手動実装 | 手動実装 | `collect()` | 手動実装 | `RA.traverse` | 手動実装 |
 
 ---
 
@@ -595,6 +643,7 @@ rectangle "Level 1: null が存在しない" #LightGreen {
 rectangle "Level 2: 型で Option を強制" #LightBlue {
   card "Scala (Option)" as sc
   card "F# (option)" as fs
+  card "Kotlin (A? / Arrow Option)" as kt
 }
 
 rectangle "Level 3: ライブラリで Option を提供" #LightYellow {
@@ -616,15 +665,17 @@ rectangle "Level 4: nil ベース + 言語機能" #LightCoral {
 | レベル | 言語 | 安全性 | 特徴 |
 |--------|------|--------|------|
 | **null なし** | Haskell, Rust | 最高 | コンパイラが Option の処理を強制 |
-| **型で強制** | Scala, F# | 高い | null は存在するが Option 使用が慣習 |
+| **型で強制** | Scala, F#, Kotlin | 高い | null は存在するが Option 使用が慣習（Kotlin は nullable 型の検査をコンパイラが強制） |
 | **ライブラリ** | Java, C#, TypeScript, Python, Ruby | 中程度 | null を使う旧コードとの共存が必要 |
 | **nil ベース** | Clojure, Elixir | 慣習依存 | 言語機能で安全にサポートするが型保証はない |
+
+Kotlin は `null` を排除せず型で追跡する方式です。`String?` の値をそのまま `String` として使うことはコンパイラが許さないため、慣習ではなく言語仕様で安全性が担保されます。一方で、`A??` のように不在をネストできないため、Level 1 の言語とは表現力が異なります（6.9 節）。
 
 ### 発見 2: 合成構文は 4 系統に分類できる
 
 1. **内包表記系**: Scala (for), Haskell (do), C# (LINQ), Clojure (when-let)
    - ネストが平坦化され、最も可読性が高い
-2. **演算子系**: Rust (`?`)
+2. **演算子系**: Rust (`?`)、Kotlin (`?.` / `?: return null`)
    - 最も簡潔で、通常のコードに自然に溶け込む
 3. **パイプ系**: F# (`|>`), Elixir (`with`), TypeScript (`pipe`)
    - データの流れが明確
@@ -641,6 +692,100 @@ Option.flatMap: Option[A] → (A → Option[B]) → Option[B]
 ```
 
 `List` の `flatMap` が「0 個以上の結果」を扱うのに対し、`Option` の `flatMap` は「0 個か 1 個の結果」を扱います。for 内包表記や do 記法が両方で使えるのは、同じモナドインターフェースを共有しているからです。
+
+### レーダーチャートで見る 12 言語
+
+ここまでの比較を 5 つの評価軸で数値化し、言語グループごとにレーダーチャートで可視化します。Option の「型としての強さ」と「日常的な書きやすさ」のバランスが言語ごとにどう異なるかが見えてきます。
+
+| 評価軸 | 5 点 | 3 点 | 1 点 |
+|--------|------|------|------|
+| 言語組み込み度 | 言語組み込みの型・構文で不在を表現 | ライブラリで Option 型を提供 | 型がなく nil で代用 |
+| 合成構文 | 短絡評価を平坦に書ける構文（do / for / `?` など） | パイプやマクロで中程度に書ける | flatMap のネストに頼る |
+| 型安全性 | コンパイラが不在の処理を強制 | 型はあるが null との共存が必要 | 実行時まで検出できない |
+| 戦略関数 | Best-effort / All-or-nothing の両方に専用関数がある | 片方だけ専用関数がある | どちらも手動実装が中心 |
+| 学習の容易さ | 既存の知識ですぐ使える | 新しい概念をいくつか学ぶ必要がある | モナドや独自 DSL の理解が前提 |
+
+| 言語 | 言語組み込み度 | 合成構文 | 型安全性 | 戦略関数 | 学習の容易さ |
+|------|---------------|---------|---------|---------|-------------|
+| Haskell | 5 | 5 | 5 | 5 | 2 |
+| Clojure | 1 | 3 | 1 | 3 | 4 |
+| Elixir | 1 | 3 | 1 | 2 | 4 |
+| F# | 5 | 3 | 4 | 3 | 3 |
+| Scala | 4 | 5 | 4 | 4 | 3 |
+| Kotlin | 5 | 5 | 4 | 3 | 4 |
+| Rust | 5 | 5 | 5 | 5 | 3 |
+| TypeScript | 2 | 3 | 3 | 4 | 2 |
+| Java | 2 | 1 | 3 | 3 | 3 |
+| C# | 2 | 4 | 3 | 3 | 3 |
+| Python | 2 | 1 | 2 | 2 | 3 |
+| Ruby | 2 | 1 | 1 | 2 | 3 |
+
+```mermaid
+---
+config:
+  radar:
+    curveTension: 0
+    marginLeft: 120
+    marginRight: 120
+---
+radar-beta
+  title 関数型ファースト言語
+  axis a1["言語組み込み度"], a2["合成構文"], a3["型安全性"], a4["戦略関数"], a5["学習の容易さ"]
+  curve haskell["Haskell"]{5, 5, 5, 5, 2}
+  curve clojure["Clojure"]{1, 3, 1, 3, 4}
+  curve elixir["Elixir"]{1, 3, 1, 2, 4}
+  curve fsharp["F#"]{5, 3, 4, 3, 3}
+  max 5
+  min 0
+```
+
+Haskell と F# は Option がファーストクラスで型安全性も高い一方、Clojure と Elixir は nil ベースで型保証を持たない代わりに学びやすさで優れます。静的型付けと動的型付けの差が、そのまま図形の形の差として現れています。
+
+```mermaid
+---
+config:
+  radar:
+    curveTension: 0
+    marginLeft: 120
+    marginRight: 120
+---
+radar-beta
+  title マルチパラダイム言語
+  axis a1["言語組み込み度"], a2["合成構文"], a3["型安全性"], a4["戦略関数"], a5["学習の容易さ"]
+  curve scala["Scala"]{4, 5, 4, 4, 3}
+  curve kotlin["Kotlin"]{5, 5, 4, 3, 4}
+  curve rust["Rust"]{5, 5, 5, 5, 3}
+  curve typescript["TypeScript"]{2, 3, 3, 4, 2}
+  max 5
+  min 0
+```
+
+Rust は `?` 演算子と `null` のない型システムで全体的に大きな図形を描きます。Kotlin は nullable 型と `?:` によって組み込み度・合成構文・学びやすさを高い水準で両立しますが、All-or-nothing に専用関数がない点で Rust と差が出ます。
+
+```mermaid
+---
+config:
+  radar:
+    curveTension: 0
+    marginLeft: 120
+    marginRight: 120
+---
+radar-beta
+  title OOP + FP ライブラリ言語
+  axis a1["言語組み込み度"], a2["合成構文"], a3["型安全性"], a4["戦略関数"], a5["学習の容易さ"]
+  curve java["Java"]{2, 1, 3, 3, 3}
+  curve csharp["C#"]{2, 4, 3, 3, 3}
+  curve python["Python"]{2, 1, 2, 2, 3}
+  curve ruby["Ruby"]{2, 1, 1, 2, 3}
+  max 5
+  min 0
+```
+
+このグループはライブラリで Option を導入するため組み込み度は横並びですが、C# だけは LINQ クエリ式によって合成構文が突出しています。Java、Python、Ruby は flatMap のネストに頼るため、合成構文が弱点になります。
+
+全体として、Option を言語や標準に組み込んでいる言語ほど合成構文と型安全性が高くなる傾向があります。ただし学習の容易さとは必ずしも一致せず、Kotlin のように既存の構文（`?.` / `?:`）へ自然に溶け込ませた言語がバランスの良さで目立ちます。
+
+> スコアは本シリーズの実装と各言語版の記事に基づく相対評価（1〜5）であり、言語の優劣を示すものではありません。
 
 ---
 
@@ -673,6 +818,41 @@ fn parse_show(raw: &str) -> Option<TvShow> {
     Some(TvShow::new(&name, start, end))
 }
 ```
+
+### Kotlin: ?. / ?: と Option をネストできない問題
+
+Kotlin の nullable 型は、`?.`（安全呼び出し）と `?:`（エルビス演算子）という専用構文で Option の主要な操作をまかないます。
+
+| 構文 | Option の操作 | 例 |
+|------|--------------|-----|
+| `x?.let { f(it) }` | `map` / `flatMap` | `x?.let { safeDivide(100, it) }` |
+| `x ?: y` | `orElse` / `getOrElse` | `x ?: alternative`、`x ?: 0` |
+| `x?.takeIf { p(it) }` | `filter` | `x?.takeIf { it > threshold }` |
+| `?: return null` | 短絡評価 | `val x = a.trim().toIntOrNull() ?: return null` |
+
+`?.let` の中で `Int` を返しても `Int?` を返しても結果は `Int?` に平坦化されるため、`map` と `flatMap` の区別がありません。これは便利な反面、**不在をネストできない** という制約の裏返しです。`A??` は `A?` と同じ型なので、「値がない」と「値として `null` がある」を区別できません。
+
+```kotlin
+listOf(null, 2, 3).firstOrNull()      // null（先頭が null）
+emptyList<Int?>().firstOrNull()       // null（リストが空）→ 区別できない
+```
+
+この場面では Arrow の `Option<A>` を使います。`Some` / `None` を持つ代数的データ型なので、`Option<Int?>` のようにネストできます。
+
+```kotlin
+fun firstElement(list: List<Int?>): Option<Int?> = list.firstOrNone()
+
+fun describeFirst(list: List<Int?>): String =
+    when (val first = firstElement(list)) {
+        is Some -> "first element is ${first.value}"
+        None -> "list is empty"
+    }
+
+describeFirst(listOf(null, 2, 3))  // "first element is null"
+describeFirst(emptyList())         // "list is empty"
+```
+
+言語組み込みの軽量さとライブラリ型の表現力を場面に応じて使い分けられる点が、Kotlin 版の大きな特徴です。
 
 ### Clojure: some-> マクロ
 
@@ -724,6 +904,7 @@ mapMaybe safeHead [[1,2], [], [3]]  -- [1, 3]
 | 完全な null 安全性 | Haskell, Rust | 言語レベルで null が存在しない |
 | 合成構文の可読性 | Scala, C# | for 内包表記 / LINQ が読みやすい |
 | 最も簡潔な短絡評価 | Rust | `?` 演算子 |
+| JVM 上での言語レベルの null 安全性 | Kotlin | nullable 型 `A?` と `?.` / `?:`、必要なら Arrow `Option` |
 | 既存の Java/C# 資産との共存 | Java + Vavr, C# + LanguageExt | 段階的な Option 導入が可能 |
 | 動的型付け + FP | Clojure | `some->` / `when-let` が強力 |
 
@@ -738,7 +919,7 @@ mapMaybe safeHead [[1,2], [], [3]]  -- [1, 3]
 
 ## 6.11 まとめ
 
-本章では、11 言語での Option/Maybe の実装を比較し、以下を確認しました：
+本章では、12 言語での Option/Maybe の実装を比較し、以下を確認しました：
 
 **共通の原則**:
 
@@ -748,7 +929,7 @@ mapMaybe safeHead [[1,2], [], [3]]  -- [1, 3]
 
 **言語間の差異**:
 
-- 実装方式は 4 段階（null なし → 型で強制 → ライブラリ → nil ベース）
+- 実装方式は 4 段階（null なし → 型で強制 → ライブラリ → nil ベース）で、Kotlin は言語組み込み（`A?`）とライブラリ（Arrow `Option`）の両方を持つ
 - 合成構文は 4 系統（内包表記、? 演算子、パイプ、flatMap チェーン）
 - フォールバックの構文は `orElse` / `||` / `or` / `lash` / `<|>` と多様
 
@@ -765,6 +946,7 @@ mapMaybe safeHead [[1,2], [], [3]]  -- [1, 3]
 | 言語 | 記事リンク |
 |------|-----------|
 | Scala | [Part III: エラーハンドリング](../scala/part-3.md) |
+| Kotlin | [Part III: エラーハンドリング](../kotlin/part-3.md) |
 | Java | [Part III: エラーハンドリング](../java/part-3.md) |
 | F# | [Part III: エラーハンドリング](../fsharp/part-3.md) |
 | C# | [Part III: エラーハンドリング](../csharp/part-3.md) |

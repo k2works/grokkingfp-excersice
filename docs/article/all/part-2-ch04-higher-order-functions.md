@@ -4,7 +4,7 @@
 
 高階関数（Higher-Order Functions）は、関数型プログラミングの最も強力な構成要素です。関数を「値」として扱い、引数として渡したり、戻り値として返したりすることで、柔軟で再利用可能なコードを実現します。
 
-本章では、11 言語での高階関数の実装を横断的に比較し、以下を明らかにします：
+本章では、12 言語（Haskell, Clojure, Elixir, F#, Scala, Kotlin, Rust, TypeScript, Java, C#, Python, Ruby）での高階関数の実装を横断的に比較し、以下を明らかにします：
 
 - `map` / `filter` / `fold` の 3 大高階関数の言語別イディオム
 - 関数を渡す・返すスタイルの言語間の違い
@@ -26,7 +26,7 @@ rectangle "3大高階関数" #LightGreen {
 }
 
 rectangle "パイプラインスタイル" #LightYellow {
-  card "メソッドチェーン\n(Scala, Java, C#, Ruby)" as mc
+  card "メソッドチェーン\n(Scala, Kotlin, Java, C#, Ruby)" as mc
   card "パイプ演算子 |>\n(F#, Elixir)" as pipe
   card "スレッディングマクロ ->>\n(Clojure)" as thread
   card "関数合成 . / $\n(Haskell)" as comp
@@ -40,7 +40,7 @@ rectangle "パイプラインスタイル" #LightYellow {
 
 ## 4.2 共通の本質：map / filter / fold
 
-11 言語すべてで共通する 3 大高階関数を確認します。
+12 言語すべてで共通する 3 大高階関数を確認します。
 
 ### map: 各要素を変換する
 
@@ -128,7 +128,7 @@ reduce(lambda acc, n: acc + n, [5, 1, 2, 4, 100], 0)  # 112
 
 ## 4.3 言語別 map / filter / fold 比較
 
-### 全 11 言語の実装
+### 全 12 言語の実装
 
 #### 関数型ファースト言語
 
@@ -247,6 +247,34 @@ List(1, 2, 3, 4, 5)
 ```
 
 Scala のプレースホルダ構文 `_` で、ラムダ式を簡潔に書けます。
+
+</details>
+
+<details>
+<summary>Kotlin 実装</summary>
+
+```kotlin
+fun len(s: String): Int = s.length
+fun isOdd(i: Int): Boolean = i % 2 == 1
+
+// map（関数参照 :: と、末尾ラムダ + it）
+listOf("scala", "rust", "ada").map(::len)       // [5, 4, 3]
+listOf(5, 1, 2, 4, 0).map { it * 2 }            // [10, 2, 4, 8, 0]
+
+// filter
+listOf(5, 1, 2, 4, 0).filter(::isOdd)           // [5, 1]
+
+// fold
+listOf(5, 1, 2, 4, 100).fold(0) { acc, i -> acc + i }  // 112
+
+// 末尾ラムダのメソッドチェーンで連鎖
+listOf(1, 2, 3, 4, 5)
+    .filter { it % 2 == 1 }
+    .map { it * it }
+    .fold(0) { acc, n -> acc + n }               // 35
+```
+
+Kotlin では最後の引数が関数型ならラムダを括弧の外に出せ（末尾ラムダ）、引数が 1 つのラムダは暗黙の名前 `it` で参照できます。既存の関数は関数参照 `::len` でそのまま渡せます。`reduce` は空リストで例外を投げるため、`fold` か `reduceOrNull` を優先します。
 
 </details>
 
@@ -407,13 +435,13 @@ Ruby の `&:method_name` はシンボルを Proc に変換する構文糖衣で�
 
 ### 語彙比較表
 
-| 操作 | Haskell | Clojure | Elixir | F# | Scala | Rust | TypeScript | Java | C# | Python | Ruby |
-|------|---------|---------|--------|----|-------|------|------------|------|----|--------|------|
-| 変換 | `map` | `map` | `Enum.map` | `List.map` | `.map` | `.map` | `RA.map` | `.map` | `.Map` | 内包表記 | `.map` |
-| 抽出 | `filter` | `filter` | `Enum.filter` | `List.filter` | `.filter` | `.filter` | `RA.filter` | `.filter` | `.Filter` | 内包表記 | `.select` |
-| 集約 | `foldl` | `reduce` | `Enum.reduce` | `List.fold` | `.foldLeft` | `.fold` | `RA.reduce` | `.foldLeft` | `.Fold` | `reduce` | `.reduce` |
+| 操作 | Haskell | Clojure | Elixir | F# | Scala | Kotlin | Rust | TypeScript | Java | C# | Python | Ruby |
+|------|---------|---------|--------|----|-------|--------|------|------------|------|----|--------|------|
+| 変換 | `map` | `map` | `Enum.map` | `List.map` | `.map` | `.map` | `.map` | `RA.map` | `.map` | `.Map` | 内包表記 | `.map` |
+| 抽出 | `filter` | `filter` | `Enum.filter` | `List.filter` | `.filter` | `.filter` | `.filter` | `RA.filter` | `.filter` | `.Filter` | 内包表記 | `.select` |
+| 集約 | `foldl` | `reduce` | `Enum.reduce` | `List.fold` | `.foldLeft` | `.fold` | `.fold` | `RA.reduce` | `.foldLeft` | `.Fold` | `reduce` | `.reduce` |
 
-**発見**: `map` と `filter` はほぼ全言語で同名です。集約操作のみ `fold` 系（Haskell, F#, Scala, Rust, C#）と `reduce` 系（Clojure, Elixir, Python, Ruby, TypeScript）に分かれます。Ruby は `filter` の代わりに `select` を使う唯一の言語です。
+**発見**: `map` と `filter` はほぼ全言語で同名です。集約操作のみ `fold` 系（Haskell, F#, Scala, Kotlin, Rust, C#）と `reduce` 系（Clojure, Elixir, Python, Ruby, TypeScript）に分かれます。Ruby は `filter` の代わりに `select` を使う唯一の言語です。
 
 ---
 
@@ -485,7 +513,7 @@ ranked_words(words, lambda w: score(w) + bonus(w) - penalty(w))
 
 **共通パターン**: `rankedWords` 関数は「スコアリングのロジック」を知りません。どのスコア関数を使うかは呼び出し側が決めます。これが高階関数による**関心の分離**です。
 
-### 全 11 言語の実装
+### 全 12 言語の実装
 
 #### 関数型ファースト言語
 
@@ -609,6 +637,32 @@ rankedWords(score, words)
 rankedWords(w => score(w) + bonus(w), words)
 rankedWords(w => score(w) + bonus(w) - penalty(w), words)
 ```
+
+</details>
+
+<details>
+<summary>Kotlin 実装</summary>
+
+```kotlin
+fun score(word: String): Int = word.replace("a", "").length
+fun bonus(word: String): Int = if (word.contains("c")) 5 else 0
+fun penalty(word: String): Int = if (word.contains("s")) 7 else 0
+
+fun rankedWords(wordScore: (String) -> Int, words: List<String>): List<String> =
+    words.sortedBy(wordScore).reversed()
+
+/** 拡張関数版 - 末尾ラムダでスコア関数を渡せる */
+fun List<String>.rankedBy(wordScore: (String) -> Int): List<String> =
+    sortedBy(wordScore).reversed()
+
+// 使用例
+rankedWords(::score, words)
+rankedWords({ w -> score(w) + bonus(w) }, words)
+rankedWords({ w -> score(w) + bonus(w) - penalty(w) }, words)
+words.rankedBy { score(it) + bonus(it) }
+```
+
+関数型 `(String) -> Int` がそのまま引数の型になります。関数型パラメータを最後に置いた拡張関数 `rankedBy` にすると、末尾ラムダで `words.rankedBy { ... }` と書けます。新しいリストを返す `sortedBy` / `reversed` を使うのが Kotlin の命名規則です。
 
 </details>
 
@@ -784,10 +838,10 @@ list(filter(larger_than(4), [5, 1, 2, 4, 0]))  # [5]
 list(filter(larger_than(1), [5, 1, 2, 4, 0]))  # [5, 2, 4]
 ```
 
-### 全 11 言語の実装
+### 全 12 言語の実装
 
 <details>
-<summary>全 11 言語の「関数を返す関数」</summary>
+<summary>全 12 言語の「関数を返す関数」</summary>
 
 **Haskell**:
 ```haskell
@@ -814,6 +868,15 @@ let largerThan (n: int) : int -> bool = fun i -> i > n
 **Scala**:
 ```scala
 def largerThan(n: Int): Int => Boolean = i => i > n
+```
+
+**Kotlin**:
+```kotlin
+fun largerThan(n: Int): (Int) -> Boolean = { i -> i > n }
+
+// カリー化された関数型の値と、2 引数関数をカリー化する curry
+val largerThanCurried: (Int) -> (Int) -> Boolean = { n -> { i -> i > n } }
+fun <A, B, C> curry(f: (A, B) -> C): (A) -> (B) -> C = { a -> { b -> f(a, b) } }
 ```
 
 **Rust**:
@@ -860,7 +923,7 @@ end
 | レベル | 言語 | 特徴 |
 |--------|------|------|
 | **自動カリー化** | Haskell, F# | すべての多引数関数が自動的にカリー化される |
-| **構文サポート** | Scala, Rust, TypeScript | 戻り値型に関数型を明示して実現 |
+| **構文サポート** | Scala, Kotlin, Rust, TypeScript | 戻り値型に関数型を明示して実現（Kotlin は複数パラメータリストを持たず `(Int) -> (Int) -> Boolean` で表現） |
 | **ラムダ式で実現** | Java, C#, Clojure, Elixir | クロージャ / ラムダ式で関数を返す |
 | **慣習的** | Python, Ruby | `lambda` / `->` で手動構築 |
 
@@ -909,6 +972,17 @@ List(1, 2, 3, 4, 5)
 
 OOP スタイルのメソッドチェーンは、多くの開発者にとって最も馴染みやすい形式です。
 
+### Kotlin 末尾ラムダによるメソッドチェーン
+
+```kotlin
+listOf(1, 2, 3, 4, 5)
+    .filter { it % 2 == 1 }
+    .map { it * it }
+    .fold(0) { acc, n -> acc + n }
+```
+
+同じメソッドチェーンでも、Kotlin では末尾ラムダと `it` により `filter { ... }` が制御構文のように読めます。拡張関数を定義すれば、自前の変換（`rankedBy` など）も同じチェーンに連ねられます。
+
 ### Haskell 関数合成 `.` と `$`
 
 ```haskell
@@ -947,7 +1021,7 @@ Rust のイテレータチェーンは遅延評価で、`.collect()` を呼ぶ�
 |---------|------|------------|------|
 | パイプ演算子 `\|>` | F#, Elixir | 左 → 右 | 最も直感的なデータフロー |
 | スレッディングマクロ | Clojure | 上 → 下 | S 式でありながら読みやすい |
-| メソッドチェーン | Scala, Java, C#, Ruby | 左 → 右 | OOP 開発者に馴染みやすい |
+| メソッドチェーン | Scala, Kotlin, Java, C#, Ruby | 左 → 右 | OOP 開発者に馴染みやすい（Kotlin は末尾ラムダ + 拡張関数） |
 | 関数合成 `.` / `$` | Haskell | 右 → 左 | 数学的な関数合成に忠実 |
 | `pipe()` 関数 | TypeScript (fp-ts) | 上 → 下 | 型推論との両立 |
 | イテレータチェーン | Rust | 左 → 右 | ゼロコスト抽象化 |
@@ -960,9 +1034,10 @@ Rust のイテレータチェーンは遅延評価で、`.collect()` を呼ぶ�
 
 `map` と `filter`（Ruby の `select` を除く）はほぼ全言語で同名ですが、畳み込み操作の命名は 2 派に分かれます：
 
-- **fold 派**: Haskell (`foldl`), F# (`List.fold`), Scala (`foldLeft`), Rust (`.fold`), C# (`.Fold`)
+- **fold 派**: Haskell (`foldl`), F# (`List.fold`), Scala (`foldLeft`), Kotlin (`.fold`), Rust (`.fold`), C# (`.Fold`)
 - **reduce 派**: Clojure (`reduce`), Elixir (`Enum.reduce`), Python (`reduce`), Ruby (`.reduce`), TypeScript (`RA.reduce`)
 - **Java は両方**: Vavr は `foldLeft`、標準 Stream API は `reduce`
+- **Kotlin は両方を区別**: 初期値ありの `fold` と、初期値なしの `reduce`（空リストで例外）/ `reduceOrNull`（空なら `null`）を使い分ける
 
 これは歴史的な系譜を反映しています。`fold` は ML / Haskell 系、`reduce` は Lisp / APL 系の伝統です。
 
@@ -971,7 +1046,7 @@ Rust のイテレータチェーンは遅延評価で、`.collect()` を呼ぶ�
 | パターン | 言語 | 例 |
 |---------|------|-----|
 | **名前で渡す** | Haskell, Clojure, F# | `map length`, `(map count)` |
-| **メソッド参照** | Java, Scala | `String::length`, `_.length` |
+| **メソッド参照** | Java, Scala, Kotlin | `String::length`, `_.length`, `::len` / `ProgrammingLanguage::name` |
 | **ブロック / キャプチャ** | Ruby, Elixir | `{ \|w\| w.length }`, `&String.length/1` |
 | **ラムダ / アロー関数** | TypeScript, Python, Rust, C# | `(w) => w.length`, `lambda w: len(w)` |
 
@@ -986,7 +1061,101 @@ OOP:  interface ScoreStrategy { int score(String word); }
 FP:   (String -> Int) ← 関数型そのものがインターフェース
 ```
 
-11 言語すべてで `rankedWords(scoreFunction, words)` という同一のパターンが成立するのは、高階関数が戦略パターンの普遍的な簡易版であることを示しています。
+12 言語すべてで `rankedWords(scoreFunction, words)` という同一のパターンが成立するのは、高階関数が戦略パターンの普遍的な簡易版であることを示しています。
+
+### レーダーチャートで見る 12 言語
+
+ここまでの比較を、高階関数に固有の 5 つの評価軸で整理します。各言語の「関数を値として扱う」ときの書き味の違いが、チャートの形の違いとして表れます。
+
+| 評価軸 | 5 点 | 3 点 | 1 点 |
+|--------|------|------|------|
+| 関数の渡しやすさ | 名前・関数参照・短縮ラムダでそのまま渡せる | ラムダ式で包む必要がある場面が多い | 専用の記法や変換が常に必要 |
+| 関数型の型表現 | `A -> B` 形式の関数型を静的に書ける | 専用の型（`Func`、`Callable`、`Fn` トレイト）で表す | 動的型付けで型としては表現しない |
+| カリー化 | すべての関数が自動的にカリー化される | 関数型を返す関数として明示的に書ける | ラムダを手動で組み立てる慣習的な方法のみ |
+| パイプライン | データフローを左から右（上から下）に自然に書ける | チェーンは書けるが記述がやや冗長 | 関数呼び出しのネストや内包表記に頼る |
+| 学習コスト | 既存の知識で直感的に使える（高得点ほど低コスト） | 独自の記法や概念をいくつか学ぶ必要がある | 型システムや所有権など前提知識が多い |
+
+| 言語 | 関数の渡しやすさ | 関数型の型表現 | カリー化 | パイプライン | 学習コスト |
+|------|:---:|:---:|:---:|:---:|:---:|
+| Haskell | 5 | 5 | 5 | 4 | 2 |
+| Clojure | 5 | 2 | 2 | 5 | 3 |
+| Elixir | 4 | 2 | 2 | 5 | 4 |
+| F# | 5 | 5 | 5 | 5 | 3 |
+| Scala | 5 | 5 | 4 | 4 | 3 |
+| Kotlin | 5 | 5 | 3 | 4 | 4 |
+| Rust | 3 | 3 | 3 | 4 | 2 |
+| TypeScript | 4 | 4 | 3 | 4 | 3 |
+| Java | 3 | 2 | 2 | 3 | 3 |
+| C# | 4 | 3 | 2 | 4 | 3 |
+| Python | 3 | 3 | 1 | 2 | 5 |
+| Ruby | 4 | 1 | 1 | 4 | 4 |
+
+```mermaid
+---
+config:
+  radar:
+    curveTension: 0
+    marginLeft: 120
+    marginRight: 120
+---
+radar-beta
+  title 関数型ファースト言語
+  axis a1["関数の渡しやすさ"], a2["関数型の型表現"], a3["カリー化"], a4["パイプライン"], a5["学習コスト"]
+  curve haskell["Haskell"]{5, 5, 5, 4, 2}
+  curve clojure["Clojure"]{5, 2, 2, 5, 3}
+  curve elixir["Elixir"]{4, 2, 2, 5, 4}
+  curve fsharp["F#"]{5, 5, 5, 5, 3}
+  max 5
+  min 0
+```
+
+関数型ファースト言語は「関数の渡しやすさ」と「パイプライン」がそろって高く、Haskell と F# は自動カリー化と静的な関数型で全体が大きく広がります。Clojure と Elixir は動的型付けのため「関数型の型表現」と「カリー化」がへこんだ形になります。
+
+```mermaid
+---
+config:
+  radar:
+    curveTension: 0
+    marginLeft: 120
+    marginRight: 120
+---
+radar-beta
+  title マルチパラダイム言語
+  axis a1["関数の渡しやすさ"], a2["関数型の型表現"], a3["カリー化"], a4["パイプライン"], a5["学習コスト"]
+  curve scala["Scala"]{5, 5, 4, 4, 3}
+  curve kotlin["Kotlin"]{5, 5, 3, 4, 4}
+  curve rust["Rust"]{3, 3, 3, 4, 2}
+  curve typescript["TypeScript"]{4, 4, 3, 4, 3}
+  max 5
+  min 0
+```
+
+Scala と Kotlin はほぼ同じ形で、関数型 `(A) -> B` と関数参照 `::`、末尾ラムダと `it` によって関数を渡す書き味が最も軽い部類です。Kotlin は複数パラメータリストを持たないぶんカリー化で Scala に一歩譲り、代わりに学習コストの低さで上回ります。Rust は `Fn` トレイトと所有権の扱いが必要なため、全体に内側へ寄ります。
+
+```mermaid
+---
+config:
+  radar:
+    curveTension: 0
+    marginLeft: 120
+    marginRight: 120
+---
+radar-beta
+  title OOP + FP ライブラリ言語
+  axis a1["関数の渡しやすさ"], a2["関数型の型表現"], a3["カリー化"], a4["パイプライン"], a5["学習コスト"]
+  curve java["Java"]{3, 2, 2, 3, 3}
+  curve csharp["C#"]{4, 3, 2, 4, 3}
+  curve python["Python"]{3, 3, 1, 2, 5}
+  curve ruby["Ruby"]{4, 1, 1, 4, 4}
+  max 5
+  min 0
+```
+
+OOP + FP ライブラリ言語では、関数型を `Function` / `Func` などの専用型で表すため「関数型の型表現」と「カリー化」が低めです。Python は学習コストの低さが突出する一方でパイプラインが弱く、Ruby はブロック構文によって渡しやすさとチェーンの読みやすさを確保しています。
+
+全体として、「関数の渡しやすさ」はどのグループでも比較的高く、高階関数そのものは言語を問わず普及していることが分かります。差が大きく開くのは「関数型の型表現」と「カリー化」で、ここに関数型ファースト言語と静的型付けのマルチパラダイム言語（Scala、Kotlin）の強みが表れています。
+
+> スコアは本シリーズの実装と各言語版の記事に基づく相対評価（1〜5）であり、言語の優劣を示すものではありません。
 
 ---
 
@@ -1032,6 +1201,17 @@ Enum.map(words, &score/1)
 Enum.map(words, &(&1 * 2))  # 各要素を2倍
 ```
 
+### Kotlin: 末尾ラムダ、it、関数参照、拡張関数
+
+Kotlin は関数型 `(String) -> Int` を言語に組み込み、Java のように `Function` / `Predicate` を使い分ける必要がありません。関数型の値は関数参照（`::score`、`ProgrammingLanguage::name`）かラムダで作り、最後の引数が関数型なら末尾ラムダで括弧の外に書けます。関数型パラメータを最後に置いた拡張関数を定義すると、自前の高階関数も標準ライブラリと同じ見た目で呼び出せます。
+
+```kotlin
+languages.map(ProgrammingLanguage::name)          // プロパティの関数参照
+sortByFunction(words) { it.length }                // 末尾ラムダ + it
+words.rankedBy { score(it) + bonus(it) }           // 拡張関数 + 末尾ラムダ
+numbers.filter(curry(::largerThanNormal)(1))       // 2 引数関数をカリー化して部分適用
+```
+
 ---
 
 ## 4.9 実践的な選択指針
@@ -1041,7 +1221,8 @@ Enum.map(words, &(&1 * 2))  # 各要素を2倍
 | 重視する点 | 推奨スタイル | 言語 |
 |-----------|------------|------|
 | データフローの可視性 | パイプ演算子 | F#, Elixir |
-| OOP チームとの親和性 | メソッドチェーン | Scala, Java, C#, Ruby |
+| OOP チームとの親和性 | メソッドチェーン | Scala, Kotlin, Java, C#, Ruby |
+| DSL 風の読みやすさ | 末尾ラムダ + 拡張関数 | Kotlin |
 | 数学的な厳密性 | 関数合成 | Haskell |
 | 型安全なパイプライン | pipe() + fp-ts | TypeScript |
 | パフォーマンス | イテレータチェーン | Rust |
@@ -1065,7 +1246,7 @@ Enum.map(words, &(&1 * 2))  # 各要素を2倍
 
 ## 4.10 まとめ
 
-本章では、11 言語での高階関数の実装を比較し、以下を確認しました：
+本章では、12 言語での高階関数の実装を比較し、以下を確認しました：
 
 **共通の原則**:
 
@@ -1077,13 +1258,13 @@ Enum.map(words, &(&1 * 2))  # 各要素を2倍
 
 - 畳み込みの命名は `fold` 系と `reduce` 系に分裂
 - パイプラインスタイルは 6 種類（パイプ演算子、スレッディングマクロ、メソッドチェーン、関数合成、pipe 関数、イテレータチェーン）
-- カリー化の自動度は Haskell/F# > Scala/Rust/TypeScript > Java/C#/Clojure/Elixir > Python/Ruby
+- カリー化の自動度は Haskell/F# > Scala/Kotlin/Rust/TypeScript > Java/C#/Clojure/Elixir > Python/Ruby
 
 **学び**:
 
 - 高階関数の概念は言語に依存しない
 - 言語の違いは「関数をどう渡すか」「パイプラインをどう表現するか」に表れる
-- Python のリスト内包表記と Ruby のブロック構文は、高階関数の独自の進化形
+- Python のリスト内包表記と Ruby のブロック構文、Kotlin の末尾ラムダと拡張関数は、高階関数の独自の進化形
 
 ---
 
@@ -1092,6 +1273,7 @@ Enum.map(words, &(&1 * 2))  # 各要素を2倍
 | 言語 | 記事リンク |
 |------|-----------|
 | Scala | [Part II: 関数型スタイルのプログラミング](../scala/part-2.md) |
+| Kotlin | [Part II: 関数型スタイルのプログラミング](../kotlin/part-2.md) |
 | Java | [Part II: 関数型スタイルのプログラミング](../java/part-2.md) |
 | F# | [Part II: 関数型スタイルのプログラミング](../fsharp/part-2.md) |
 | C# | [Part II: 関数型スタイルのプログラミング](../csharp/part-2.md) |
