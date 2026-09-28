@@ -1,4 +1,4 @@
-# 第10章: 並行・並列処理 — 11言語比較
+# 第10章: 並行・並列処理 — 12言語比較
 
 ## 10.1 はじめに
 
@@ -6,7 +6,7 @@
 
 従来の並行処理は、デッドロック、競合状態、共有可変状態の管理といった難題が伴います。関数型プログラミングでは、イミュータブルデータと参照透過性を基盤に、これらの問題に構造的に対処します。
 
-本章では、11 言語それぞれの並行処理プリミティブを比較し、**共有状態の安全な管理（Ref）**、**並列実行（parSequence）**、**軽量スレッド（Fiber）** という 3 つの共通概念がどのように表現されるかを見ていきます。
+本章では、12 言語それぞれの並行処理プリミティブを比較し、**共有状態の安全な管理（Ref）**、**並列実行（parSequence）**、**軽量スレッド（Fiber）** という 3 つの共通概念がどのように表現されるかを見ていきます。
 
 ---
 
@@ -28,7 +28,7 @@
 
 ---
 
-## 10.3 共有状態の安全な管理 — Ref の全 11 言語比較
+## 10.3 共有状態の安全な管理 — Ref の全 12 言語比較
 
 ### 代表 3 言語の詳細比較
 
@@ -84,7 +84,32 @@ impl AtomicCounter {
 }
 ```
 
-### 全 11 言語の Ref 実装
+### 全 12 言語の Ref 実装
+
+<details>
+<summary>Kotlin — Arrow Atomic / AtomicInt（CAS ベース）</summary>
+
+```kotlin
+import arrow.atomic.Atomic
+import arrow.atomic.AtomicInt
+import arrow.atomic.update
+
+/** カウンターを 3 回インクリメントした結果を返す */
+fun incrementThreeTimes(): Int {
+    val counter = AtomicInt(0)
+    repeat(3) { counter.update { it + 1 } }
+    return counter.get()
+}
+
+/** Atomic に保存されたチェックイン数をアトミックに更新する */
+fun storeCheckIn(storedCheckIns: Atomic<Map<City, Int>>, city: City) {
+    storedCheckIns.update { current -> updateCheckIns(current, city) }
+}
+```
+
+外部から読み取る値（ランキング）には `MutableStateFlow<A>` を使い、読み取り側には `StateFlow` として公開します。
+
+</details>
 
 <details>
 <summary>Java — AtomicReference ベースの Ref</summary>
@@ -248,6 +273,7 @@ end
 | 言語 | 型 | 内部実装 | 特徴 |
 |------|-----|---------|------|
 | Scala | `Ref[IO, A]` | CAS（アトミック） | IO モナドに統合、ロックフリー |
+| Kotlin | `Atomic<A>` / `MutableStateFlow<A>` | CAS（`AtomicReference`） | Arrow の拡張関数 `update { }`、作成は副作用扱いしない |
 | Haskell | `IORef a` | アトミック操作 | `atomicModifyIORef'` で CAS |
 | Rust | `Arc<Mutex<T>>` | OS レベルロック | 所有権で安全性を保証 |
 | Java | `Ref<A>` (自作) | `AtomicReference` | CAS ベース、IO にラップ |
@@ -261,7 +287,7 @@ end
 
 ---
 
-## 10.4 並列実行 — parSequence の全 11 言語比較
+## 10.4 並列実行 — parSequence の全 12 言語比較
 
 ### 代表 3 言語の詳細比較
 
@@ -316,7 +342,43 @@ where
 }
 ```
 
-### 全 11 言語の並列実行
+### 全 12 言語の並列実行
+
+<details>
+<summary>Kotlin — Arrow parMap / parZip + coroutineScope</summary>
+
+```kotlin
+/** Scala の parSequence に相当: suspend 関数のリストを並列実行する */
+suspend fun <A> List<suspend () -> A>.parSequence(): List<A> =
+    parMap { io -> io() }
+
+/** 同時実行数を制限して並列に取得する */
+suspend fun <A, B> fetchAllLimited(
+    ids: List<A>,
+    concurrency: Int,
+    fetch: suspend (A) -> B,
+): List<B> = ids.parMap(concurrency = concurrency) { id -> fetch(id) }
+
+/** 名前とスコアを並列に取得して Profile に組み立てる */
+suspend fun fetchProfile(
+    fetchName: suspend () -> String,
+    fetchScore: suspend () -> Int,
+    context: CoroutineContext = EmptyCoroutineContext,
+): Profile = parZip(
+    context,
+    { fetchName() },
+    { fetchScore() },
+) { name, score -> Profile(name, score) }
+
+/** 構造化並行性: すべてを並行に実行して合計する */
+suspend fun sumConcurrent(ios: List<suspend () -> Int>): Int = coroutineScope {
+    ios.map { io -> async { io() } }.awaitAll().sum()
+}
+```
+
+`coroutineScope` の中の子が 1 つでも失敗すると、残りの兄弟は自動的にキャンセルされ、例外は呼び出し元に再送出されます。
+
+</details>
 
 <details>
 <summary>Java — CompletableFuture + VirtualThread</summary>
@@ -434,6 +496,7 @@ end
 | 言語 | API | 内部実装 | 備考 |
 |------|-----|---------|------|
 | Scala | `List(...).parSequence` | cats-effect Fiber Pool | ファイバーベース |
+| Kotlin | `list.parMap { it() }` / `parZip` / `raceN` | Arrow Fx Coroutines + kotlinx.coroutines | `concurrency` で同時実行数を制限可 |
 | Haskell | `mapConcurrently` | async ライブラリ | GHC 軽量スレッド |
 | Rust | `tokio::spawn` + `join_all` | tokio ランタイム | `Send` 境界が必要 |
 | Java | `CompletableFuture` + VirtualThread | Project Loom | Java 21+ |
@@ -447,7 +510,7 @@ end
 
 ---
 
-## 10.5 軽量スレッド — Fiber の全 11 言語比較
+## 10.5 軽量スレッド — Fiber の全 12 言語比較
 
 ### 代表 3 言語の詳細比較
 
@@ -489,7 +552,41 @@ impl<T> BackgroundTask<T> {
 }
 ```
 
-### 全 11 言語の Fiber / 軽量スレッド
+### 全 12 言語の Fiber / 軽量スレッド
+
+<details>
+<summary>Kotlin — コルーチンの Job（構造化並行性）</summary>
+
+```kotlin
+/** interval ごとに action を繰り返す Job を起動し、すぐに返す */
+fun CoroutineScope.repeatForever(interval: Duration, action: suspend () -> Unit): Job =
+    launch {
+        while (true) {
+            delay(interval)
+            action()
+        }
+    }
+
+/** interval ごとに値を集め、duration 経過後に停止して結果を返す */
+suspend fun collectFor(
+    duration: Duration,
+    interval: Duration,
+    produce: suspend () -> Int,
+): List<Int> = coroutineScope {
+    val collected = Atomic(emptyList<Int>())
+    val producer = repeatForever(interval) {
+        val n = produce()
+        collected.update { values -> values + n }
+    }
+    delay(duration)
+    producer.cancelAndJoin()
+    collected.get()
+}
+```
+
+`launch` は `CoroutineScope` の拡張関数なので、起動した `Job` は必ずスコープの子になり、スコープの外に漏れません。
+
+</details>
 
 <details>
 <summary>Java — Fiber（VirtualThread ベース）</summary>
@@ -629,6 +726,7 @@ end
 | 言語 | 起動 | 待機 | キャンセル | 実体 |
 |------|------|------|-----------|------|
 | Scala | `.start` | `fiber.join` | `fiber.cancel` | cats-effect Fiber |
+| Kotlin | `scope.launch` / `scope.async` | `job.join()` / `deferred.await()` | `job.cancelAndJoin()` | コルーチン（`Job`） |
 | Haskell | `async` | `wait` | `cancel` | GHC 軽量スレッド |
 | Rust | `tokio::spawn` | `handle.await` | `handle.abort()` | tokio タスク |
 | Java | `Thread.startVirtualThread` | `future.get()` | `thread.interrupt()` | VirtualThread |
@@ -728,6 +826,27 @@ data ProcessingCheckIns = ProcessingCheckIns
     }
 ```
 
+**Kotlin の ProcessingCheckIns:**
+
+```kotlin
+fun CoroutineScope.startProcessingCheckIns(
+    checkIns: Flow<City>,
+    topN: Int,
+    interval: Duration,
+): ProcessingCheckIns {
+    val storedCheckIns = Atomic(emptyMap<City, Int>())
+    val storedRanking = MutableStateFlow(emptyList<CityStats>())
+
+    val job = launch {
+        launch { updateRanking(storedCheckIns, storedRanking, topN, interval) }
+        launch { checkIns.collect { city -> storeCheckIn(storedCheckIns, city) } }
+    }
+    return ProcessingCheckIns(storedRanking, job)
+}
+```
+
+Kotlin では `Ref` の代わりに `Atomic` と `MutableStateFlow`、Fiber の代わりに `Job` を使います。`CoroutineScope` の拡張関数にすることで、「起動してすぐ戻る」関数であることをシグネチャで表明しています。
+
 このパターンの共通構造は以下の通りです。
 
 1. **Ref** で共有状態を初期化
@@ -740,13 +859,13 @@ data ProcessingCheckIns = ProcessingCheckIns
 
 ### 並行モデルの分類
 
-11 言語の並行処理モデルは、以下の 4 つのカテゴリに分類できます。
+12 言語の並行処理モデルは、以下の 4 つのカテゴリに分類できます。なお、これらのモデルの土台となる実行単位の管理方法として、Kotlin の **コルーチン + 構造化並行性**（すべてのコルーチンがスコープに属し、失敗とキャンセルが親子で伝播する）があります。
 
 #### 1. 共有状態モデル（Ref / Lock ベース）
 
 最も広く採用されているモデルです。アトミック参照やロックを使って共有状態を保護します。
 
-**採用言語**: Scala、Haskell（IORef）、Rust、Java、Python、TypeScript、F#、C#、Ruby
+**採用言語**: Scala、Kotlin（Atomic / MutableStateFlow）、Haskell（IORef）、Rust、Java、Python、TypeScript、F#、C#、Ruby
 
 **特徴**: 直感的で理解しやすいが、ロックの粒度設計が重要。
 
@@ -754,7 +873,7 @@ data ProcessingCheckIns = ProcessingCheckIns
 
 複数の参照をトランザクションで一貫性を保って更新するモデルです。
 
-**採用言語**: Haskell（TVar/STM）、Clojure（ref/dosync）
+**採用言語**: Haskell（TVar/STM）、Kotlin（Arrow `arrow-fx-stm` の TVar/atomically）、Clojure（ref/dosync）
 
 ```haskell
 -- Haskell STM: 銀行口座間の送金
@@ -764,6 +883,22 @@ transfer from to amount = do
     check (fromBalance >= amount)
     modifyTVar' from (subtract amount)
     modifyTVar' to (+ amount)
+```
+
+```kotlin
+// Kotlin（Arrow STM）: Haskell と同じく check で条件待ち
+fun STM.transferStm(from: TVar<Int>, to: TVar<Int>, amount: Int) {
+    val balance = from.read()
+    check(balance >= amount) // false なら retry: from が変わるまで待機して再実行
+    from.write(balance - amount)
+    to.modify { it + amount }
+}
+
+/** 残高不足なら待たずに false を返す送金 */
+suspend fun tryTransfer(from: TVar<Int>, to: TVar<Int>, amount: Int): Boolean =
+    atomically {
+        stm { transferStm(from, to, amount); true } orElse { false }
+    }
 ```
 
 ```clojure
@@ -804,8 +939,97 @@ Agent.update(counter, &(&1 + 1))
 |--------|------|-------------|
 | **コンパイル時** | Rust | 所有権システムが共有可変状態を静的に検出 |
 | **型システム** | Scala, Haskell | IO モナドが副作用を型で追跡 |
+| **構造化並行性** | Kotlin | コルーチンのスコープが子の寿命を管理し、失敗とキャンセルを伝播。複数状態の整合は Arrow STM で保証 |
 | **ランタイム** | Clojure, Elixir | STM の自動リトライ、プロセス分離 |
 | **規約ベース** | Java, Python, TypeScript, F#, C#, Ruby | 開発者がロック/同期を適切に使用 |
+
+### レーダーチャートで見る 12 言語
+
+並行処理の 3 つの柱に、複数状態のトランザクションと静的な保証を加えた 5 つの軸で、12 言語の特徴をレーダーチャートにまとめます。
+
+| 評価軸 | 5 点 | 3 点 | 1 点 |
+|--------|------|------|------|
+| 共有状態管理 | 言語やライブラリがロックフリーな原子参照を直接提供する | 標準のロックや原子参照を自作の `Ref` で包む | 低レベルな同期操作を直接扱う必要がある |
+| 並列実行API | 同時実行数の制限や型の異なる処理の組み合わせまで高水準 API が揃う | 一括実行と待機の基本 API がある | 実質的な並列実行が難しい |
+| キャンセル制御 | 親子関係やスーパーバイザーでキャンセルと失敗が自動伝播する | トークンやハンドルで明示的にキャンセルする | キャンセル手段がほぼない |
+| トランザクション | STM を言語・標準で提供し、条件待ちや合成ができる | 外部ライブラリやプロセスの直列化で代替する | 複数状態の整合は自前で管理する |
+| 型による保証 | データ競合をコンパイル時に検出する | 非同期処理を型で表すが、同期は規約に委ねる | 動的型付けで規約のみに頼る |
+
+| 言語 | 共有状態管理 | 並列実行API | キャンセル制御 | トランザクション | 型による保証 |
+|------|:---:|:---:|:---:|:---:|:---:|
+| Haskell | 5 | 5 | 4 | 5 | 4 |
+| Clojure | 5 | 4 | 2 | 4 | 1 |
+| Elixir | 4 | 5 | 5 | 2 | 1 |
+| F# | 3 | 4 | 3 | 1 | 3 |
+| Scala | 5 | 5 | 4 | 2 | 4 |
+| Kotlin | 4 | 5 | 5 | 4 | 3 |
+| Rust | 4 | 4 | 3 | 1 | 5 |
+| TypeScript | 3 | 4 | 2 | 1 | 3 |
+| Java | 3 | 4 | 2 | 1 | 3 |
+| C# | 3 | 4 | 3 | 1 | 3 |
+| Python | 3 | 4 | 3 | 1 | 1 |
+| Ruby | 3 | 2 | 2 | 1 | 1 |
+
+```mermaid
+---
+config:
+  radar:
+    curveTension: 0
+---
+radar-beta
+  title 関数型ファースト言語
+  axis a1["共有状態管理"], a2["並列実行API"], a3["キャンセル制御"], a4["トランザクション"], a5["型による保証"]
+  curve haskell["Haskell"]{5, 5, 4, 5, 4}
+  curve clojure["Clojure"]{5, 4, 2, 4, 1}
+  curve elixir["Elixir"]{4, 5, 5, 2, 1}
+  curve fsharp["F#"]{3, 4, 3, 1, 3}
+  max 5
+  min 0
+```
+
+関数型ファースト言語では、Haskell が STM と IO 型によりほぼ全方位で高得点です。Clojure は atom と ref による状態管理、Elixir は OTP によるプロセスの寿命管理と、それぞれ得意な軸がはっきり分かれています。
+
+```mermaid
+---
+config:
+  radar:
+    curveTension: 0
+---
+radar-beta
+  title マルチパラダイム言語
+  axis a1["共有状態管理"], a2["並列実行API"], a3["キャンセル制御"], a4["トランザクション"], a5["型による保証"]
+  curve scala["Scala"]{5, 5, 4, 2, 4}
+  curve kotlin["Kotlin"]{4, 5, 5, 4, 3}
+  curve rust["Rust"]{4, 4, 3, 1, 5}
+  curve typescript["TypeScript"]{3, 4, 2, 1, 3}
+  max 5
+  min 0
+```
+
+マルチパラダイム言語では、Scala が cats-effect の `Ref` と IO 型で、Kotlin が構造化並行性と Arrow STM で、Rust が所有権による静的な保証で、それぞれ異なる方向に張り出しています。Kotlin は STM をライブラリで使える点で、Haskell に次ぐトランザクションの手軽さを持ちます。
+
+```mermaid
+---
+config:
+  radar:
+    curveTension: 0
+---
+radar-beta
+  title OOP + FP ライブラリ言語
+  axis a1["共有状態管理"], a2["並列実行API"], a3["キャンセル制御"], a4["トランザクション"], a5["型による保証"]
+  curve java["Java"]{3, 4, 2, 1, 3}
+  curve csharp["C#"]{3, 4, 3, 1, 3}
+  curve python["Python"]{3, 4, 3, 1, 1}
+  curve ruby["Ruby"]{3, 2, 2, 1, 1}
+  max 5
+  min 0
+```
+
+OOP + FP ライブラリ言語は、既存の並行処理基盤の上に自作の `Ref` や `parSequence` を載せるため、似た形になります。Ruby は GIL の制約により並列実行の軸が低くなります。
+
+全体として、並列実行 API はどの言語でも充実しており、差が出るのはキャンセルの伝播、複数状態のトランザクション、静的な保証の 3 軸です。STM を持つ Haskell、Clojure、Kotlin、構造化されたキャンセルを持つ Kotlin と Elixir、コンパイル時の安全性を持つ Rust というように、各言語の強みは並行処理のどの難しさに正面から取り組んでいるかを反映しています。
+
+> スコアは本シリーズの実装と各言語版の記事に基づく相対評価（1〜5）であり、言語の優劣を示すものではありません。
 
 ---
 
@@ -814,6 +1038,10 @@ Agent.update(counter, &(&1 + 1))
 ### Haskell — STM の優雅さ
 
 Haskell の STM は `retry` と `orElse` による合成可能なトランザクションを提供します。条件が満たされない場合に自動的にブロックし、条件が満たされた時点で再実行する仕組みは、他の言語では再現が困難です。
+
+### Kotlin — 構造化並行性と Arrow STM
+
+Kotlin のコルーチンは必ず `CoroutineScope` に属し、スコープは子の完了を待ちます。`coroutineScope` の中で子が 1 つ失敗すると兄弟は自動的にキャンセルされ、例外は親に再送出されるため、Future を手動でキャンセルして回る必要がありません。その上に Arrow Fx Coroutines の `parMap`（`concurrency` で同時実行数を制限可）、`parZip`、`raceN` が高水準な並列 API を提供します。共有状態は 1 つの値なら `Atomic` / `MutableStateFlow`、複数の値の整合性や条件待ちが必要なら `arrow-fx-stm` の `TVar` と `atomically` を使い、`check` / `retry` / `orElse` で Haskell と同じ合成可能なトランザクションを書けます。一方でキャンセルは協調的で、サスペンドポイントに到達するまで止まらない点には注意が必要です。
 
 ### Rust — 所有権による安全性
 
@@ -840,7 +1068,8 @@ Java 21 の VirtualThread により、従来の OS スレッドの制約から�
 | ユースケース | 推奨モデル | 適切な言語 |
 |-------------|-----------|-----------|
 | 高頻度の状態更新 | Ref（共有状態） | Scala, Haskell, Rust |
-| 複数リソースのトランザクション | STM | Haskell, Clojure |
+| 複数リソースのトランザクション | STM | Haskell, Clojure, Kotlin |
+| 子タスクの寿命とキャンセルの管理 | 構造化並行性 | Kotlin, Elixir |
 | 大規模分散システム | アクター/プロセス | Elixir, F# |
 | I/O バウンドの並列処理 | parSequence | 全言語 |
 | CPU バウンドの並列処理 | ワーカープール | Rust, Java, Elixir |
@@ -851,7 +1080,7 @@ Java 21 の VirtualThread により、従来の OS スレッドの制約から�
 
 **FP ファースト（Haskell, Clojure, Elixir, F#）**: 言語レベルで並行プリミティブを提供。Haskell の STM、Clojure の atom/ref/agent、Elixir の OTP はそれぞれ独自の哲学に基づく強力な抽象化です。
 
-**マルチパラダイム静的型付け（Scala, Rust, TypeScript）**: ライブラリベースで FP 並行処理を実現。Scala の cats-effect と Rust の tokio はエコシステムの成熟度が高く、TypeScript は Promise ベースの軽量な抽象化を提供します。
+**マルチパラダイム静的型付け（Scala, Kotlin, Rust, TypeScript）**: ライブラリベースで FP 並行処理を実現。Scala の cats-effect と Rust の tokio はエコシステムの成熟度が高く、Kotlin は言語組み込みのコルーチンと構造化並行性の上に Arrow の `parMap` / `parZip` / STM を載せ、TypeScript は Promise ベースの軽量な抽象化を提供します。
 
 **OOP + FP（Java, C#, Python, Ruby）**: 既存の並行処理基盤（Thread, Task, asyncio）の上に FP パターンを構築。Java の VirtualThread や C# の async/await など、プラットフォームの進化を活用しつつ、Ref や parSequence の FP 的インターフェースをラップします。
 
@@ -859,11 +1088,11 @@ Java 21 の VirtualThread により、従来の OS スレッドの制約から�
 
 ## 10.10 まとめ
 
-本章では、11 言語の並行処理モデルを **Ref**（共有状態）、**parSequence**（並列実行）、**Fiber**（軽量スレッド）の 3 つの柱で比較しました。
+本章では、12 言語の並行処理モデルを **Ref**（共有状態）、**parSequence**（並列実行）、**Fiber**（軽量スレッド）の 3 つの柱で比較しました。
 
 **共通する本質**: すべての言語が「純粋関数でロジックを記述し、副作用として並行制御を行う」という FP の原則に従っています。`topCities` のような純粋関数を並行処理から分離することで、テスト容易性と保守性を確保しています。
 
-**根本的な違い**: 安全性の保証レベルに最大の差があります。Rust は所有権システムでコンパイル時にデータ競合を排除し、Haskell/Clojure は STM でランタイムにトランザクション整合性を保証します。一方、多くの言語は規約ベースで安全性を担保しており、開発者の責任に委ねられます。
+**根本的な違い**: 安全性の保証レベルに最大の差があります。Rust は所有権システムでコンパイル時にデータ競合を排除し、Haskell/Clojure（ライブラリとしては Kotlin の Arrow STM も）は STM でランタイムにトランザクション整合性を保証します。Kotlin は構造化並行性により、コルーチンの寿命とキャンセルをスコープで管理します。一方、多くの言語は規約ベースで安全性を担保しており、開発者の責任に委ねられます。
 
 **並行モデルの多様性**: 共有状態、STM、アクター、チャネルという 4 つのモデルは相互排他ではなく、Clojure のように複数のモデルを言語レベルで提供する言語もあります。プロジェクトの要件に応じて適切なモデルを選択することが重要です。
 
