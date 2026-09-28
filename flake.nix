@@ -19,6 +19,7 @@
           # App language environments
           scala = import ./ops/nix/environments/scala/shell.nix { inherit packages; };
           java = import ./ops/nix/environments/java/shell.nix { inherit packages; };
+          kotlin = import ./ops/nix/environments/kotlin/shell.nix { inherit packages; };
           rust = import ./ops/nix/environments/rust/shell.nix { inherit packages; };
           haskell = import ./ops/nix/environments/haskell/shell.nix { inherit packages; };
           clojure = import ./ops/nix/environments/clojure/shell.nix { inherit packages; };
