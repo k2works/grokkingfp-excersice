@@ -17,6 +17,16 @@
 | テストコード | `app/kotlin/src/test/kotlin/ch01`〜`ch12` |
 | 言語グループ | マルチパラダイム（Scala / Rust / TypeScript と同グループ） |
 
+### 進捗
+
+| イテレーション | 状態 | 備考 |
+|--------------|------|------|
+| 0: 環境構築 | 完了 | Kotlin 2.4.20 / Arrow 2.2.3 / kotlinx.coroutines 1.11.0 / Kotest 6.2.5 |
+| 1: Part I・II | 完了 | |
+| 2: Part III・IV | 完了 | |
+| 3: Part V・VI + 統合 | 完了 | 任意節の STM（10.10）は見送り |
+| 4: 統合比較記事 | 未着手（任意） | |
+
 ### スコープ外
 
 - 11 言語統合比較記事（`docs/article/all/`）への Kotlin 追記は本計画の完了後に別計画で扱う（「イテレーション 4（任意）」参照）
@@ -37,7 +47,7 @@
 | テスト | Kotest（`kotest-runner-junit5`、`kotest-assertions-core`） | 単体テスト | 全章 |
 | PBT | Kotest Property（`kotest-property`） | プロパティベーステスト | Part VI |
 
-ライブラリのバージョンはイテレーション 0 の環境構築時に最新の安定版を確認して `build.gradle.kts` に固定します。
+ライブラリのバージョンはイテレーション 0 の環境構築時に最新の安定版を確認し、`build.gradle.kts` に固定しました（Kotlin 2.4.20、Arrow 2.2.3、kotlinx.coroutines 1.11.0、Kotest 6.2.5）。
 
 ### 採用理由
 
@@ -227,10 +237,10 @@ app/kotlin/
 
 #### イテレーション 1 完了条件
 
-- [ ] `part-1.md`、`part-2.md` が共通テンプレートに準拠している
-- [ ] ch01〜ch05 のテストがすべてパス
-- [ ] 記事中のコードとサンプルコードが一致している
-- [ ] 各 Part に演習問題（3〜4 問）と解答がある
+- [x] `part-1.md`、`part-2.md` が共通テンプレートに準拠している
+- [x] ch01〜ch05 のテストがすべてパス
+- [x] 記事中のコードとサンプルコードが一致している
+- [x] 各 Part に演習問題（3〜4 問）と解答がある
 
 **リスク**: Low
 
@@ -300,9 +310,9 @@ app/kotlin/
 
 #### イテレーション 2 完了条件
 
-- [ ] `part-3.md`、`part-4.md` が共通テンプレートに準拠している
-- [ ] ch06〜ch09 のテストがすべてパス（コルーチンは `runTest` / Kotest のコルーチン対応で検証）
-- [ ] 「Scala との対応」表で cats-effect IO と suspend の違いを説明している
+- [x] `part-3.md`、`part-4.md` が共通テンプレートに準拠している
+- [x] ch06〜ch09 のテストがすべてパス（コルーチンは `runTest` / Kotest のコルーチン対応で検証）
+- [x] 「Scala との対応」表で cats-effect IO と suspend の違いを説明している
 
 **リスク**: Medium（IO モナドの表現が Scala と大きく異なるため、原著の説明との橋渡しに紙幅が必要）
 
@@ -375,10 +385,10 @@ app/kotlin/
 
 #### イテレーション 3 完了条件
 
-- [ ] `part-5.md`、`part-6.md`、`index.md` が完成している
-- [ ] ch01〜ch12 のテストがすべてパスし、CI の Kotlin ジョブが緑
-- [ ] `mkdocs build` が警告なしで成功する
-- [ ] README とトップページに Kotlin 版が掲載されている
+- [x] `part-5.md`、`part-6.md`、`index.md` が完成している
+- [x] ch01〜ch12 のテストがすべてパスし、CI の Kotlin ジョブが緑
+- [x] `mkdocs build` が警告なしで成功する
+- [x] README とトップページに Kotlin 版が掲載されている
 
 ---
 
