@@ -4,7 +4,7 @@
 
 関数型プログラミング（FP）は「何をするか（WHAT）」を宣言的に記述するパラダイムです。命令型プログラミングが「どうやるか（HOW）」をステップバイステップで指示するのに対し、FP はデータの変換を値と関数の組み合わせで表現します。
 
-本章では、11 言語での実装を横断的に比較し、以下を明らかにします：
+本章では、12 言語での実装を横断的に比較し、以下を明らかにします：
 
 - 命令型と関数型の本質的な違い
 - 各言語が FP をどのレベルでサポートしているか
@@ -35,7 +35,7 @@ imp -[hidden]right-> fp
 
 ## 1.2 共通の本質：HOW vs WHAT
 
-11 言語すべてで共通しているのは、「命令型は手順を記述し、関数型は結果を記述する」という対比です。
+12 言語すべてで共通しているのは、「命令型は手順を記述し、関数型は結果を記述する」という対比です。
 
 ワードスコア計算（文字列の長さを返す）を例にとります。
 
@@ -79,7 +79,7 @@ public static int wordScore(String word) {
 
 ## 1.3 言語別実装比較：ワードスコア計算
 
-11 言語で同じ問題（ワードスコア＝文字列の長さ）を命令型と関数型の両方で実装した比較です。
+12 言語で同じ問題（ワードスコア＝文字列の長さ）を命令型と関数型の両方で実装した比較です。
 
 ### 関数型ファースト言語
 
@@ -163,6 +163,27 @@ def wordScore(word: String): Int = word.length()
 ```
 
 Scala は命令型の例として Java コードを流用し、自身は関数型スタイルで示します。`def` + `=` による式ベースの定義が基本です。
+
+</details>
+
+<details>
+<summary>Kotlin</summary>
+
+```kotlin
+// 命令型（var で状態を変更しながら数える）
+fun calculateScoreImperative(word: String): Int {
+    var score = 0
+    for (c in word) {
+        score++
+    }
+    return score
+}
+
+// 関数型（式本体関数）
+fun wordScore(word: String): Int = word.length
+```
+
+Kotlin は命令型・関数型の両方を自言語で示します。クラスに属さないトップレベル関数と、`=` の右側に式を 1 つだけ書く式本体関数により、Java の `public static` や `return` を書かずに純粋関数をそのまま表現できます。
 
 </details>
 
@@ -309,18 +330,18 @@ Ruby は型注釈がなく最もシンプルな構文です。最後の式が暗
 
 ### 命令型コードの示し方に表れる設計思想
 
-11 言語を横断すると、命令型コードの示し方に 2 つのパターンが見えてきます：
+12 言語を横断すると、命令型コードの示し方に 2 つのパターンが見えてきます：
 
 | パターン | 言語 | 意味 |
 |---------|------|------|
-| **自言語で命令型を書く** | Java, Rust, Python, TypeScript, Ruby, F#, C#, Clojure | 「この言語では命令型も書ける」 |
+| **自言語で命令型を書く** | Java, Kotlin, Rust, Python, TypeScript, Ruby, F#, C#, Clojure | 「この言語では命令型も書ける」 |
 | **Java コードで命令型を示す** | Scala, Haskell, Elixir | 「この言語では命令型は本来的でない」 |
 
 Haskell・Scala・Elixir が命令型の例に Java を使うのは、これらの言語が FP を「追加機能」ではなく「デフォルトのスタイル」として位置づけていることの表れです。
 
 ### 関数定義の構文比較
 
-同じ `increment` 関数を 11 言語で定義した比較です：
+同じ `increment` 関数を 12 言語で定義した比較です：
 
 | 言語 | 構文 | 式ベース |
 |------|------|---------|
@@ -329,6 +350,7 @@ Haskell・Scala・Elixir が命令型の例に Java を使うのは、これら�
 | Elixir | `def increment(x), do: x + 1` | Yes |
 | F# | `let increment x = x + 1` | Yes |
 | Scala | `def increment(x: Int): Int = x + 1` | Yes |
+| Kotlin | `fun increment(x: Int): Int = x + 1` | Yes（式本体関数） |
 | Rust | `fn increment(x: i32) -> i32 { x + 1 }` | Yes（ブロック式） |
 | TypeScript | `const increment = (x: number): number => x + 1` | Yes（アロー関数） |
 | Java | `public static int increment(int x) { return x + 1; }` | No |
@@ -336,7 +358,7 @@ Haskell・Scala・Elixir が命令型の例に Java を使うのは、これら�
 | Python | `def increment(x: int) -> int: return x + 1` | No |
 | Ruby | `def increment(x) = x + 1` | Yes（Ruby 3.0+） |
 
-**発見**: 11 言語中 9 言語が式ベースの関数定義をサポートしています。`return` 文が必須なのは Java と Python のみです。式ベースの設計は関数型スタイルとの親和性が高く、言語進化の方向性を示しています。
+**発見**: 12 言語中 10 言語が式ベースの関数定義をサポートしています。`return` 文が必須なのは Java と Python のみです。式ベースの設計は関数型スタイルとの親和性が高く、言語進化の方向性を示しています。
 
 ### 不変バインディングの比較
 
@@ -347,6 +369,7 @@ Haskell・Scala・Elixir が命令型の例に Java を使うのは、これら�
 | Elixir | `x = ...` | なし（再束縛は別概念） | 不変 |
 | F# | `let x = ...` | `let mutable x = ...` | 不変 |
 | Scala | `val x = ...` | `var x = ...` | 不変（慣習） |
+| Kotlin | `val x = ...` | `var x = ...` | 不変（慣習） |
 | Rust | `let x = ...` | `let mut x = ...` | 不変 |
 | TypeScript | `const x = ...` | `let x = ...` | 選択 |
 | Java | `final var x = ...` | `var x = ...` | 可変 |
@@ -354,7 +377,95 @@ Haskell・Scala・Elixir が命令型の例に Java を使うのは、これら�
 | Python | `Final[int]` | `x = ...` | 可変 |
 | Ruby | `x.freeze` | `x = ...` | 可変 |
 
-**発見**: FP ファースト言語（Haskell, Clojure, Elixir, F#）とマルチパラダイム言語の一部（Rust）は不変がデフォルトです。OOP ファースト言語（Java, C#, Python, Ruby）は可変がデフォルトであり、不変にするには追加のキーワードや呼び出しが必要です。
+**発見**: FP ファースト言語（Haskell, Clojure, Elixir, F#）とマルチパラダイム言語の一部（Rust）は不変がデフォルトです。Scala と Kotlin は `val` / `var` を同じ字数で選べる設計で、`val` を使うことが慣習として推奨されています。OOP ファースト言語（Java, C#, Python, Ruby）は可変がデフォルトであり、不変にするには追加のキーワードや呼び出しが必要です。
+
+### レーダーチャートで見る 12 言語
+
+第 1 章で比較した関数定義の構文、不変バインディング、命令型コードの示し方を 5 つの軸で数値化し、言語グループごとにレーダーチャートで比較します。
+
+| 評価軸 | 5 点 | 3 点 | 1 点 |
+|--------|------|------|------|
+| 式ベース定義 | すべての関数定義が式（`return` 不要） | 式形式の定義が一部の書き方に限られる | `return` 文が必須 |
+| 不変デフォルト | 不変がデフォルト、または不変のみ | 不変と可変を同じ手間で選択 | 可変がデフォルトで、不変には追加の記述が必要 |
+| 構文の簡潔さ | `increment` がキーワードと式だけで書ける | 型注釈や記号がやや多い | 修飾子・ブロック・`return` が必要 |
+| 静的型検査 | 静的型付けで型推論も強力 | 静的型付けだが注釈が多い、または抜け道がある | 動的型付け |
+| FP の既定度 | 関数型が既定のスタイル（命令型は不自然） | 命令型と関数型を同程度に自然に書ける | OOP が主体で、FP は後付けの機能 |
+
+| 言語 | 式ベース定義 | 不変デフォルト | 構文の簡潔さ | 静的型検査 | FP の既定度 |
+|------|:---:|:---:|:---:|:---:|:---:|
+| Haskell | 5 | 5 | 5 | 5 | 5 |
+| Clojure | 5 | 5 | 4 | 1 | 4 |
+| Elixir | 5 | 5 | 4 | 1 | 5 |
+| F# | 5 | 5 | 5 | 5 | 4 |
+| Scala | 5 | 4 | 4 | 4 | 4 |
+| Kotlin | 4 | 4 | 4 | 4 | 3 |
+| Rust | 5 | 5 | 3 | 5 | 3 |
+| TypeScript | 4 | 3 | 3 | 3 | 3 |
+| Java | 1 | 1 | 1 | 3 | 1 |
+| C# | 3 | 1 | 3 | 3 | 2 |
+| Python | 1 | 1 | 3 | 2 | 2 |
+| Ruby | 5 | 1 | 5 | 1 | 2 |
+
+```mermaid
+---
+config:
+  radar:
+    curveTension: 0
+---
+radar-beta
+  title 関数型ファースト言語
+  axis a1["式ベース定義"], a2["不変デフォルト"], a3["構文の簡潔さ"], a4["静的型検査"], a5["FP の既定度"]
+  curve haskell["Haskell"]{5, 5, 5, 5, 5}
+  curve clojure["Clojure"]{5, 5, 4, 1, 4}
+  curve elixir["Elixir"]{5, 5, 4, 1, 5}
+  curve fsharp["F#"]{5, 5, 5, 5, 4}
+  max 5
+  min 0
+```
+
+関数型ファースト言語は式ベース定義と不変デフォルトで満点が揃い、差が出るのは静的型検査の軸だけです。Clojure と Elixir は動的型付けのため、型の軸で Haskell・F# と大きく分かれます。
+
+```mermaid
+---
+config:
+  radar:
+    curveTension: 0
+---
+radar-beta
+  title マルチパラダイム言語
+  axis a1["式ベース定義"], a2["不変デフォルト"], a3["構文の簡潔さ"], a4["静的型検査"], a5["FP の既定度"]
+  curve scala["Scala"]{5, 4, 4, 4, 4}
+  curve kotlin["Kotlin"]{4, 4, 4, 4, 3}
+  curve rust["Rust"]{5, 5, 3, 5, 3}
+  curve typescript["TypeScript"]{4, 3, 3, 3, 3}
+  max 5
+  min 0
+```
+
+Scala と Kotlin は `val` / `var` と「名前: 型」の構文を共有し、ほぼ同じ形になります。Kotlin は式本体関数とブロック本体（`return` 必須）を使い分けるため、式ベース定義で Scala に 1 点及びません。Rust は不変デフォルトと型検査で突出し、TypeScript はすべての軸が中程度です。
+
+```mermaid
+---
+config:
+  radar:
+    curveTension: 0
+---
+radar-beta
+  title OOP + FP ライブラリ言語
+  axis a1["式ベース定義"], a2["不変デフォルト"], a3["構文の簡潔さ"], a4["静的型検査"], a5["FP の既定度"]
+  curve java["Java"]{1, 1, 1, 3, 1}
+  curve csharp["C#"]{3, 1, 3, 3, 2}
+  curve python["Python"]{1, 1, 3, 2, 2}
+  curve ruby["Ruby"]{5, 1, 5, 1, 2}
+  max 5
+  min 0
+```
+
+OOP + FP ライブラリ言語はいずれも可変がデフォルトで、不変デフォルトの軸が 1 に揃います。Ruby は最後の式が戻り値になる設計で式ベース定義と簡潔さが高く、C# は `=>` 式形式メンバーの分だけ Java より外側に広がります。
+
+全体として、関数型ファーストから OOP + FP ライブラリ言語へ移るにつれてチャートの面積が小さくなり、パラダイムポジションの違いがそのまま形に表れます。一方、式ベース定義の軸では Ruby や Rust のようにグループをまたいで高得点の言語があり、式ベースの設計が言語進化の共通の方向であることが分かります。
+
+> スコアは本シリーズの実装と各言語版の記事に基づく相対評価（1〜5）であり、言語の優劣を示すものではありません。
 
 ---
 
@@ -384,7 +495,7 @@ wordScore word = length word  -- 定義
 
 ### Clojure：S 式とホモイコニシティ
 
-Clojure は Lisp 方言であり、前置記法の S 式でコードを表現します。他の 10 言語とは構文が根本的に異なります。
+Clojure は Lisp 方言であり、前置記法の S 式でコードを表現します。他の 11 言語とは構文が根本的に異なります。
 
 ```clojure
 ;; S 式: (関数 引数1 引数2 ...)
@@ -425,6 +536,20 @@ let x = 5;        // イミュータブル（デフォルト）
 let mut y = 5;    // ミュータブル（明示的に指定）
 y = 6;            // OK
 ```
+
+### Kotlin：トップレベル関数と式本体関数
+
+Kotlin は Java と同じ JVM 上で動きながら、関数をクラスに属さないトップレベルに定義できます。`=` の右側に式を 1 つだけ書く式本体関数は `return` や途中の代入を書く余地がないため、副作用が紛れ込みにくい形です。Part I・II では Arrow を使わず、標準ライブラリだけで FP の考え方を確認します。
+
+```kotlin
+// トップレベル関数 + 式本体関数（クラスも return も不要）
+fun increment(x: Int): Int = x + 1
+
+// 文字列テンプレート
+fun greet(name: String): String = "Hello, $name!"
+```
+
+なお、`val` は「参照を差し替えられない」ことを保証するだけで、参照先のオブジェクトの不変性までは保証しません。この区別は Kotlin 版記事の第 2 章（2.3 節）で `List` と `MutableList` を使って確認しています。
 
 ### F#・TypeScript・C#：第 1 章からの高度な機能
 
@@ -471,6 +596,7 @@ rectangle "FP ファースト" #PaleGreen {
 
 rectangle "マルチパラダイム" #LightBlue {
   card "Scala" as scala
+  card "Kotlin" as kotlin
   card "Rust" as rust
   card "TypeScript" as ts
 }
@@ -494,7 +620,7 @@ scala -[hidden]right-> java
 | 目的 | 推奨言語 | 理由 |
 |------|---------|------|
 | FP の本質を深く理解したい | Haskell | 純粋性が型で強制され、FP の概念が最も明確 |
-| 実務で FP を導入したい（JVM） | Scala, Clojure | 既存 Java 資産と共存可能 |
+| 実務で FP を導入したい（JVM） | Scala, Kotlin, Clojure | 既存 Java 資産と共存可能 |
 | 実務で FP を導入したい（.NET） | F# | .NET エコシステムとの高い親和性 |
 | 並行処理を重視したい | Elixir | OTP による堅牢な並行処理モデル |
 | 安全性とパフォーマンスの両立 | Rust | 所有権システムによるゼロコスト抽象化 |
@@ -507,8 +633,8 @@ scala -[hidden]right-> java
 
 ### 言語横断的な学び
 
-1. **HOW vs WHAT**: 命令型は手順を、関数型は結果を記述する。この対比は 11 言語すべてで共通
-2. **式ベース**: 11 言語中 9 言語が式ベースの関数定義をサポート。`return` が必須なのは Java と Python のみ
+1. **HOW vs WHAT**: 命令型は手順を、関数型は結果を記述する。この対比は 12 言語すべてで共通
+2. **式ベース**: 12 言語中 10 言語が式ベースの関数定義をサポート（Kotlin は式本体関数）。`return` が必須なのは Java と Python のみ
 3. **不変性のデフォルト**: FP ファースト言語は不変がデフォルト、OOP 言語は可変がデフォルト
 4. **ライブラリ依存度**: Java/C#/TypeScript は FP ライブラリなしでは表現力が限定的
 5. **言語固有の強み**: Haskell の遅延評価、Clojure の S 式、Elixir のパターンマッチ、Rust の所有権は各言語の FP アプローチに独自の色を与えている
@@ -522,6 +648,7 @@ scala -[hidden]right-> java
 | | Elixir | [Part I](../elixir/part-1.md) |
 | | F# | [Part I](../fsharp/part-1.md) |
 | マルチパラダイム | Scala | [Part I](../scala/part-1.md) |
+| | Kotlin | [Part I](../kotlin/part-1.md) |
 | | Rust | [Part I](../rust/part-1.md) |
 | | TypeScript | [Part I](../typescript/part-1.md) |
 | OOP + FP | Java | [Part I](../java/part-1.md) |
