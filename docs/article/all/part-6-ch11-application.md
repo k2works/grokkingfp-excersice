@@ -1,10 +1,10 @@
-# 第11章: 実践アプリケーション — 11言語比較
+# 第11章: 実践アプリケーション — 12言語比較
 
 ## 11.1 はじめに
 
 第 10 章までで、関数型プログラミングの基礎から並行処理まで幅広い概念を学んできました。本章では、これまでのすべての概念を統合し、**実践的なアプリケーション**を構築します。
 
-題材は **TravelGuide**（旅行ガイド）アプリケーションです。外部データソースからアトラクション、アーティスト、映画の情報を取得し、旅行ガイドを生成します。この過程で、**DataAccess の抽象化（DI パターン）**、**Resource によるリソース管理**、**キャッシュ**、**SearchReport による可観測性**という、FP アプリケーション設計の 4 つの柱を 11 言語で比較します。
+題材は **TravelGuide**（旅行ガイド）アプリケーションです。外部データソースからアトラクション、アーティスト、映画の情報を取得し、旅行ガイドを生成します。この過程で、**DataAccess の抽象化（DI パターン）**、**Resource によるリソース管理**、**キャッシュ**、**SearchReport による可観測性**という、FP アプリケーション設計の 4 つの柱を 12 言語（Haskell、Clojure、Elixir、F#、Scala、Kotlin、Rust、TypeScript、Java、C#、Python、Ruby）で比較します。
 
 ---
 
@@ -28,7 +28,7 @@
 
 ---
 
-## 11.3 ドメインモデル — 全 11 言語比較
+## 11.3 ドメインモデル — 全 12 言語比較
 
 ### 代表 3 言語の詳細比較
 
@@ -72,7 +72,26 @@ pub struct Attraction { pub name: String, pub description: Option<String>, pub l
 pub struct TravelGuide { pub attraction: Attraction, pub subjects: Vec<String>, pub search_report: SearchReport }
 ```
 
-### 全 11 言語のドメインモデル定義方式
+### 全 12 言語のドメインモデル定義方式
+
+<details>
+<summary>Kotlin — data class + value class + sealed interface</summary>
+
+```kotlin
+@JvmInline
+value class LocationId(val value: String)
+
+data class Location(val id: LocationId, val name: String, val population: Int)
+data class Attraction(val name: String, val description: String?, val location: Location)
+
+sealed interface PopCultureSubject { val name: String }
+data class Artist(override val name: String, val followers: Int) : PopCultureSubject
+data class Movie(override val name: String, val boxOffice: Int) : PopCultureSubject
+
+data class Guide(val attraction: Attraction, val subjects: List<PopCultureSubject>)
+```
+
+</details>
 
 <details>
 <summary>Java — record + sealed interface</summary>
@@ -203,6 +222,7 @@ TravelGuide = Struct.new(:attraction, :subjects, :search_report, keyword_init: t
 | 言語 | 手段 | 保証レベル |
 |------|------|-----------|
 | Scala | `case class` (デフォルトで `val`) | コンパイル時 |
+| Kotlin | `data class`（`val` プロパティ）+ `value class` | コンパイル時 |
 | Haskell | すべての値がイミュータブル | 言語レベル |
 | Rust | デフォルトがイミュータブル (`mut` 明示) | コンパイル時 |
 | Java | `record` | コンパイル時 |
@@ -216,7 +236,7 @@ TravelGuide = Struct.new(:attraction, :subjects, :search_report, keyword_init: t
 
 ---
 
-## 11.4 DataAccess の抽象化 — 関数型 DI の全 11 言語比較
+## 11.4 DataAccess の抽象化 — 関数型 DI の全 12 言語比較
 
 ### 代表 3 言語の詳細比較
 
@@ -256,7 +276,20 @@ pub trait DataAccess: Send + Sync {
 }
 ```
 
-### 全 11 言語の DataAccess 抽象化
+### 全 12 言語の DataAccess 抽象化
+
+<details>
+<summary>Kotlin — interface + suspend fun</summary>
+
+```kotlin
+interface DataAccess {
+    suspend fun findAttractions(name: String, ordering: AttractionOrdering, limit: Int): List<Attraction>
+    suspend fun findArtistsFromLocation(locationId: LocationId, limit: Int): List<Artist>
+    suspend fun findMoviesAboutLocation(locationId: LocationId, limit: Int): List<Movie>
+}
+```
+
+</details>
 
 <details>
 <summary>Java — interface</summary>
@@ -378,6 +411,7 @@ end
 | 言語 | 抽象化手段 | エフェクト型 | エラー表現 |
 |------|-----------|-------------|-----------|
 | Scala | `trait` | `IO[A]` | `IO[List[A]]`（IO 内で例外） |
+| Kotlin | `interface` + `suspend fun` | `suspend fun -> A` | 例外（呼び出し側で `Either.catch` により捕捉） |
 | Haskell | レコード型 | `IO a` | `IO (Either String [a])` |
 | Rust | `#[async_trait] trait` | `async fn -> T` | `Result<Vec<A>, String>` |
 | Java | `interface` | `IO<A>` | `IO<List<A>>` |
@@ -389,11 +423,11 @@ end
 | Elixir | `@behaviour` | 直接値 | `{:ok, v}` / `{:error, msg}` |
 | Ruby | `module`（duck typing） | `IO[A]` | `{success: bool, value: A}` |
 
-**注目すべき相違点**: Haskell はレコード型の関数フィールドとしてインターフェースを表現し、TypeScript も同様のアプローチを取ります。一方、Scala、Java、Rust、F#、C# は伝統的なインターフェース/トレイト、Clojure はプロトコル、Elixir はビヘイビアを使用します。表現形式は異なりますが、**「実装の詳細を隠蔽し、テスト時に差し替え可能にする」** という本質は全言語で共通です。
+**注目すべき相違点**: Haskell はレコード型の関数フィールドとしてインターフェースを表現し、TypeScript も同様のアプローチを取ります。一方、Scala、Kotlin、Java、Rust、F#、C# は伝統的なインターフェース/トレイト、Clojure はプロトコル、Elixir はビヘイビアを使用します。表現形式は異なりますが、**「実装の詳細を隠蔽し、テスト時に差し替え可能にする」** という本質は全言語で共通です。
 
 ---
 
-## 11.5 Resource — 安全なリソース管理の全 11 言語比較
+## 11.5 Resource — 安全なリソース管理の全 12 言語比較
 
 ### 代表 3 言語の詳細比較
 
@@ -453,6 +487,7 @@ class Resource(Generic[T]):
 | 言語 | Resource 型 | ネイティブサポート | 特徴 |
 |------|------------|-------------------|------|
 | Scala | `Resource[IO, A]` | cats-effect ライブラリ | for 内包表記で合成可能 |
+| Kotlin | `Resource<A>` | Arrow Fx Coroutines | `resource { install(...) }`、`bind()` で合成、キャンセルでも解放 |
 | Haskell | `bracket` / `ResourceT` | 標準ライブラリ | `bracket acquire release use` |
 | Rust | `Drop` trait（RAII） | 言語レベル | 所有権でスコープ管理 |
 | Java | `Resource<A>` (自作) | `try-with-resources` | `AutoCloseable` との統合 |
@@ -538,6 +573,7 @@ impl DataAccess for StubDataAccess { /* ... */ }
 | 言語 | スタブ実装方式 | 特徴 |
 |------|-------------|------|
 | Scala | 匿名 trait / テスト用 object | `new DataAccess { ... }` |
+| Kotlin | object 式 / 関数を受け取るスタブクラス | `object : DataAccess { ... }` / `TestDataAccess(...)` |
 | Haskell | レコード値の直接構築 | 関数フィールドを差し替え |
 | Rust | Builder パターン + impl | `.with_attractions(...)` チェーン |
 | Java | 匿名クラス / ラムダ | `new DataAccess() { ... }` |
@@ -589,6 +625,28 @@ travelGuideWithReport da name = do
             return $ Just TravelGuide { tgAttraction = a, tgSubjects = ..., tgSearchReport = ... }
 ```
 
+**Kotlin のアプリケーションロジック（`either { }` + `parMap` / `parZip`）:**
+
+```kotlin
+suspend fun guideForAttraction(dataAccess: DataAccess, attraction: Attraction): Guide =
+    parZip(
+        { dataAccess.findArtistsFromLocation(attraction.location.id, 2) },
+        { dataAccess.findMoviesAboutLocation(attraction.location.id, 2) },
+    ) { artists, movies -> Guide(attraction, artists + movies) }
+
+suspend fun travelGuideV3(dataAccess: DataAccess, attractionName: String): Either<SearchReport, Guide> =
+    either {
+        val attractions = Either
+            .catch { dataAccess.findAttractions(attractionName, AttractionOrdering.ByLocationPopulation, 3) }
+            .mapLeft { SearchReport(emptyList(), listOf(it.message ?: it.toString())) }
+            .bind()
+        val results = attractions.parMap { Either.catch { guideForAttraction(dataAccess, it) } }
+        findGoodGuide(results).bind()
+    }
+```
+
+Kotlin 版の `SearchReport` は原著と同じ `badGuides`（スコアが閾値に届かなかったガイド）と `problems`（失敗の理由）を持ちます。各アトラクションのガイド作成を `parMap` で並列に行い、個別の失敗は `Either.catch` で値に変えてから `findGoodGuide` 内の `separateEither()` で振り分けます。
+
 このパターンの共通構造は以下です。
 
 1. アトラクションを検索（失敗 → `None` / `Nothing` を返す）
@@ -602,15 +660,17 @@ travelGuideWithReport da name = do
 
 ### DI パターンの 3 つのアプローチ
 
-11 言語の DataAccess 抽象化は、以下の 3 つのアプローチに分類できます。
+12 言語の DataAccess 抽象化は、以下の 3 つのアプローチに分類できます。
 
 #### アプローチ 1: 型システム統合型
 
 言語の型システムと深く統合され、コンパイル時に実装の完全性が検証されます。
 
-**採用言語**: Scala（trait）、Rust（trait + async_trait）、Java（interface）、F#（abstract type）、C#（interface）
+**採用言語**: Scala（trait）、Kotlin（interface + suspend fun）、Rust（trait + async_trait）、Java（interface）、F#（abstract type）、C#（interface）
 
 **利点**: 実装漏れをコンパイル時に検出、IDE サポートが充実
+
+Kotlin 版は DI コンテナを使わず、`travelGuideV3(dataAccess, name)` のように **関数引数** で DataAccess を渡し、`CachedDataAccess.create(underlying)` のように **コンストラクタ（ファクトリ）引数** でデコレータを重ねます。`dataAccessResource(address, makeDataAccess)` は「接続から DataAccess を作る関数」自体を引数に取るため、本番実装とスタブを同じ Resource の組み立てに差し込めます。
 
 #### アプローチ 2: レコード/オブジェクト型
 
@@ -633,7 +693,7 @@ travelGuideWithReport da name = do
 | 安全性レベル | 言語 | 仕組み |
 |-------------|------|-------|
 | **所有権ベース（最高）** | Rust | RAII + Drop trait。コンパイル時にリソースリークを防止 |
-| **型レベル（高）** | Scala | `Resource[IO, A]` が確実な解放を型で保証 |
+| **型レベル（高）** | Scala, Kotlin | `Resource[IO, A]` / Arrow の `Resource<A>` が確実な解放を保証 |
 | **言語構文（中〜高）** | Java, Python, F#, C# | try-with-resources / with / use / using |
 | **プロセスベース（中〜高）** | Elixir | プロセス終了時に自動クリーンアップ |
 | **規約ベース（低〜中）** | TypeScript, Ruby, Clojure, Haskell | 開発者が明示的に bracket / ensure を使用 |
@@ -645,9 +705,97 @@ travelGuideWithReport da name = do
 | 容易さ | 言語 | 理由 |
 |--------|------|------|
 | **最も容易** | Haskell, TypeScript | レコード/オブジェクトのフィールドを直接構築 |
-| **容易** | Scala, Clojure | 匿名実装 / defrecord |
+| **容易** | Scala, Kotlin, Clojure | 匿名実装 / object 式・名前付き引数のスタブ / defrecord |
 | **標準** | Java, Rust, F#, C#, Elixir | クラス/モジュール実装が必要 |
 | **やや煩雑** | Python, Ruby | ABC / module の実装 + ボイラープレート |
+
+### レーダーチャートで見る 12 言語
+
+本章で比較した DataAccess の抽象化、リソース管理、スタブ、ドメインモデル、エフェクトの表現を 5 つの軸で数値化し、言語グループごとにレーダーチャートで比較します。
+
+| 評価軸 | 5 点 | 3 点 | 1 点 |
+|--------|------|------|------|
+| DI の型安全性 | 実装漏れやシグネチャの不一致をコンパイル時に検出 | 警告やインスタンス化時の検査で検出 | 呼び出すまで検出されない（duck typing） |
+| リソース安全性 | 所有権などで解放漏れを言語が防ぐ | `try-with-resources` / `with` / `using` などの構文で解放 | 開発者が明示的に `bracket` / `ensure` を書く規約に頼る |
+| スタブの容易さ | レコード/オブジェクトを直接構築するだけ | クラス/モジュールの実装が必要 | 抽象クラスの継承など定型コードが多い |
+| 不変性の保証 | すべての値がイミュータブル（言語レベル） | 型検査で不変性を保証するが抜け道がある | 規約やランタイムの `freeze` に頼る |
+| エフェクト明示 | `IO` 型で副作用がシグネチャに現れる | `async` / `Task` / 自作 `IO` などで部分的に現れる | 副作用がシグネチャに現れない |
+
+| 言語 | DI の型安全性 | リソース安全性 | スタブの容易さ | 不変性の保証 | エフェクト明示 |
+|------|:---:|:---:|:---:|:---:|:---:|
+| Haskell | 5 | 2 | 5 | 5 | 5 |
+| Clojure | 2 | 2 | 4 | 5 | 1 |
+| Elixir | 3 | 3 | 3 | 5 | 2 |
+| F# | 5 | 3 | 3 | 4 | 4 |
+| Scala | 5 | 4 | 4 | 4 | 5 |
+| Kotlin | 5 | 4 | 4 | 4 | 4 |
+| Rust | 5 | 5 | 3 | 4 | 4 |
+| TypeScript | 4 | 2 | 5 | 3 | 4 |
+| Java | 5 | 3 | 3 | 4 | 4 |
+| C# | 5 | 3 | 3 | 4 | 4 |
+| Python | 3 | 3 | 2 | 2 | 2 |
+| Ruby | 1 | 2 | 2 | 1 | 3 |
+
+```mermaid
+---
+config:
+  radar:
+    curveTension: 0
+---
+radar-beta
+  title 関数型ファースト言語
+  axis a1["DI の型安全性"], a2["リソース安全性"], a3["スタブの容易さ"], a4["不変性の保証"], a5["エフェクト明示"]
+  curve haskell["Haskell"]{5, 2, 5, 5, 5}
+  curve clojure["Clojure"]{2, 2, 4, 5, 1}
+  curve elixir["Elixir"]{3, 3, 3, 5, 2}
+  curve fsharp["F#"]{5, 3, 3, 4, 4}
+  max 5
+  min 0
+```
+
+関数型ファースト言語は不変性の保証で満点が揃います。Haskell はレコード型 DI と `IO` 型で DI・スタブ・エフェクトの軸も最大ですが、本シリーズの実装では `bracket` を明示的に使う規約ベースのためリソース安全性だけが低くなります。Clojure と Elixir は動的型付けのため、DI の型安全性とエフェクト明示で F# と大きく分かれます。
+
+```mermaid
+---
+config:
+  radar:
+    curveTension: 0
+---
+radar-beta
+  title マルチパラダイム言語
+  axis a1["DI の型安全性"], a2["リソース安全性"], a3["スタブの容易さ"], a4["不変性の保証"], a5["エフェクト明示"]
+  curve scala["Scala"]{5, 4, 4, 4, 5}
+  curve kotlin["Kotlin"]{5, 4, 4, 4, 4}
+  curve rust["Rust"]{5, 5, 3, 4, 4}
+  curve typescript["TypeScript"]{4, 2, 5, 3, 4}
+  max 5
+  min 0
+```
+
+Scala と Kotlin はほぼ同じ形で、Kotlin は `suspend` 修飾子で副作用を示すため、`IO[A]` を値として扱う Scala にエフェクト明示で 1 点及びません。Rust は RAII によりリソース安全性で突出し、TypeScript はオブジェクトリテラルによるスタブの容易さが際立ちます。
+
+```mermaid
+---
+config:
+  radar:
+    curveTension: 0
+---
+radar-beta
+  title OOP + FP ライブラリ言語
+  axis a1["DI の型安全性"], a2["リソース安全性"], a3["スタブの容易さ"], a4["不変性の保証"], a5["エフェクト明示"]
+  curve java["Java"]{5, 3, 3, 4, 4}
+  curve csharp["C#"]{5, 3, 3, 4, 4}
+  curve python["Python"]{3, 3, 2, 2, 2}
+  curve ruby["Ruby"]{1, 2, 2, 1, 3}
+  max 5
+  min 0
+```
+
+Java と C# は interface と `record` により DI の型安全性と不変性で高得点を取り、Kotlin・Scala に近い形になります。Python と Ruby は動的な抽象化とランタイム・規約ベースの不変性のため、全体的に内側に収まります。
+
+全体として、DI の型安全性とエフェクト明示は静的型付けの有無で、不変性の保証はパラダイムポジションで大きく分かれます。一方、リソース安全性はライブラリ（cats-effect、Arrow）や言語機能（RAII）の有無でグループをまたいで差が出る軸であり、Scala と Kotlin の `Resource` はライブラリによって型レベルの安全性を実現した例です。
+
+> スコアは本シリーズの実装と各言語版の記事に基づく相対評価（1〜5）であり、言語の優劣を示すものではありません。
 
 ---
 
@@ -656,6 +804,33 @@ travelGuideWithReport da name = do
 ### Scala — for 内包表記による Resource の合成
 
 Scala の `Resource` は for 内包表記で合成可能であり、複数のリソースを宣言的に扱えます。データベース接続とクエリ実行を一つの式で安全に結合できます。
+
+### Kotlin — suspend + Arrow Resource + MutableStateFlow キャッシュ
+
+Kotlin の DataAccess は `suspend fun` を並べた `interface` で、副作用を伴う処理であることを `suspend` 修飾子で表します。リソース管理には Arrow の `Resource`（`suspend ResourceScope.() -> A` の型エイリアス）を使い、`resource { }` の中で `bind()` を呼ぶだけで、Scala の `for` 内包表記と同じ合成を逐次的なコードで書けます。解放は成功・失敗・キャンセルのいずれでも取得と逆順に実行されます。
+
+```kotlin
+fun connectionResource(address: String): Resource<Connection> = resource {
+    install({ Connection(address) }) { connection, _ -> connection.close() }
+}
+
+fun dataAccessResource(address: String, makeDataAccess: (Connection) -> DataAccess): Resource<DataAccess> =
+    resource {
+        val connection = connectionResource(address).bind()
+        CachedDataAccess.create(makeDataAccess(connection))
+    }
+```
+
+キャッシュは Scala の `Ref[IO, Map[K, V]]` の代わりに、`MutableStateFlow` にイミュータブルな `Map` を持たせ、`update` でアトミックに差し替えます。
+
+```kotlin
+class Cache<K, V> {
+    private val entries = MutableStateFlow<Map<K, V>>(emptyMap())
+
+    suspend fun getOrFetch(key: K, fetch: suspend () -> V): V =
+        entries.value[key] ?: fetch().also { value -> entries.update { it + (key to value) } }
+}
+```
 
 ### Haskell — レコード型 DI の優雅さ
 
@@ -685,7 +860,7 @@ Java 17 の record と sealed interface により、Scala の case class と ADT
 
 | プロジェクト特性 | 推奨アプローチ | 適切な言語 |
 |----------------|-------------|-----------|
-| 大規模エンタープライズ | 型システム統合型 DI | Scala, Java, C#, F# |
+| 大規模エンタープライズ | 型システム統合型 DI | Scala, Kotlin, Java, C#, F# |
 | マイクロサービス | プロセスベース DI | Elixir, Clojure |
 | 高性能システム | 所有権ベースリソース管理 | Rust |
 | 学術/研究 | レコード型 DI | Haskell |
@@ -704,12 +879,12 @@ Java 17 の record と sealed interface により、Scala の case class と ADT
 
 ## 11.11 まとめ
 
-本章では、TravelGuide アプリケーションを題材に、11 言語の FP アプリケーション設計パターンを比較しました。
+本章では、TravelGuide アプリケーションを題材に、12 言語の FP アプリケーション設計パターンを比較しました。
 
 **共通する本質**: すべての言語が「イミュータブルなドメインモデル」「DataAccess の抽象化による DI」「安全なリソース管理」「部分的失敗への対処」という 4 つの柱を共有しています。FP の原則に従えば、どの言語でも同じ設計思想でアプリケーションを構築できます。
 
-**根本的な違い**: DI の表現形式に最大の差があります。Haskell のレコード型 DI は DI フレームワーク不要の最軽量アプローチ、Scala/Java/C# の trait/interface は IDE サポートと型安全性が充実、Clojure/Elixir のプロトコル/ビヘイビアは動的言語の柔軟性を活かします。
+**根本的な違い**: DI の表現形式に最大の差があります。Haskell のレコード型 DI は DI フレームワーク不要の最軽量アプローチ、Scala/Kotlin/Java/C# の trait/interface は IDE サポートと型安全性が充実、Clojure/Elixir のプロトコル/ビヘイビアは動的言語の柔軟性を活かします。
 
-**実践的な教訓**: FP アプリケーション設計では、DI コンテナや複雑なフレームワークは不要です。「インターフェースを引数として受け取る」というシンプルなパターンだけで、テスト容易性、保守性、拡張性のすべてが得られます。これが 11 言語を通じて見えてくる FP の最も重要な実践的価値です。
+**実践的な教訓**: FP アプリケーション設計では、DI コンテナや複雑なフレームワークは不要です。「インターフェースを引数として受け取る」というシンプルなパターンだけで、テスト容易性、保守性、拡張性のすべてが得られます。これが 12 言語を通じて見えてくる FP の最も重要な実践的価値です。
 
-本シリーズの全 12 章を通じて、関数型プログラミングの基礎から実践まで、11 言語の視点から包括的に比較してきました。各言語には固有の強みがありますが、**純粋関数、イミュータブルデータ、型による安全性、宣言的な合成**という FP の核心は普遍です。
+本シリーズの全 12 章を通じて、関数型プログラミングの基礎から実践まで、12 言語の視点から包括的に比較してきました。各言語には固有の強みがありますが、**純粋関数、イミュータブルデータ、型による安全性、宣言的な合成**という FP の核心は普遍です。
