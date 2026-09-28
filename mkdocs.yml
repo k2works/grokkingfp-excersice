@@ -44,7 +44,7 @@ markdown_extensions:
   - attr_list
 
 extra_javascript:
-  - https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js
+  - https://cdn.jsdelivr.net/npm/mermaid@11.17.2/dist/mermaid.min.js
   - docs/assets/js/extra.js
 
 extra:
@@ -62,7 +62,7 @@ exclude_docs: |
 
 nav:
   - Home: index.md
-  - 11言語統合比較:
+  - 12言語統合比較:
       - 目次: all/index.md
       - 第1章 - FP入門: all/part-1-ch01-fp-introduction.md
       - 第2章 - 純粋関数: all/part-1-ch02-pure-functions.md
