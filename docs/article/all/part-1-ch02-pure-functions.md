@@ -2,7 +2,7 @@
 
 ## 2.1 はじめに：純粋関数の価値
 
-純粋関数は関数型プログラミングの最も基本的な構成要素です。本章では、11 言語で純粋関数がどのように定義・保証・テストされるかを横断的に比較し、以下を明らかにします：
+純粋関数は関数型プログラミングの最も基本的な構成要素です。本章では、12 言語で純粋関数がどのように定義・保証・テストされるかを横断的に比較し、以下を明らかにします：
 
 - 純粋関数の共通定義と、言語ごとの保証メカニズムの違い
 - 副作用の扱い方に表れる言語設計思想
@@ -12,7 +12,7 @@
 
 ## 2.2 共通の本質：純粋関数の 2 条件
 
-11 言語すべてで共通する純粋関数の定義は、以下の 2 条件です：
+12 言語すべてで共通する純粋関数の定義は、以下の 2 条件です：
 
 1. **決定性**: 同じ入力には常に同じ出力を返す
 2. **副作用なし**: 外部状態を読み取らず、変更もしない
@@ -81,7 +81,7 @@ static double randomPart(double x) {
 }
 ```
 
-**ここに最大の差異があります**: Haskell では不純な関数の戻り値型が `IO Double` になり、型シグネチャを見るだけで副作用の有無が判明します。他の 10 言語では、型情報だけからは純粋性を判断できません。
+**ここに最大の差異があります**: Haskell では不純な関数の戻り値型が `IO Double` になり、型シグネチャを見るだけで副作用の有無が判明します。他の 11 言語では、型情報だけからは純粋性を判断できません。
 
 ---
 
@@ -172,6 +172,23 @@ static double randomPart(double x) {
 ```
 
 Scala は不純な関数の例を Java コードで示し、「Scala では副作用を避けるのが自然」というメッセージを暗黙に伝えています。
+
+</details>
+
+<details>
+<summary>Kotlin</summary>
+
+```kotlin
+import kotlin.random.Random
+
+/** 不純: 乱数に依存するため、同じ入力でも毎回異なる値を返しうる */
+fun randomPart(x: Double): Double = x * Random.nextDouble()
+
+/** 不純: 呼び出すタイミングによって結果が変わる */
+fun currentTime(): Long = System.currentTimeMillis()
+```
+
+Kotlin は純粋関数も不純な関数も同じ式本体関数（`= 式`）で書けます。式本体で書くことは純粋さの「手がかり」にはなっても「保証」にはならず、乱数生成器やシステム時計という **隠れた入力** は型に表れません。
 
 </details>
 
@@ -296,7 +313,7 @@ Ruby は `puts`（コンソール出力）を副作用として明示する唯�
 
 ## 2.4 ショッピングカート割引：純粋関数による設計
 
-11 言語すべてで、ショッピングカートの割引計算を「不純な設計」と「純粋な設計」の対比で示しています。
+12 言語すべてで、ショッピングカートの割引計算を「不純な設計」と「純粋な設計」の対比で示しています。
 
 ### 問題：不純な設計
 
@@ -345,6 +362,7 @@ public static int getDiscountPercentage(List<String> items) {
 | Elixir | リスト | 言語デフォルトで保証 |
 | F# | `string list` | 言語デフォルトで保証 |
 | Scala | `List[String]` | 標準ライブラリで保証 |
+| Kotlin | `List<String>` | 読み取り専用ビュー（不変は保証しない） |
 | Rust | `&[&str]` | 借用で保証（コピーなし） |
 | TypeScript | `readonly string[]` | コンパイル時に保証 |
 | Java | `List<String>` (Vavr) | ライブラリで保証 |
@@ -352,7 +370,7 @@ public static int getDiscountPercentage(List<String> items) {
 | Python | `list[str]` | 保証なし（慣習に依存） |
 | Ruby | `Array` | 保証なし（`freeze` で部分保証） |
 
-### 11 言語の全実装
+### 12 言語の全実装
 
 <details>
 <summary>Haskell</summary>
@@ -373,7 +391,7 @@ calculateDiscount price items =
 <details>
 <summary>Clojure</summary>
 
-Clojure は他の 10 言語と異なり、第 1 章（1.8）でショッピングカートを扱っています。関数型スタイルの対比はありますが、"Book" 割引パターンは使用していません。
+Clojure は他の 11 言語と異なり、第 1 章（1.8）でショッピングカートを扱っています。関数型スタイルの対比はありますが、"Book" 割引パターンは使用していません。
 
 </details>
 
@@ -419,6 +437,25 @@ object ShoppingCart {
     if (items.contains("Book")) 5 else 0
 }
 ```
+
+</details>
+
+<details>
+<summary>Kotlin</summary>
+
+```kotlin
+/** Book が含まれていれば 5%、そうでなければ 0% の割引率を返す */
+fun getDiscountPercentage(items: List<String>): Int =
+    if ("Book" in items) 5 else 0
+
+// テスト: plus（+）は新しいリストを作成し、元のカートは変わらない
+val cart1 = listOf("Apple")
+val cart2 = cart1 + "Book"
+getDiscountPercentage(cart1) shouldBe 0
+getDiscountPercentage(cart2) shouldBe 5
+```
+
+Kotlin の `if` は式なので三項演算子なしで値を返せます。`"Book" in items` は `items.contains("Book")` の演算子版です。ただし `List<String>` は読み取り専用のビューであり、実体が `MutableList` なら外部からの変更が見えてしまうため、`+` / `-` で新しいリストを作る規律で不変性を保ちます。
 
 </details>
 
@@ -571,7 +608,7 @@ public static int GetTipPercentageMatch(Seq<string> names) =>
     };
 ```
 
-**3. if-else チェーン**（Scala, Java, Elixir, Python, TypeScript, Ruby）:
+**3. if-else チェーン**（Scala, Kotlin, Java, Elixir, Python, TypeScript, Ruby）:
 
 ```scala
 def getTipPercentage(names: List[String]): Int =
@@ -580,12 +617,22 @@ def getTipPercentage(names: List[String]): Int =
   else 0
 ```
 
+```kotlin
+// Kotlin: 引数なしの when で if-else の連鎖を 1 つの式として書く
+fun getTipPercentage(names: List<String>): Int =
+    when {
+        names.size > 5 -> 20
+        names.isNotEmpty() -> 10
+        else -> 0
+    }
+```
+
 **発見**: Rust の範囲パターン `1..=5` は、if-else の連鎖を排除して意図を最も明確に伝えます。F# と C# もパターンマッチ版を併記しており、「パターンマッチは条件分岐の関数型的表現である」ことを示唆しています。
 
 > **Clojure の例外**: Clojure は第 2 章にチップ計算を含みません。代わりに給与計算システムやデータバリデーションなど、より実践的な例題を扱います。
 
 <details>
-<summary>11 言語の全実装</summary>
+<summary>12 言語の全実装</summary>
 
 | 言語 | 分岐スタイル | 特徴 |
 |------|------------|------|
@@ -594,6 +641,7 @@ def getTipPercentage(names: List[String]): Int =
 | F# | `match` + `when` ガード | パターンマッチ版を併記 |
 | C# | `switch` 式 | `> 5 =>` で関係パターン |
 | Scala | if-else（式） | 式として値を返す |
+| Kotlin | 引数なし `when`（式） | if-else の連鎖を式本体関数 1 つで表現 |
 | Elixir | `cond` | 複数条件の Elixir イディオム |
 | Java | if-else（文） | `return` が各行に必要 |
 | Python | if-elif-else | 最もシンプルな構文 |
@@ -684,6 +732,27 @@ let ``increment は数値を1増やす`` () =
 ```
 
 F# のバックティック記法（` `` `` `）で日本語テスト名を自然に書ける点が特徴です。
+
+</details>
+
+<details>
+<summary>Kotlin（Kotest）</summary>
+
+```kotlin
+class IntroKotlinTest : FunSpec({
+
+    context("基本的な純粋関数") {
+        test("increment は入力に 1 を加える") {
+            increment(0) shouldBe 1
+            increment(6) shouldBe 7
+            increment(-1) shouldBe 0
+            increment(Int.MAX_VALUE - 1) shouldBe Int.MAX_VALUE
+        }
+    }
+})
+```
+
+Kotlin は Kotest の `FunSpec` スタイルで、`context` によるグループ化と日本語のテスト名を使います。`shouldBe` は中置関数（infix function）で、`実際の値 shouldBe 期待値` と英文のように読めます。
 
 </details>
 
@@ -806,7 +875,7 @@ assert(score1 == score2)         // true
 
 ## 2.8 比較分析：純粋性の保証スペクトラム
 
-11 言語を「純粋性の保証レベル」で分類すると、明確なスペクトラムが見えます。
+12 言語を「純粋性の保証レベル」で分類すると、明確なスペクトラムが見えます。
 
 ```plantuml
 @startuml
@@ -828,6 +897,7 @@ rectangle "ライブラリ補助" #LightBlue {
   card "Java + Vavr\nList" as ja
   card "C# + LE\nSeq" as cs
   card "TypeScript + fp-ts\nreadonly" as ts
+  card "Kotlin\n読み取り専用 List" as kt
 }
 
 rectangle "慣習" #LightYellow {
@@ -852,9 +922,98 @@ ja -[hidden]right-> sc
 | **ライブラリ補助** | Java + Vavr | `io.vavr.collection.List` でイミュータブルリスト | 中 |
 | | C# + LanguageExt | `Seq<T>` でイミュータブルシーケンス | 中 |
 | | TypeScript + fp-ts | `readonly` + `ReadonlyArray` で型レベル保証 | 中 |
+| | Kotlin | 標準の読み取り専用 `List` + `val`（ビューであり不変は保証しない） | 中 |
 | **慣習** | Scala | `val` の使用が慣習だが `var` も自由 | 低 |
 | | Python | 型ヒントは実行時に無視される | 低 |
 | | Ruby | `freeze` はオプションで不完全 | 低 |
+
+### レーダーチャートで見る 12 言語
+
+純粋関数と副作用の扱いについて、5 つの評価軸で 12 言語を相対評価します。保証スペクトラムの表を、分岐の書き方やテスト支援まで含めた多面的な比較に広げたものです。
+
+| 評価軸 | 5 点 | 3 点 | 1 点 |
+|--------|------|------|------|
+| 純粋性の型表現 | 副作用の有無が型シグネチャに必ず表れる（`IO`） | 可変参照など副作用の一部が型に表れる | 型から純粋性を判断できない |
+| 不変性の既定 | 言語全体でデータがデフォルト不変 | 読み取り専用型やライブラリで不変を補う | 不変性は開発者の慣習に依存 |
+| 式指向の分岐 | ガードやパターンマッチで分岐全体が 1 つの式 | if / when などが式として値を返す | 文ベースの分岐で各行に `return` が必要 |
+| テスト支援 | 性質ベーステストまで本章で示す | 標準的な単体テストフレームワーク | インライン検証などの最小限の確認 |
+| 学習コスト | 既存の知識でほぼ書ける（低コスト） | 新しい概念がいくつか必要 | 独自の概念の習得が前提（高コスト） |
+
+| 言語 | 純粋性の型表現 | 不変性の既定 | 式指向の分岐 | テスト支援 | 学習コスト |
+|------|:---:|:---:|:---:|:---:|:---:|
+| Haskell | 5 | 5 | 5 | 5 | 2 |
+| Clojure | 1 | 5 | 4 | 3 | 3 |
+| Elixir | 1 | 5 | 4 | 4 | 4 |
+| F# | 2 | 4 | 5 | 4 | 3 |
+| Scala | 2 | 3 | 4 | 3 | 3 |
+| Kotlin | 2 | 3 | 4 | 4 | 4 |
+| Rust | 3 | 4 | 5 | 4 | 1 |
+| TypeScript | 2 | 3 | 2 | 2 | 4 |
+| Java | 1 | 3 | 1 | 3 | 3 |
+| C# | 1 | 3 | 4 | 3 | 3 |
+| Python | 1 | 1 | 2 | 3 | 5 |
+| Ruby | 1 | 2 | 3 | 3 | 5 |
+
+```mermaid
+---
+config:
+  radar:
+    curveTension: 0
+---
+radar-beta
+  title 関数型ファースト言語
+  axis a1["純粋性の型表現"], a2["不変性の既定"], a3["式指向の分岐"], a4["テスト支援"], a5["学習コスト"]
+  curve haskell["Haskell"]{5, 5, 5, 5, 2}
+  curve clojure["Clojure"]{1, 5, 4, 3, 3}
+  curve elixir["Elixir"]{1, 5, 4, 4, 4}
+  curve fsharp["F#"]{2, 4, 5, 4, 3}
+  max 5
+  min 0
+```
+
+関数型ファースト言語はいずれも不変性の既定と式指向の分岐が高く、純粋性を型で表せる Haskell だけが突出した形になります。Clojure と Elixir は動的型付けのため、純粋性の型表現が最小値にとどまります。
+
+```mermaid
+---
+config:
+  radar:
+    curveTension: 0
+---
+radar-beta
+  title マルチパラダイム言語
+  axis a1["純粋性の型表現"], a2["不変性の既定"], a3["式指向の分岐"], a4["テスト支援"], a5["学習コスト"]
+  curve scala["Scala"]{2, 3, 4, 3, 3}
+  curve kotlin["Kotlin"]{2, 3, 4, 4, 4}
+  curve rust["Rust"]{3, 4, 5, 4, 1}
+  curve typescript["TypeScript"]{2, 3, 2, 2, 4}
+  max 5
+  min 0
+```
+
+Rust は `let` の不変性と `match` の範囲パターンで高得点ですが、所有権の習得が必要なため学習コストの軸が最も低くなります。Kotlin は Scala に近い形で、式としての `if` / `when` と Kotest による読みやすいテストが強みですが、読み取り専用 `List` は不変を保証しないため不変性の既定は中程度です。
+
+```mermaid
+---
+config:
+  radar:
+    curveTension: 0
+---
+radar-beta
+  title OOP + FP ライブラリ言語
+  axis a1["純粋性の型表現"], a2["不変性の既定"], a3["式指向の分岐"], a4["テスト支援"], a5["学習コスト"]
+  curve java["Java"]{1, 3, 1, 3, 3}
+  curve csharp["C#"]{1, 3, 4, 3, 3}
+  curve python["Python"]{1, 1, 2, 3, 5}
+  curve ruby["Ruby"]{1, 2, 3, 3, 5}
+  max 5
+  min 0
+```
+
+Java と C# はライブラリで不変性を補いますが、C# は `switch` 式により分岐を式として書ける点で Java と差がつきます。Python と Ruby は学習コストの低さが際立つ一方、不変性は慣習に依存します。
+
+全体として、純粋性の型表現で 5 点を取るのは Haskell のみであり、他の 11 言語は「不変性の既定」と「式指向の分岐」で純粋関数を書きやすくしているかどうかで差がつきます。どの言語でも純粋関数そのものは書けるため、違いは「どこまで言語が支援してくれるか」に集約されます。
+
+> スコアは本シリーズの実装と各言語版の記事に基づく相対評価（1〜5）であり、言語の優劣を示すものではありません。
 
 ---
 
@@ -872,7 +1031,24 @@ safeHead (x:_) = Just x
 
 ### Clojure：副作用分離のアーキテクチャ
 
-Clojure は「純粋なコア / 不純なシェル」パターンを第 2 章で明示的に教育する唯一の言語です。給与計算システムやデータバリデーションなど、他の 10 言語にはない実践的な例題で構成されています。
+Clojure は「純粋なコア / 不純なシェル」パターンを第 2 章で明示的に教育する唯一の言語です。給与計算システムやデータバリデーションなど、他の 11 言語にはない実践的な例題で構成されています。
+
+### Kotlin：読み取り専用 ≠ イミュータブル
+
+Kotlin の `List` は変更操作を持たない **読み取り専用のビュー** であり、イミュータブルであることは保証しません。Kotlin 版は第 2 章で、状態を持つカートが読み取り専用の型で内部リストを返しても、内部の変更が見えてしまうことをテストで示しています。
+
+```kotlin
+test("読み取り専用ビューでも内部状態の変更が見えてしまう") {
+    val cart = ShoppingCartBad()
+    val view: List<String> = cart.itemsView()
+    view shouldBe emptyList()
+
+    cart.addItem("Apple")
+    view shouldBe listOf("Apple")
+}
+```
+
+そのため、可変なコレクションを共有せず、`plus`（`+`）/ `minus`（`-`）で新しいリストを作る規律によって不変性を保ちます。
 
 ### Rust：所有権と純粋性の関係
 
@@ -891,6 +1067,7 @@ Ruby は `freeze` によるイミュータビリティ強制を第 2 章で扱�
 | 純粋性を型で保証したい | Haskell（`IO` モナド） |
 | イミュータビリティを言語レベルで保証したい | Elixir, Clojure, F#, Rust |
 | 既存 OOP コードに純粋関数を段階的に導入したい | Java + Vavr, C# + LanguageExt, TypeScript + fp-ts |
+| JVM で標準ライブラリだけで純粋関数スタイルを始めたい | Kotlin（式としての `if` / `when`、`List` + `plus`） |
 | 副作用分離のアーキテクチャを学びたい | Clojure（純粋コア / 不純シェル） |
 | テスト駆動で純粋関数を活用したい | どの言語でも可能（Haskell の PBT が最も強力） |
 
@@ -900,9 +1077,9 @@ Ruby は `freeze` によるイミュータビリティ強制を第 2 章で扱�
 
 ### 言語横断的な学び
 
-1. **純粋関数の 2 条件は普遍**: 決定性と副作用なし。この定義は 11 言語すべてで共通
+1. **純粋関数の 2 条件は普遍**: 決定性と副作用なし。この定義は 12 言語すべてで共通
 2. **保証メカニズムは 4 段階**: 型レベル強制（Haskell）→ 言語レベル部分強制 → ライブラリ補助 → 慣習
-3. **Haskell の IO モナドは唯一無二**: 型シグネチャだけで純粋性を判断できるのは 11 言語中 Haskell のみ
+3. **Haskell の IO モナドは唯一無二**: 型シグネチャだけで純粋性を判断できるのは 12 言語中 Haskell のみ
 4. **テスト容易性は言語非依存**: 純粋関数のテストの簡潔さはどの言語でも実感できる
 5. **条件分岐に個性が出る**: ガード構文、パターンマッチ、if-else の選択が言語の FP 度合いを反映
 
@@ -915,6 +1092,7 @@ Ruby は `freeze` によるイミュータビリティ強制を第 2 章で扱�
 | | Elixir | [Part I](../elixir/part-1.md) |
 | | F# | [Part I](../fsharp/part-1.md) |
 | マルチパラダイム | Scala | [Part I](../scala/part-1.md) |
+| | Kotlin | [Part I](../kotlin/part-1.md) |
 | | Rust | [Part I](../rust/part-1.md) |
 | | TypeScript | [Part I](../typescript/part-1.md) |
 | OOP + FP | Java | [Part I](../java/part-1.md) |
