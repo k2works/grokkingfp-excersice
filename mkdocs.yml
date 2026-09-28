@@ -1,5 +1,5 @@
 site_name: Grokking Functional Programming
-site_description: Scala、Java、F#、C#、Haskell、Clojure、Elixir、Rust、Python、TypeScript、Ruby で学ぶ関数型プログラミング
+site_description: Scala、Java、Kotlin、F#、C#、Haskell、Clojure、Elixir、Rust、Python、TypeScript、Ruby で学ぶ関数型プログラミング
 site_author: Project Team
 repo_url: https://github.com/k2works/grokkingfp-excersice
 repo_name: grokkingfp-excersice
@@ -44,7 +44,7 @@ markdown_extensions:
   - attr_list
 
 extra_javascript:
-  - https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js
+  - https://cdn.jsdelivr.net/npm/mermaid@11.17.2/dist/mermaid.min.js
   - docs/assets/js/extra.js
 
 extra:
@@ -62,7 +62,7 @@ exclude_docs: |
 
 nav:
   - Home: index.md
-  - 11言語統合比較:
+  - 12言語統合比較:
       - 目次: all/index.md
       - 第1章 - FP入門: all/part-1-ch01-fp-introduction.md
       - 第2章 - 純粋関数: all/part-1-ch02-pure-functions.md
@@ -92,6 +92,14 @@ nav:
       - Part IV - IO と副作用: java/part-4.md
       - Part V - 並行処理: java/part-5.md
       - Part VI - 実践: java/part-6.md
+  - Kotlin:
+      - 概要: kotlin/index.md
+      - Part I - 基礎: kotlin/part-1.md
+      - Part II - 関数型スタイル: kotlin/part-2.md
+      - Part III - エラーハンドリング: kotlin/part-3.md
+      - Part IV - IO と副作用: kotlin/part-4.md
+      - Part V - 並行処理: kotlin/part-5.md
+      - Part VI - 実践: kotlin/part-6.md
   - F#:
       - 概要: fsharp/index.md
       - Part I - 基礎: fsharp/part-1.md

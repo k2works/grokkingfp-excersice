@@ -3,7 +3,7 @@
 ## 概要
 
 「Grokking Functional Programming」（Michał Płachta 著）の学習用リポジトリ。
-Scala、Java、F#、C#、Haskell、Clojure、Elixir、Rust、Python、TypeScript、Ruby の11言語で関数型プログラミングの実装例と日本語解説を含む。
+Scala、Java、Kotlin、F#、C#、Haskell、Clojure、Elixir、Rust、Python、TypeScript、Ruby の12言語で関数型プログラミングの実装例と日本語解説を含む。
 
 ### 目的
 
@@ -15,9 +15,9 @@ Scala、Java、F#、C#、Haskell、Clojure、Elixir、Rust、Python、TypeScript
 
 | ソフトウェア | バージョン | 備考                  |
 | :----------- | :--------- | :-------------------- |
-| JDK          | 21+        | Scala/Java/Clojure    |
+| JDK          | 21+        | Scala/Java/Kotlin/Clojure |
 | sbt          | 1.10+      | Scala ビルド          |
-| Gradle       | 8.0+       | Java ビルド           |
+| Gradle       | 8.0+       | Java/Kotlin ビルド    |
 | .NET         | 8.0+       | F#/C# ビルド          |
 | GHC          | 9.x        | Haskell ビルド        |
 | Clojure CLI  | 1.11+      | Clojure ビルド        |
@@ -46,6 +46,10 @@ sbt run
 # Java サンプルコードの実行
 cd app/java
 ./gradlew run
+
+# Kotlin サンプルコードのテスト実行
+cd app/kotlin
+./gradlew test
 
 # Ruby サンプルコードの実行
 cd app/ruby
@@ -81,6 +85,7 @@ echo 'experimental-features = nix-command flakes' > ~/.config/nix/nix.conf
 # プロジェクトルートで実行
 nix develop .#scala      # Scala 環境（JDK21, sbt, scala_3, metals）
 nix develop .#java       # Java 環境（JDK21, gradle）
+nix develop .#kotlin     # Kotlin 環境（JDK21, gradle, kotlin）
 nix develop .#rust       # Rust 環境（rustc, cargo, rust-analyzer）
 nix develop .#haskell    # Haskell 環境（ghc, stack, haskell-language-server）
 nix develop .#clojure    # Clojure 環境（JDK21, clojure, leiningen）
@@ -104,6 +109,7 @@ nix flake show  # 全環境を表示
 |--------|----------------|-----------------|
 | `scala` | JDK21, sbt, scala_3, metals | `app/scala` |
 | `java` | JDK21, gradle | `app/java` |
+| `kotlin` | JDK21, gradle, kotlin | `app/kotlin` |
 | `rust` | rustc, cargo, clippy, rust-analyzer | `app/rust` |
 | `haskell` | ghc, stack, cabal, haskell-language-server | `app/haskell` |
 | `clojure` | JDK21, clojure, leiningen, clojure-lsp | `app/clojure` |
@@ -196,7 +202,7 @@ VS Code で Dev Container を使用する場合：
 1. VS Code で「Dev Containers: Reopen in Container」を実行
 2. または「Dev Containers: Rebuild and Reopen in Container」で再ビルド
 
-サポートされる言語：Scala, Java, F#, C#, Haskell, Clojure, Elixir, Rust, Python, TypeScript, Ruby
+サポートされる言語：Scala, Java, Kotlin, F#, C#, Haskell, Clojure, Elixir, Rust, Python, TypeScript, Ruby
 
 **[⬆ back to top](#構成)**
 
@@ -209,6 +215,7 @@ grokkingfp-excersice/
 ├── app/
 │   ├── scala/                   # Scala サンプルコード
 │   ├── java/                    # Java サンプルコード
+│   ├── kotlin/                  # Kotlin サンプルコード
 │   ├── fsharp/                  # F# サンプルコード
 │   ├── csharp/                  # C# サンプルコード
 │   ├── haskell/                 # Haskell サンプルコード
@@ -221,6 +228,7 @@ grokkingfp-excersice/
 ├── docs/article/
 │   ├── scala/                   # Scala 日本語解説記事
 │   ├── java/                    # Java 日本語解説記事
+│   ├── kotlin/                  # Kotlin 日本語解説記事
 │   ├── fsharp/                  # F# 日本語解説記事
 │   ├── csharp/                  # C# 日本語解説記事
 │   ├── haskell/                 # Haskell 日本語解説記事
@@ -250,6 +258,7 @@ grokkingfp-excersice/
 |------|---------------|------------------|
 | Scala | cats-effect, fs2 | ScalaCheck |
 | Java | Vavr | JUnit 5 |
+| Kotlin | Arrow, kotlinx.coroutines | Kotest |
 | F# | FSharpPlus | FsCheck |
 | C# | LanguageExt | xUnit |
 | Haskell | base | QuickCheck |
@@ -262,16 +271,16 @@ grokkingfp-excersice/
 
 #### 主要概念の言語別対応
 
-| 概念 | Scala | Java | Ruby |
-|------|-------|------|------|
-| イミュータブルリスト | `List` | `io.vavr.collection.List` | `Array#freeze` |
-| Option 型 | `Option[A]` | `io.vavr.control.Option<A>` | `nil` / カスタム |
-| Either 型 | `Either[E, A]` | `io.vavr.control.Either<L, R>` | `{ success:, value/error: }` |
-| IO モナド | `cats.effect.IO[A]` | 独自 `IO<A>` 実装 | 独自 `IO` クラス |
-| アトミック参照 | `Ref[IO, A]` | 独自 `Ref<A>` 実装 | `Ref` クラス (Mutex) |
-| リソース管理 | `Resource[IO, A]` | 独自 `Resource<A>` 実装 | `Resource` クラス (ensure) |
-| ストリーム | `fs2.Stream[IO, A]` | `io.vavr.collection.Stream<A>` | `Enumerator` |
-| ADT | `sealed trait` | `sealed interface` | `Struct` / `Class` |
+| 概念 | Scala | Java | Kotlin | Ruby |
+|------|-------|------|--------|------|
+| イミュータブルリスト | `List` | `io.vavr.collection.List` | `List`（読み取り専用） | `Array#freeze` |
+| Option 型 | `Option[A]` | `io.vavr.control.Option<A>` | nullable 型 `A?` / `arrow.core.Option` | `nil` / カスタム |
+| Either 型 | `Either[E, A]` | `io.vavr.control.Either<L, R>` | `arrow.core.Either<E, A>` | `{ success:, value/error: }` |
+| IO モナド | `cats.effect.IO[A]` | 独自 `IO<A>` 実装 | `suspend` 関数 | 独自 `IO` クラス |
+| アトミック参照 | `Ref[IO, A]` | 独自 `Ref<A>` 実装 | `MutableStateFlow` / `Atomic` | `Ref` クラス (Mutex) |
+| リソース管理 | `Resource[IO, A]` | 独自 `Resource<A>` 実装 | `arrow.fx.coroutines.Resource` | `Resource` クラス (ensure) |
+| ストリーム | `fs2.Stream[IO, A]` | `io.vavr.collection.Stream<A>` | `Sequence` / `Flow` | `Enumerator` |
+| ADT | `sealed trait` | `sealed interface` | `sealed interface` | `Struct` / `Class` |
 
 **[⬆ back to top](#構成)**
 
@@ -287,6 +296,11 @@ grokkingfp-excersice/
 
 ### Java
 - [Vavr](https://www.vavr.io/) - Java 用関数型ライブラリ
+
+### Kotlin
+- [Kotlin 公式ドキュメント](https://kotlinlang.org/docs/home.html)
+- [Arrow](https://arrow-kt.io/) - Kotlin 用関数型ライブラリ
+- [Kotest](https://kotest.io/)
 
 ### F# / C#
 - [F# 公式ドキュメント](https://docs.microsoft.com/ja-jp/dotnet/fsharp/)

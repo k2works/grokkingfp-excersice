@@ -10,7 +10,7 @@
 - 乱数生成
 - 現在時刻の取得
 
-関数型プログラミングの核心的な問いは「副作用をどう管理するか」です。本章では、11 言語がこの問いにどう答えるかを横断的に比較し、以下を明らかにします：
+関数型プログラミングの核心的な問いは「副作用をどう管理するか」です。本章では、12 言語がこの問いにどう答えるかを横断的に比較し、以下を明らかにします：
 
 - IO の抽象化レベルの違い（言語組み込み vs ライブラリ vs 慣習的分離）
 - 「記述」と「実行」を分離する共通パターン
@@ -41,7 +41,7 @@ end note
 
 ## 8.2 共通の本質：記述と実行の分離
 
-11 言語すべてに共通する IO の原則は、**副作用の「記述」と「実行」を分離する**ことです：
+12 言語すべてに共通する IO の原則は、**副作用の「記述」と「実行」を分離する**ことです：
 
 1. **記述（Description）**: 副作用を持つ計算を「値」として表現する
 2. **合成（Composition）**: IO 値を flatMap / bind / chain で組み合わせる
@@ -121,6 +121,9 @@ Haskell は唯一、IO を**言語レベル**で強制する言語です。`IO` 
 | **F#** | `Async<'a>` | `Async.RunSynchronously` | コンピュテーション式 |
 | **C#** | `Task<T>` | `await` / `GetResult()` | async/await |
 | **Rust** | `Future<Output=T>` | `.await` + tokio ランタイム | ゼロコスト抽象化 |
+| **Kotlin** | `suspend` 関数 / `suspend () -> A` | `runBlocking` / `runTest` | Arrow 2.x は IO 型を持たず `suspend` を副作用の印とする |
+
+Kotlin の本命は `suspend` 関数ですが、Kotlin 版では考え方を学ぶために `() -> A` サンクを包んだ最小の `IO<A>`（`delay` / `pure` / `map` / `flatMap` / `unsafeRun`）も自作し、両者を比較しています。
 
 ### アプローチ 4: 実用的プリミティブ
 
@@ -133,7 +136,7 @@ Haskell は唯一、IO を**言語レベル**で強制する言語です。`IO` 
 
 ## 8.4 サイコロを振る：IO の基本パターン
 
-最もシンプルな IO の例として、サイコロを振る関数を 11 言語で比較します。
+最もシンプルな IO の例として、サイコロを振る関数を 12 言語で比較します。
 
 ### 代表 3 言語の比較
 
@@ -180,7 +183,7 @@ pub async fn cast_the_die_twice() -> i32 {
 }
 ```
 
-### 全 11 言語の実装
+### 全 12 言語の実装
 
 #### 関数型ファースト言語
 
@@ -318,6 +321,38 @@ val pureValue: IO[Int] = IO.pure(42)
 // 実行
 castTheDieTwice().unsafeRunSync()
 ```
+
+</details>
+
+<details>
+<summary>Kotlin (Arrow) 実装</summary>
+
+```kotlin
+/** 呼び出すたびに異なる値が返る */
+fun castTheDieImpure(): Int = Random.nextInt(1, 7)
+
+// 学習用の自作 IO: 作成しただけではサイコロは振られない
+fun castTheDieIO(): IO<Int> = IO.delay { castTheDieImpure() }
+
+fun castTheDieTwiceIO(): IO<Int> =
+    castTheDieIO().flatMap { first -> castTheDieIO().map { second -> first + second } }
+
+// 本命の suspend 関数: 呼び出せる場所がコルーチンの中に限定される
+suspend fun castTheDie(): Int = castTheDieImpure()
+
+/** flatMap の代わりに、普通の逐次コードとして合成できる */
+suspend fun castTheDieTwice(): Int {
+    val first = castTheDie()
+    val second = castTheDie()
+    return first + second
+}
+
+// 実行
+castTheDieTwiceIO().unsafeRun()
+runBlocking { castTheDieTwice() }
+```
+
+Arrow 2.x は「Kotlin には既に `suspend` という言語機能がある」という理由で独自の IO 型を持ちません。`suspend` は副作用を持ちうる関数をコンパイラが追跡するマーカーで、`suspend () -> A` 型のラムダが「実行を待つ記述」として IO 値の役割を担います。
 
 </details>
 
@@ -517,6 +552,7 @@ IO の合成は flatMap / bind の連鎖です。各言語の糖衣構文を比�
 |------|------|---------|-----|
 | **Haskell** | do 記法 | `<-` | `do { x <- io; return x }` |
 | **Scala** | for 内包表記 | `<-` | `for { x <- io } yield x` |
+| **Kotlin** | 直接スタイル（suspend） | 普通の呼び出し | `suspend fun f(): Int { val x = io(); return x }` |
 | **F#** | async { } | `let!` | `async { let! x = io; return x }` |
 | **C#** | async/await | `await` | `async { var x = await io; return x; }` |
 | **Rust** | async/await | `.await` | `async { let x = io.await; x }` |
@@ -559,6 +595,8 @@ public static async Task<Seq<MeetingTime>> ScheduledMeetings(
     return entries1.Concat(entries2);
 }
 ```
+
+Kotlin の `suspend` 関数は専用のバインド構文すら持たず、`val entries1 = calendarEntries(person1)` のような普通の逐次コードがそのまま合成になります。コンパイラが `suspend` 関数を継続渡しスタイルのステートマシンに変換するためです。
 
 **糖衣構文なし**（ラムダのネストが必要）:
 
@@ -634,12 +672,13 @@ where
 }
 ```
 
-### 全 11 言語のエラーハンドリング比較
+### 全 12 言語のエラーハンドリング比較
 
 | 言語 | フォールバック | リトライ方式 | エラー型 |
 |------|-------------|------------|---------|
 | **Haskell** | `catch` / 手動 | 再帰 + `try` | `SomeException` |
 | **Scala** | `IO.orElse` | fold / handleErrorWith | `Throwable` |
+| **Kotlin** | `Either.catch { }.getOrElse { }` / 自作の中置 `orElse` | `Schedule.recurs(n).retry { }`（Arrow Resilience） | `Throwable` |
 | **Rust** | `or_else` / `unwrap_or` | ループ + `Result` | `E` (ジェネリック) |
 | **F#** | `try/with` + Async | Async.Catch | `exn` |
 | **C#** | `try/catch` + Task | ループ + try/catch | `Exception` |
@@ -707,6 +746,7 @@ pub async fn scheduled_meetings_for_all(attendees: &[&str]) -> Vec<MeetingTime> 
 |------|--------------------------|---------|
 | **Haskell** | `sequence` / `mapM` | `mapConcurrently` |
 | **Scala** | `.sequence` (cats) | `parSequence` |
+| **Kotlin** | `list.map { }`（suspend 内で逐次）/ 自作 `sequence()` | `parMap`（Arrow）/ `async` + `awaitAll` |
 | **Rust** | `join_all` / `try_join_all` | `join_all`（デフォルト並行） |
 | **F#** | `Async.Parallel` | `Async.Parallel`（デフォルト並行） |
 | **C#** | `Task.WhenAll` | `Task.WhenAll`（デフォルト並行） |
@@ -741,6 +781,7 @@ rectangle "Level 3: 言語の非同期プリミティブ" #LightYellow {
   card "F# (Async)" as fs
   card "C# (Task)" as cs
   card "Rust (Future / async)" as rs
+  card "Kotlin (suspend 関数)" as kt
 }
 
 rectangle "Level 4: 慣習的分離 / 自前実装" #LightCoral {
@@ -758,7 +799,7 @@ rectangle "Level 4: 慣習的分離 / 自前実装" #LightCoral {
 
 **Level 2（Scala, TypeScript）** はライブラリが IO 型を提供し、`unsafeRunSync` / `io()` で実行を明示します。純粋性はライブラリの規約に依存します。
 
-**Level 3（F#, C#, Rust）** は言語の非同期プリミティブ（`Async`, `Task`, `Future`）で副作用を遅延実行します。IO モナドとは異なりますが、「記述と実行の分離」を実現しています。
+**Level 3（F#, C#, Rust, Kotlin）** は言語の非同期プリミティブ（`Async`, `Task`, `Future`, `suspend`）で副作用を遅延実行します。IO モナドとは異なりますが、「記述と実行の分離」を実現しています。Kotlin の `suspend` は非同期処理だけでなく「副作用を持ちうる関数」の印として使われ、`suspend` 関数は `suspend` 関数かコルーチンの中からしか呼べないため、副作用の境界がコンパイル時に呼び出しの連鎖として強制されます。
 
 **Level 4（Java, Python, Ruby, Clojure, Elixir）** は標準的な IO 型がなく、カスタム実装または慣習的な分離に頼ります。
 
@@ -767,7 +808,7 @@ rectangle "Level 4: 慣習的分離 / 自前実装" #LightCoral {
 | 系統 | 構文 | 言語 | 可読性 |
 |------|------|------|--------|
 | **モナド内包表記** | do / for / async { } / LINQ | Haskell, Scala, F#, C# | 高（手続き的に読める） |
-| **async/await** | async fn / await | C#, Rust, F# | 高（主流の構文） |
+| **async/await・直接スタイル** | async fn / await / suspend fun | C#, Rust, F#, Kotlin | 高（主流の構文） |
 | **明示的チェーン** | flatMap / bind / chain | Java, Python, Ruby, TypeScript, Elixir, Clojure | 低〜中（ラムダのネスト） |
 
 モナド内包表記と async/await は本質的に同じ脱糖を行います：
@@ -829,6 +870,100 @@ calendarEntries :: String -> IO [MeetingTime]
 scheduledMeetings :: String -> String -> IO [MeetingTime]
 ```
 
+### レーダーチャートで見る 12 言語
+
+ここまでの比較を、IO と副作用の管理に固有の 5 つの評価軸で数値化し、言語グループごとにレーダーチャートで可視化します。
+
+| 評価軸 | 5 点 | 3 点 | 1 点 |
+|--------|------|------|------|
+| 副作用の型付け | 副作用の有無が型やシグネチャに現れ、コンパイラが境界を強制する | 非同期型や IO 型で表せるが、型を使わない副作用も書ける | 副作用は型に現れず、慣習で分離する |
+| 合成構文 | do / for / async-await / 直接スタイルで手続き的に書ける | ブロックやメソッドチェーンで比較的読みやすく書ける | ラムダのネストや手動の評価が必要 |
+| 記述と実行 | 記述を値として保持し、明示的に実行するまで何度でも再実行できる | 遅延はできるが、一度きりの実行や即時開始など制約がある | 遅延実行を自前の無名関数やキャッシュで代用する |
+| リトライ支援 | 宣言的なリトライ戦略（回数・間隔）を部品として使える | `orElse` などの合成でリトライを簡潔に自作できる | ループと例外処理でリトライを手書きする |
+| 学習しやすさ | 普段のコードの延長で IO を扱える | 専用の型や構文の習得が必要 | モナドや型クラスなどの理解が前提になる |
+
+| 言語 | 副作用の型付け | 合成構文 | 記述と実行 | リトライ支援 | 学習しやすさ |
+|------|:---:|:---:|:---:|:---:|:---:|
+| Haskell | 5 | 5 | 5 | 3 | 1 |
+| Clojure | 1 | 1 | 2 | 2 | 4 |
+| Elixir | 1 | 2 | 3 | 3 | 4 |
+| F# | 3 | 5 | 5 | 3 | 3 |
+| Scala | 4 | 5 | 5 | 4 | 2 |
+| Kotlin | 4 | 5 | 4 | 5 | 4 |
+| Rust | 3 | 5 | 4 | 3 | 2 |
+| TypeScript | 4 | 2 | 5 | 4 | 2 |
+| Java | 2 | 2 | 4 | 2 | 3 |
+| C# | 3 | 5 | 2 | 2 | 4 |
+| Python | 2 | 2 | 4 | 2 | 4 |
+| Ruby | 2 | 3 | 4 | 3 | 4 |
+
+```mermaid
+---
+config:
+  radar:
+    curveTension: 0
+    marginLeft: 120
+    marginRight: 120
+---
+radar-beta
+  title 関数型ファースト言語
+  axis a1["副作用の型付け"], a2["合成構文"], a3["記述と実行"], a4["リトライ支援"], a5["学習しやすさ"]
+  curve haskell["Haskell"]{5, 5, 5, 3, 1}
+  curve clojure["Clojure"]{1, 1, 2, 2, 4}
+  curve elixir["Elixir"]{1, 2, 3, 3, 4}
+  curve fsharp["F#"]{3, 5, 5, 3, 3}
+  max 5
+  min 0
+```
+
+関数型ファースト言語では、Haskell が型付け・合成・記述と実行の 3 軸で満点を取る一方、Clojure と Elixir は IO 型を持たず実用的なプリミティブで副作用を扱うため、学習しやすさ以外の軸が低く出ます。F# は `Async` と `async { }` で合成と遅延実行に優れます。
+
+```mermaid
+---
+config:
+  radar:
+    curveTension: 0
+    marginLeft: 120
+    marginRight: 120
+---
+radar-beta
+  title マルチパラダイム言語
+  axis a1["副作用の型付け"], a2["合成構文"], a3["記述と実行"], a4["リトライ支援"], a5["学習しやすさ"]
+  curve scala["Scala"]{4, 5, 5, 4, 2}
+  curve kotlin["Kotlin"]{4, 5, 4, 5, 4}
+  curve rust["Rust"]{3, 5, 4, 3, 2}
+  curve typescript["TypeScript"]{4, 2, 5, 4, 2}
+  max 5
+  min 0
+```
+
+マルチパラダイム言語では、Scala の cats-effect `IO` が記述と実行の分離で最も厳密です。Kotlin は `suspend` 呼び出しがその場で実行される分だけ記述と実行で一歩譲りますが、Arrow の `Schedule` によるリトライと、普通の逐次コードで書ける学習しやすさで最も広い形になります。
+
+```mermaid
+---
+config:
+  radar:
+    curveTension: 0
+    marginLeft: 120
+    marginRight: 120
+---
+radar-beta
+  title OOP + FP ライブラリ言語
+  axis a1["副作用の型付け"], a2["合成構文"], a3["記述と実行"], a4["リトライ支援"], a5["学習しやすさ"]
+  curve java["Java"]{2, 2, 4, 2, 3}
+  curve csharp["C#"]{3, 5, 2, 2, 4}
+  curve python["Python"]{2, 2, 4, 2, 4}
+  curve ruby["Ruby"]{2, 3, 4, 3, 4}
+  max 5
+  min 0
+```
+
+OOP + FP ライブラリ言語では、Java・Python・Ruby が自作 IO クラスで記述と実行を忠実に分離する一方、合成は明示的チェーンに頼ります。C# は async/await で合成が読みやすい反面、`Task` が作成と同時に開始するホットな性質を持つため記述と実行の軸が低くなります。
+
+全体として、「記述と実行の分離」を値で厳密に表す言語（Haskell, Scala, TypeScript）と、言語機能で副作用を追跡して合成を普通のコードに近づける言語（Kotlin, C#, Rust）に大きく分かれます。どちらの系統でも、Pure Core / Impure Shell による設計の効果は変わりません。
+
+> スコアは本シリーズの実装と各言語版の記事に基づく相対評価（1〜5）であり、言語の優劣を示すものではありません。
+
 ---
 
 ## 8.9 言語固有の特徴
@@ -859,6 +994,35 @@ pub async fn scheduled_meetings(person1: &str, person2: &str) -> Vec<MeetingTime
     [entries1, entries2].concat()
 }
 ```
+
+### Kotlin (Arrow): IO 型を持たず suspend と Schedule で表す
+
+Arrow 2.x はあえて独自の IO 型を持たず、kotlinx.coroutines の `suspend` 関数を副作用の記述として扱い、その上に `Either.catch` や `Schedule` などの部品を提供します。自作の最小 `IO` と比べると、違いがはっきりします。
+
+| 性質 | 自作 `IO<A>` | `suspend () -> A` |
+|------|-------------|-------------------|
+| 副作用の目印 | 戻り値の型が `IO<A>` | 関数に `suspend` が付く |
+| 実行の入口 | `unsafeRun()` | `runBlocking` / `runTest` / `launch` など |
+| 合成 | `map` / `flatMap` | 普通の逐次コード（直接スタイル） |
+| リトライ | `orElse` を `fold` で連結 | `Schedule.recurs(n).retry { }` |
+
+リトライは `Schedule`（「いつ、何回繰り返すか」を表す値）で宣言的に書きます：
+
+```kotlin
+/** Arrow の Schedule で最大 maxRetries 回まで再実行する */
+suspend fun <A> retry(maxRetries: Int, action: suspend () -> A): A =
+    Schedule.recurs<Throwable>(maxRetries.toLong()).retry(action)
+
+/** リトライしても全て失敗したらデフォルト値を返す */
+suspend fun <A> retryWithDefault(maxRetries: Int, default: A, action: suspend () -> A): A =
+    Either.catch { retry(maxRetries, action) }.getOrElse { default }
+
+/** 自作 IO 版（IO<A> クラスのメソッド）: 同じ IO を orElse で maxRetries 回つなげる */
+fun retry(maxRetries: Int): IO<A> =
+    List(maxRetries) { this }.fold(this) { program, retryAction -> program.orElse(retryAction) }
+```
+
+注意点は、`suspend` 関数を**呼び出す式**そのものは値ではなく、`suspend` 関数の中では書いた順にすぐ実行されることです。遅延された値として受け渡したいときは `suspend { ... }` や関数参照で `suspend () -> A` 型のラムダにします。一方で、`suspend` 関数は `suspend` 関数かコルーチンからしか呼べないため、副作用の境界はコンパイル時に強制されます。
 
 ### TypeScript: IO / Task / TaskEither の 3 層
 
@@ -916,6 +1080,7 @@ result = Task.await(task)
 | 最も厳格な純粋性保証 | Haskell | 型レベルで IO と純粋関数を分離 |
 | 高性能な非同期処理 | Rust | ゼロコスト抽象化の async/await |
 | JVM でのエフェクト管理 | Scala + cats-effect | 成熟した IO ライブラリ |
+| JVM で IO 型なしの軽量なエフェクト管理 | Kotlin + Arrow | `suspend` 関数 + `Either.catch` / `Schedule` |
 | .NET での非同期処理 | F# (Async) / C# (Task) | コンピュテーション式 / async-await |
 | フロントエンドでの型安全 IO | TypeScript + fp-ts | IO / Task / TaskEither の 3 層 |
 | 分散システム | Elixir | OTP の軽量プロセスモデル |
@@ -926,14 +1091,14 @@ result = Task.await(task)
 | 規模 | 推奨アプローチ | 言語例 |
 |------|-------------|-------|
 | 小規模 | Pure Core / Impure Shell の慣習的分離 | Python, Ruby, Java |
-| 中規模 | エフェクトライブラリの導入 | Scala (cats-effect), TypeScript (fp-ts) |
+| 中規模 | エフェクトライブラリの導入 | Scala (cats-effect), Kotlin (Arrow), TypeScript (fp-ts) |
 | 大規模 | 言語レベルの IO 分離 | Haskell, F# |
 
 ---
 
 ## 8.11 まとめ
 
-本章では、11 言語での IO モナドと副作用の分離を比較し、以下を確認しました：
+本章では、12 言語での IO モナドと副作用の分離を比較し、以下を確認しました：
 
 **共通の原則**:
 
@@ -946,6 +1111,7 @@ result = Task.await(task)
 - 抽象化レベルは 4 段階（言語組み込み → ライブラリ → 非同期プリミティブ → 慣習的分離）
 - 合成構文は 3 系統（モナド内包表記 / async-await / 明示的チェーン）
 - Haskell のみが型レベルで純粋性を保証
+- Kotlin (Arrow 2.x) は IO 型を持たず、`suspend` を副作用の印として直接スタイルで合成する
 
 **学び**:
 
@@ -960,6 +1126,7 @@ result = Task.await(task)
 | 言語 | 記事リンク |
 |------|-----------|
 | Scala | [Part IV: IO と副作用の管理](../scala/part-4.md) |
+| Kotlin | [Part IV: IO と副作用の管理](../kotlin/part-4.md) |
 | Java | [Part IV: IO と副作用の管理](../java/part-4.md) |
 | F# | [Part IV: 非同期処理とストリーム](../fsharp/part-4.md) |
 | C# | [Part IV: 非同期処理とストリーム](../csharp/part-4.md) |

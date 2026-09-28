@@ -6,10 +6,10 @@
 
 さらに本章では、**代数的データ型**（ADT: Algebraic Data Type）を学びます。ADT は「直和型」と「直積型」の組み合わせで、ドメインの概念を正確にモデリングする関数型プログラミングの基盤です。
 
-本章では、11 言語での Either/Result と ADT の実装を横断的に比較し、以下を明らかにします：
+本章では、12 言語での Either/Result と ADT の実装を横断的に比較し、以下を明らかにします：
 
 - Either/Result の実装方式の違い（組み込み vs ライブラリ vs タプル/マップ）
-- ADT の表現方法（sealed trait, enum, 判別共用体, discriminated union）
+- ADT の表現方法（sealed trait, sealed interface, enum, 判別共用体, discriminated union）
 - パターンマッチの網羅性チェックの言語間差異
 
 ```plantuml
@@ -40,7 +40,7 @@ on -right-> el : "失敗の理由を追加"
 
 ## 7.2 共通の本質：Either = Right | Left
 
-11 言語すべてに共通する Either/Result の構造は、**成功と失敗の 2 つのケース**を持つ型です：
+12 言語すべてに共通する Either/Result の構造は、**成功と失敗の 2 つのケース**を持つ型です：
 
 1. **Right / Ok / Success**: 処理が成功し、値を保持する
 2. **Left / Err / Failure**: 処理が失敗し、エラー情報を保持する
@@ -100,6 +100,7 @@ def extractName(show: String): Either[String, String] = {
 | 言語 | ライブラリ | 型名 | 成功 | 失敗 |
 |------|-----------|------|------|------|
 | **Scala** | 標準ライブラリ | `Either[E, A]` | `Right(a)` | `Left(e)` |
+| **Kotlin** | Arrow | `Either<E, A>` | `a.right()` | `e.left()` |
 | **Java** | Vavr | `Either<L, R>` | `Either.right(r)` | `Either.left(l)` |
 | **C#** | LanguageExt | `Either<L, R>` | `Right(r)` | `Left(l)` |
 | **TypeScript** | fp-ts | `Either<E, A>` | `E.right(a)` | `E.left(e)` |
@@ -169,7 +170,7 @@ parse_show("Invalid")
 // Err("Can't extract name from Invalid")
 ```
 
-### 全 11 言語の実装
+### 全 12 言語の実装
 
 #### 関数型ファースト言語
 
@@ -280,6 +281,29 @@ def parseShow(rawShow: String): Either[String, TvShow] =
     yearEnd   <- extractYearEnd(rawShow).orElse(extractSingleYear(rawShow))
   } yield TvShow(name, yearStart, yearEnd)
 ```
+
+</details>
+
+<details>
+<summary>Kotlin (Arrow) 実装</summary>
+
+```kotlin
+import arrow.core.raise.either
+
+/** nullable 型の結果に失敗理由を付けて Either にする */
+fun parseYear(yearStr: String, context: String): Either<String, Int> =
+    yearStr.trim().toIntOrNull()?.right() ?: "Can't parse $context: '$yearStr'".left()
+
+/** either { } DSL で組み立てる */
+fun parseShow(rawShow: String): Either<String, TvShow> = either {
+    val name = extractName(rawShow).bind()
+    val yearStart = extractYearStart(rawShow).getOrElse { extractSingleYear(rawShow).bind() }
+    val yearEnd = extractYearEnd(rawShow).getOrElse { extractSingleYear(rawShow).bind() }
+    TvShow(name, yearStart, yearEnd)
+}
+```
+
+Arrow の `either { }` ブロック内で `bind()` を呼ぶと、`Right` なら中身を取り出し、`Left` ならブロック全体をそのエラーで終了させます。`getOrElse` はインライン関数なので、ラムダの中から外側の `either { }` に向けて `bind()` を呼ぶことでフォールバックを表現できます。Arrow 2.x の `Either` には `orElse` がなく、`flatMap` で書く場合は `recover { alternative.bind() }` を使います。
 
 </details>
 
@@ -500,7 +524,7 @@ case class Artist(
 )
 ```
 
-### 全 11 言語の ADT 表現
+### 全 12 言語の ADT 表現
 
 | 言語 | 直和型の構文 | 直積型の構文 | 網羅性チェック |
 |------|------------|------------|-------------|
@@ -508,6 +532,7 @@ case class Artist(
 | **Rust** | `enum T { A, B }` | `struct T { field: Type }` | コンパイルエラー |
 | **F#** | `type T = A \| B` | `type T = { Field: Type }` | コンパイラ警告 |
 | **Scala** | `enum T { case A; case B }` | `case class T(field: Type)` | コンパイラ警告 |
+| **Kotlin** | `sealed interface T` + `data class` / `data object` | `data class T(val field: Type)` | コンパイルエラー（`when` 式） |
 | **Java** | `sealed interface T` + `record` | `record T(Type field)` | コンパイルエラー（21+） |
 | **C#** | `abstract record` + 派生 record | `record T(Type Field)` | switch 式で警告 |
 | **TypeScript** | `type T = { _tag: 'A' } \| { _tag: 'B' }` | `interface T { field: Type }` | なし（型レベル） |
@@ -517,7 +542,7 @@ case class Artist(
 | **Ruby** | モジュール + クラス | `Struct` | case when |
 
 <details>
-<summary>全 11 言語の ADT 定義</summary>
+<summary>全 12 言語の ADT 定義</summary>
 
 **F#**（判別共用体）:
 ```fsharp
@@ -526,6 +551,23 @@ type MusicGenre = HeavyMetal | Pop | HardRock | Jazz
 type YearsActive =
     | StillActive of since: int
     | ActiveBetween of start: int * endYear: int
+```
+
+**Kotlin**（sealed interface + data class）:
+```kotlin
+enum class MusicGenre { HEAVY_METAL, POP, HARD_ROCK, JAZZ, CLASSICAL }
+
+sealed interface YearsActive {
+    data class StillActive(val since: Int) : YearsActive
+    data class ActiveBetween(val start: Int, val end: Int) : YearsActive
+}
+
+data class Artist(
+    val name: String,
+    val genre: MusicGenre,
+    val origin: String,
+    val yearsActive: YearsActive,
+)
 ```
 
 **Java**（sealed interface + record）:
@@ -642,12 +684,22 @@ def wasArtistActive(artist: Artist, yearStart: Int, yearEnd: Int): Boolean =
 
 | レベル | 言語 | 挙動 |
 |--------|------|------|
-| **コンパイルエラー** | Rust, Java (21+ sealed) | ケースが不足するとコンパイルが失敗する |
+| **コンパイルエラー** | Rust, Java (21+ sealed), Kotlin (sealed + `when` 式) | ケースが不足するとコンパイルが失敗する |
 | **コンパイラ警告** | Haskell, Scala, F# | 警告が出るが、コンパイルは通る |
 | **IDE 警告のみ** | C#, TypeScript | エディタが警告するが言語レベルでは強制しない |
 | **なし** | Clojure, Elixir, Python, Ruby | 動的型付けのため網羅性チェックなし |
 
-**発見**: Rust は `match` で全ケースを処理しないとコンパイルエラーになる唯一の言語です。これにより、ADT にケースを追加した際に、処理漏れを確実に検出できます。
+**発見**: Rust は `match` で全ケースを処理しないとコンパイルエラーになる代表的な言語です（Java 21+ の sealed + switch、Kotlin の sealed interface + `when` 式も同様）。これにより、ADT にケースを追加した際に、処理漏れを確実に検出できます。
+
+Kotlin では `when (val active = ...)` で分岐対象を束縛すると、各分岐の中で `active` がサブタイプにスマートキャストされます。
+
+```kotlin
+fun wasArtistActive(artist: Artist, yearStart: Int, yearEnd: Int): Boolean =
+    when (val active = artist.yearsActive) {
+        is StillActive -> active.since <= yearEnd
+        is ActiveBetween -> active.start <= yearEnd && active.end >= yearStart
+    }
+```
 
 ---
 
@@ -657,10 +709,10 @@ Option と Either は相互に変換可能です。失敗理由を付加して O
 
 ### 代表的な変換パターン
 
-| 方向 | Scala | Haskell | Rust | F# |
-|------|-------|---------|------|----|
-| Option → Either | `opt.toRight("error")` | `maybeToEither "error" mb` | `opt.ok_or("error")` | `Option.toResult` |
-| Either → Option | `either.toOption` | `eitherToMaybe e` | `result.ok()` | `Result.toOption` |
+| 方向 | Scala | Kotlin (Arrow) | Haskell | Rust | F# |
+|------|-------|----------------|---------|------|----|
+| Option → Either | `opt.toRight("error")` | `option.toEither { "error" }` / `x?.right() ?: "error".left()` | `maybeToEither "error" mb` | `opt.ok_or("error")` | `Option.toResult` |
+| Either → Option | `either.toOption` | `either.getOrNone()` / `either.getOrNull()` | `eitherToMaybe e` | `result.ok()` | `Result.toOption` |
 
 ```scala
 // Scala
@@ -690,7 +742,7 @@ let back: Option<i32> = result.ok();
 
 | 系統 | 成功 | 失敗 | 言語 |
 |------|------|------|------|
-| **Either 系** | `Right` | `Left` | Haskell, Scala, Java (Vavr), C# (LE), TypeScript (fp-ts) |
+| **Either 系** | `Right` | `Left` | Haskell, Scala, Kotlin (Arrow), Java (Vavr), C# (LE), TypeScript (fp-ts) |
 | **Result 系** | `Ok` | `Err` / `Error` | Rust, F# |
 | **Success/Failure 系** | `Success` | `Failure` | Python (returns), Ruby (dry-monads) |
 
@@ -711,6 +763,7 @@ rectangle "Level 1: ファーストクラス ADT" #LightGreen {
 
 rectangle "Level 2: 型システムで近似" #LightBlue {
   card "Scala (enum)" as sc
+  card "Kotlin (sealed interface)" as kt
   card "Java (sealed)" as jv
   card "C# (abstract record)" as cs
   card "TypeScript (discriminated union)" as ts
@@ -740,7 +793,101 @@ Option.flatMap: Option[A] → (A → Option[B]) → Option[B]
 Either.flatMap: Either[E,A] → (A → Either[E,B]) → Either[E,B]
 ```
 
-Scala の for 内包表記、Haskell の do 記法、Rust の `?` 演算子は、Option と Either の両方で同じように機能します。
+Scala の for 内包表記、Haskell の do 記法、Rust の `?` 演算子は、Option と Either の両方で同じように機能します。Kotlin でも Arrow の `option { }` と `either { }` は同じ `bind()` のスタイルで書け、第 6 章の `?: return null` による早期リターンとほぼ同じ構造になります。
+
+### レーダーチャートで見る 12 言語
+
+本章のテーマである Either/Result と ADT について、5 つの評価軸で 12 言語を比較します。失敗理由の伝播しやすさと、ドメインを型で正確に表現する力の両面から見ていきます。
+
+| 評価軸 | 5 点 | 3 点 | 1 点 |
+|--------|------|------|------|
+| 組み込み度 | Either/Result が言語組み込み | 標準・外部ライブラリで提供、または慣習として統一 | 専用の型がなくデータで手動表現 |
+| 合成構文 | 失敗の伝播を平坦に書ける（do / for / `?` / DSL） | パイプやパターンマッチで中程度に書ける | flatMap や手動関数のネストに頼る |
+| 網羅性検査 | ケース不足がコンパイルエラー | 警告は出るが強制しない（コンパイラ警告は 4、IDE 警告のみは 2） | 網羅性チェックなし |
+| ADT 表現力 | ファーストクラスの直和型 | 型システムで近似 | データやタグで表現 |
+| 学習の容易さ | 既存の知識ですぐ使える | 新しい概念をいくつか学ぶ必要がある | モナドや独自 DSL の理解が前提 |
+
+| 言語 | 組み込み度 | 合成構文 | 網羅性検査 | ADT 表現力 | 学習の容易さ |
+|------|-----------|---------|-----------|-----------|-------------|
+| Haskell | 5 | 5 | 4 | 5 | 2 |
+| Clojure | 1 | 2 | 1 | 1 | 4 |
+| Elixir | 3 | 4 | 1 | 1 | 4 |
+| F# | 5 | 3 | 4 | 5 | 3 |
+| Scala | 4 | 5 | 4 | 4 | 3 |
+| Kotlin | 3 | 5 | 5 | 4 | 3 |
+| Rust | 5 | 5 | 5 | 5 | 3 |
+| TypeScript | 3 | 3 | 2 | 3 | 2 |
+| Java | 3 | 1 | 5 | 3 | 3 |
+| C# | 3 | 4 | 2 | 3 | 3 |
+| Python | 3 | 1 | 1 | 2 | 3 |
+| Ruby | 3 | 1 | 1 | 2 | 3 |
+
+```mermaid
+---
+config:
+  radar:
+    curveTension: 0
+    marginLeft: 120
+    marginRight: 120
+---
+radar-beta
+  title 関数型ファースト言語
+  axis a1["組み込み度"], a2["合成構文"], a3["網羅性検査"], a4["ADT 表現力"], a5["学習の容易さ"]
+  curve haskell["Haskell"]{5, 5, 4, 5, 2}
+  curve clojure["Clojure"]{1, 2, 1, 1, 4}
+  curve elixir["Elixir"]{3, 4, 1, 1, 4}
+  curve fsharp["F#"]{5, 3, 4, 5, 3}
+  max 5
+  min 0
+```
+
+Haskell と F# はファーストクラスの ADT と組み込みの Either/Result を持ち、図形が大きく広がります。Elixir は `{:ok, value}` / `{:error, reason}` の慣習と `with` 式で合成しやすい一方、Clojure とともに型による網羅性の保証は持ちません。
+
+```mermaid
+---
+config:
+  radar:
+    curveTension: 0
+    marginLeft: 120
+    marginRight: 120
+---
+radar-beta
+  title マルチパラダイム言語
+  axis a1["組み込み度"], a2["合成構文"], a3["網羅性検査"], a4["ADT 表現力"], a5["学習の容易さ"]
+  curve scala["Scala"]{4, 5, 4, 4, 3}
+  curve kotlin["Kotlin"]{3, 5, 5, 4, 3}
+  curve rust["Rust"]{5, 5, 5, 5, 3}
+  curve typescript["TypeScript"]{3, 3, 2, 3, 2}
+  max 5
+  min 0
+```
+
+Rust は `Result` と `enum`、`match` の網羅性エラーですべての軸が高得点です。Kotlin は Either をライブラリ（Arrow）に頼るものの、`either { }` / `Raise<E>` による平坦な合成と、sealed interface + `when` 式の網羅性エラーで Scala と並ぶ形を描きます。
+
+```mermaid
+---
+config:
+  radar:
+    curveTension: 0
+    marginLeft: 120
+    marginRight: 120
+---
+radar-beta
+  title OOP + FP ライブラリ言語
+  axis a1["組み込み度"], a2["合成構文"], a3["網羅性検査"], a4["ADT 表現力"], a5["学習の容易さ"]
+  curve java["Java"]{3, 1, 5, 3, 3}
+  curve csharp["C#"]{3, 4, 2, 3, 3}
+  curve python["Python"]{3, 1, 1, 2, 3}
+  curve ruby["Ruby"]{3, 1, 1, 2, 3}
+  max 5
+  min 0
+```
+
+Java は flatMap のネストで合成構文が弱い反面、Java 21 の sealed interface で網羅性検査が突出しています。C# は逆に LINQ で合成しやすいものの、網羅性は警告止まりです。
+
+全体として、Either の合成構文と ADT の網羅性検査は独立した軸であり、両方が高いのは Haskell、Rust、Scala、Kotlin などに限られます。ライブラリで Either を導入する言語でも、Kotlin や Java のように言語側の sealed 型が強ければ ADT の安全性は十分に確保できます。
+
+> スコアは本シリーズの実装と各言語版の記事に基づく相対評価（1〜5）であり、言語の優劣を示すものではありません。
 
 ---
 
@@ -770,6 +917,56 @@ pub fn extract_name(raw_show: &str) -> Result<String, ParseError> {
 ```
 
 エラー型を enum にすることで、パターンマッチでエラーの種類ごとに処理を分けられます。
+
+### Kotlin: Raise<E> と zipOrAccumulate
+
+Arrow 2.x では、`either { }` ブロックの中が `Raise<E>` というスコープになります。`Raise<E>` を拡張関数のレシーバーにすると、戻り値は素の型のまま「失敗しうる関数」を書けます。
+
+```kotlin
+fun Raise<String>.checkAge(age: Int): Int {
+    ensure(age >= 0) { "Age cannot be negative" }
+    ensure(age <= 150) { "Age cannot be greater than 150" }
+    return age
+}
+
+/** Raise の関数を直接呼び出して組み立てる（最初のエラーで停止、bind() も不要） */
+fun validateUserRaise(username: String, email: String, age: Int): Either<String, User> = either {
+    User(checkUsername(username), checkEmail(email), checkAge(age))
+}
+
+/** zipOrAccumulate: 同じ Raise 関数を使い、すべてのエラーを NonEmptyList に集める */
+fun validateUserAccumulating(username: String, email: String, age: Int): Either<NonEmptyList<String>, User> =
+    either {
+        zipOrAccumulate(
+            { checkUsername(username) },
+            { checkEmail(email) },
+            { checkAge(age) },
+        ) { validUsername, validEmail, validAge ->
+            User(validUsername, validEmail, validAge)
+        }
+    }
+
+validateUserAccumulating("ab", "invalid", -1)
+// Left(NonEmptyList("Username must be at least 3 characters", "Email must contain @", "Age cannot be negative"))
+```
+
+バリデーションロジックを `Raise<String>` の関数として 1 つ書いておけば、`either { }` では「短絡」、`zipOrAccumulate` では「蓄積」と、呼び出し側で戦略を選べます。エラー型が `NonEmptyList<String>` なので、`Left` のときに必ず 1 つ以上のエラーがあることも型で保証されます（Arrow 1.x の `Validated` は廃止されました）。
+
+また、ADT は `sealed interface` にサブタイプをネストして定義し、フィールドを持たないケースは `data object` で表します。`else` を書かない `when` 式は、サブタイプを追加するとコンパイルエラーになります。
+
+```kotlin
+sealed interface Payment {
+    data class CreditCard(val number: String, val expiry: String) : Payment
+    data class BankTransfer(val accountNumber: String) : Payment
+    data object Cash : Payment
+}
+
+fun isOnlinePaymentAvailable(method: Payment): Boolean =
+    when (method) {
+        is CreditCard, is BankTransfer -> true
+        Cash -> false
+    }
+```
 
 ### Elixir: {:ok, value} / {:error, reason} のタプルパターン
 
@@ -815,6 +1012,7 @@ Java 21 のパターンマッチ switch と組み合わせると、Scala に近�
 |------|---------|------|
 | 最も簡潔なエラー伝播 | Rust | `?` 演算子 + カスタムエラー enum |
 | 可読性の高い合成 | Scala, C# | for 内包表記 / LINQ |
+| 短絡とエラー蓄積の両立 | Kotlin + Arrow | 同じ `Raise<E>` 関数を `either { }` と `zipOrAccumulate` で再利用 |
 | 完全な型安全性 | Haskell | Either モナド + do 記法 |
 | 既存 OOP 資産との共存 | Java + Vavr, C# + LE | ライブラリで段階導入 |
 | エコシステム統一 | Elixir | {:ok}/{:error} がエコシステム全体で統一 |
@@ -823,16 +1021,16 @@ Java 21 のパターンマッチ switch と組み合わせると、Scala に近�
 
 | 要件 | 推奨言語 | 理由 |
 |------|---------|------|
-| 網羅性チェックの強制 | Rust | match の網羅性がコンパイルエラー |
+| 網羅性チェックの強制 | Rust, Kotlin | match / `when` 式の網羅性がコンパイルエラー |
 | 最も表現力の高い ADT | Haskell, F# | ファーストクラスの直和型 |
-| OOP チームでの導入 | Scala, Java, C# | sealed trait/interface でなじみやすい |
+| OOP チームでの導入 | Scala, Kotlin, Java, C# | sealed trait/interface でなじみやすい |
 | 型レベルの Union | TypeScript | discriminated union |
 
 ---
 
 ## 7.11 まとめ
 
-本章では、11 言語での Either/Result と ADT の実装を比較し、以下を確認しました：
+本章では、12 言語での Either/Result と ADT の実装を比較し、以下を確認しました：
 
 **共通の原則**:
 
@@ -844,7 +1042,8 @@ Java 21 のパターンマッチ switch と組み合わせると、Scala に近�
 
 - 命名は 3 系統（Either 系 / Result 系 / Success/Failure 系）
 - ADT の表現力は 4 段階（ファーストクラス → 型で近似 → 慣習的 → データ表現）
-- 網羅性チェックは Rust が最も厳格（コンパイルエラー）
+- 網羅性チェックは Rust、Java 21+、Kotlin が最も厳格（コンパイルエラー）
+- Kotlin + Arrow は `Raise<E>` によって短絡（`either { }`）と蓄積（`zipOrAccumulate`）を同じ関数で使い分けられる
 
 **学び**:
 
@@ -859,6 +1058,7 @@ Java 21 のパターンマッチ switch と組み合わせると、Scala に近�
 | 言語 | 記事リンク |
 |------|-----------|
 | Scala | [Part III: エラーハンドリング](../scala/part-3.md) |
+| Kotlin | [Part III: エラーハンドリング](../kotlin/part-3.md) |
 | Java | [Part III: エラーハンドリング](../java/part-3.md) |
 | F# | [Part III: エラーハンドリング](../fsharp/part-3.md) |
 | C# | [Part III: エラーハンドリング](../csharp/part-3.md) |

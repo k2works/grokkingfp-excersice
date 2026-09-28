@@ -1,4 +1,4 @@
-# 第12章: テスト戦略とプロパティベーステスト — 11言語比較
+# 第12章: テスト戦略とプロパティベーステスト — 12言語比較
 
 ## 12.1 はじめに
 
@@ -6,7 +6,7 @@
 
 純粋関数は同じ入力に対して常に同じ出力を返すため、テストが驚くほど簡単になります。しかし、特定のテストケースを手で書くだけでは、見落としているエッジケースがあるかもしれません。そこで登場するのが**プロパティベーステスト（PBT）** です。ランダムな入力を自動生成し、関数が満たすべき**不変条件（プロパティ）** を検証します。
 
-本章では、11 言語それぞれの PBT ライブラリを比較し、ジェネレータの合成、プロパティの定義、Shrinking（最小反例の探索）といった共通概念がどのように表現されるかを見ていきます。
+本章では、12 言語（Haskell、Clojure、Elixir、F#、Scala、Kotlin、Rust、TypeScript、Java、C#、Python、Ruby）それぞれの PBT ライブラリを比較し、ジェネレータの合成、プロパティの定義、Shrinking（最小反例の探索）といった共通概念がどのように表現されるかを見ていきます。
 
 ---
 
@@ -34,7 +34,7 @@
 
 ## 12.3 PBT ライブラリの実装方式
 
-11 言語の PBT ライブラリは、以下の 3 つのアプローチに分類できます。
+12 言語の PBT ライブラリは、以下の 3 つのアプローチに分類できます。
 
 ### アプローチ 1: 専用 PBT フレームワーク（型クラス/プロトコル統合）
 
@@ -44,6 +44,7 @@
 |------|-----------|--------------|------|
 | Haskell | QuickCheck | `Arbitrary a` | PBT の元祖。型クラスで自動導出 |
 | Scala | ScalaCheck | `Gen[A]` | for 内包表記でジェネレータ合成 |
+| Kotlin | Kotest Property | `Arb<A>` | `arbitrary { }` ビルダーと `Arb.bind` で合成、Kotest に統合 |
 | F# | FsCheck | `Gen<'a>` | .NET 向け QuickCheck ポート |
 | C# | FsCheck | `Gen<T>` | F# と共通の FsCheck エコシステム |
 | Clojure | test.check | `gen/fmap` | Clojure 版 QuickCheck |
@@ -70,7 +71,7 @@
 
 ---
 
-## 12.4 ジェネレータの合成 — 全 11 言語比較
+## 12.4 ジェネレータの合成 — 全 12 言語比較
 
 PBT の核心は**ジェネレータの合成**です。基本型のジェネレータを組み合わせて、ドメインオブジェクトのジェネレータを構築します。ここでは `Location` のジェネレータを各言語で比較します。
 
@@ -126,7 +127,7 @@ proptest! {
 
 Rust の proptest では `0i32..10_000_000` のような範囲式でジェネレータを簡潔に記述できます。
 
-### 全 11 言語のジェネレータ比較
+### 全 12 言語のジェネレータ比較
 
 <details>
 <summary>Haskell — QuickCheck</summary>
@@ -156,6 +157,30 @@ val locationGen: Gen[Location] = for {
   name       <- Gen.alphaStr
   population <- Gen.posNum[Int]
 } yield Location(id, name, population)
+```
+
+</details>
+
+<details>
+<summary>Kotlin — Kotest Property</summary>
+
+```kotlin
+val nonNegativeInt: Arb<Int> = Arb.int(0..Int.MAX_VALUE)
+
+val identifier: Arb<String> = Arb.string(1..10, Codepoint.alphanumeric())
+
+// arbitrary { } ビルダー: bind() で値を取り出して逐次的に合成
+val randomArtist: Arb<Artist> = arbitrary { Artist(identifier.bind(), nonNegativeInt.bind()) }
+
+// Arb.bind: 複数の Arb をまとめて関数に渡す
+val randomLocation: Arb<Location> = Arb.bind(identifier, identifier, Arb.int(0..10_000_000)) { id, name, population ->
+    Location(LocationId("Q$id"), name, population)
+}
+
+// orNull() で「ときどき null を返す」Arb を作り、nullable 型の説明を生成
+val randomAttraction: Arb<Attraction> = Arb.bind(identifier, identifier.orNull(), randomLocation) { name, desc, loc ->
+    Attraction(name, desc, loc)
+}
 ```
 
 </details>
@@ -320,7 +345,7 @@ end
 
 ## 12.5 プロパティの定義 — filterPopularLocations を例に
 
-PBT の最も重要な要素は**プロパティの定義**です。`filterPopularLocations` という純粋関数を題材に、3 つの標準的なプロパティを 11 言語で比較します。
+PBT の最も重要な要素は**プロパティの定義**です。`filterPopularLocations` という純粋関数を題材に、3 つの標準的なプロパティを 12 言語で比較します。
 
 ```
 filterPopularLocations(locations, minPopulation)
@@ -389,12 +414,13 @@ proptest! {
 
 FP のテスト戦略において、外部依存の分離は重要です。すべての言語で「DataAccess インターフェースを定義し、テスト時にスタブに差し替える」パターンが共通しています。
 
-### スタブ実装の 3 パターン
+### スタブ実装の 4 パターン
 
 | パターン | 言語例 | 特徴 |
 |---------|--------|------|
 | trait/interface + 匿名実装 | Scala, Haskell, F# | 型安全、インターフェースベース |
 | Builder パターン | Java, Rust | 柔軟な設定、エラー注入が容易 |
+| 名前付き引数 + デフォルト引数 | Kotlin | 振る舞いを `suspend` ラムダで受け取り、Builder が不要 |
 | レコード/マップ | Clojure, Elixir, Ruby | 軽量、動的型付けの利点を活用 |
 
 **Scala のスタブ実装:**
@@ -429,6 +455,28 @@ DataAccess dataAccess = TestDataAccess.builder()
     {:ok (take limit (filter #(str/includes? (:name %) name) attractions))})
   (find-artists-from-location [_ location-id limit]
     {:ok (take limit artists)}))
+```
+
+**Kotlin の名前付き引数スタブ:**
+
+```kotlin
+class TestDataAccess(
+    private val attractions: suspend (name: String) -> List<Attraction> = { emptyList() },
+    private val artists: suspend (locationId: LocationId) -> List<Artist> = { emptyList() },
+    private val movies: suspend (locationId: LocationId) -> List<Movie> = { emptyList() },
+) : DataAccess {
+    override suspend fun findAttractions(name: String, ordering: AttractionOrdering, limit: Int): List<Attraction> =
+        attractions(name).take(limit)
+    // findArtistsFromLocation / findMoviesAboutLocation も同様
+}
+
+// 失敗の注入は、例外を投げるラムダを渡すだけ
+val dataAccess = TestDataAccess(
+    attractions = { listOf(yosemite, yellowstone) },
+    artists = { locationId ->
+        if (locationId == yosemite.location.id) failWith("Yosemite artists fetching failed") else emptyList()
+    },
+)
 ```
 
 ---
@@ -468,6 +516,14 @@ if let Err(e) = &artists_result { errors.push(e.clone()); }
 let artists = artists_result.unwrap_or_default();
 ```
 
+```kotlin
+// Kotlin: 原著と同じ badGuides / problems 形式。separateEither() で失敗と成功を振り分ける
+fun findGoodGuide(results: List<Either<Throwable, Guide>>): Either<SearchReport, Guide> {
+    val (errors, guides) = results.separateEither()
+    return findGoodGuide(guides, errors.map { it.message ?: it.toString() })
+}
+```
+
 ---
 
 ## 12.8 比較分析 — 3 つの発見
@@ -479,7 +535,7 @@ let artists = artists_result.unwrap_or_default();
 | 段階 | 特徴 | 言語 |
 |------|------|------|
 | **完全自動** | 型からジェネレータ自動導出 + Shrinking 自動 | Haskell (QuickCheck), F#/C# (FsCheck) |
-| **半自動** | ビルトインジェネレータ豊富 + Shrinking 対応 | Scala (ScalaCheck), Rust (proptest), Python (Hypothesis), Clojure (test.check), Elixir (StreamData), TypeScript (fast-check) |
+| **半自動** | ビルトインジェネレータ豊富 + Shrinking 対応 | Scala (ScalaCheck), Kotlin (Kotest Property), Rust (proptest), Python (Hypothesis), Clojure (test.check), Elixir (StreamData), TypeScript (fast-check) |
 | **手動** | ジェネレータ手書き + Shrinking なし | Java (@RepeatedTest), Ruby (手動) |
 
 Haskell の QuickCheck は `Arbitrary` 型クラスにより、新しい型のジェネレータを定義するだけで自動的に Shrinking まで提供されます。一方、Java では JUnit 5 の `@RepeatedTest` と手動ジェネレータの組み合わせで PBT 的なテストを実現しますが、Shrinking はありません。
@@ -491,7 +547,7 @@ Haskell の QuickCheck は `Arbitrary` 型クラスにより、新しい型の�
 | 型システム | 副作用管理 | テスト容易性 | 言語 |
 |-----------|-----------|-------------|------|
 | 強い型 + 純粋性保証 | IO モナド | 最高 | Haskell |
-| 強い型 + エフェクト型 | IO[A] / Task<A> | 高 | Scala, F#, Rust |
+| 強い型 + エフェクト型 | IO[A] / Task<A> / suspend | 高 | Scala, Kotlin, F#, Rust |
 | 漸進的型付け | 慣習的分離 | 中〜高 | TypeScript, Python |
 | 動的型付け | パターンマッチ | 中 | Clojure, Elixir, Ruby |
 | 静的型付け + 例外 | try-catch | 中 | Java, C# |
@@ -500,11 +556,11 @@ Haskell では型システムが純粋関数と IO を厳密に分離するた�
 
 ### 発見 3: DataAccess 抽象化の共通性
 
-11 言語すべてで、外部依存をインターフェース/プロトコル/レコードで抽象化し、テスト時にスタブに差し替えるパターンが確認できました。
+12 言語すべてで、外部依存をインターフェース/プロトコル/レコードで抽象化し、テスト時にスタブに差し替えるパターンが確認できました。
 
 | 抽象化手段 | 言語 |
 |-----------|------|
-| trait / interface | Scala, Java, Rust, C# |
+| trait / interface | Scala, Kotlin, Java, Rust, C# |
 | 型クラス + レコード型 | Haskell |
 | abstract class (ABC) | Python |
 | object expression | F# |
@@ -513,6 +569,100 @@ Haskell では型システムが純粋関数と IO を厳密に分離するた�
 | interface (構造的型) | TypeScript |
 
 FP の「副作用の明示的分離」原則が、テスト可能な設計を自然に導くことが、すべての言語で確認できます。
+
+### レーダーチャートで見る 12 言語
+
+本章で比較したジェネレータの合成、Shrinking、スタブ、副作用の分離を 5 つの軸で数値化し、言語グループごとにレーダーチャートで比較します。
+
+| 評価軸 | 5 点 | 3 点 | 1 点 |
+|--------|------|------|------|
+| ジェネレータ合成 | 専用構文（`for` / `gen { }` / `gen all` / `arbitrary { }`）で逐次的に合成 | コンビネータ関数や範囲式で合成 | ランダム生成関数を手書き |
+| 型からの導出 | 型クラスや型情報からジェネレータを自動導出 | ビルトインジェネレータを組み合わせて明示的に定義 | ジェネレータの仕組みなし |
+| Shrinking | ライブラリが最小反例を自動探索 | 一部の型のみ、または手動で定義 | Shrinking なし |
+| スタブの容易さ | レコード/オブジェクトを直接構築するだけ | クラス/モジュールの実装が必要 | 抽象クラスの継承など定型コードが多い |
+| 副作用の分離 | 型システムが純粋関数と IO を厳密に分離 | 慣習や漸進的型付けによる分離 | 例外や暗黙の副作用に頼る |
+
+| 言語 | ジェネレータ合成 | 型からの導出 | Shrinking | スタブの容易さ | 副作用の分離 |
+|------|:---:|:---:|:---:|:---:|:---:|
+| Haskell | 5 | 5 | 5 | 5 | 5 |
+| Clojure | 4 | 3 | 5 | 4 | 2 |
+| Elixir | 5 | 3 | 5 | 3 | 2 |
+| F# | 5 | 5 | 5 | 3 | 4 |
+| Scala | 5 | 3 | 5 | 4 | 4 |
+| Kotlin | 5 | 3 | 5 | 4 | 4 |
+| Rust | 3 | 3 | 5 | 3 | 4 |
+| TypeScript | 3 | 3 | 5 | 5 | 3 |
+| Java | 1 | 1 | 1 | 3 | 2 |
+| C# | 4 | 5 | 5 | 3 | 2 |
+| Python | 3 | 3 | 5 | 2 | 3 |
+| Ruby | 1 | 1 | 1 | 2 | 2 |
+
+```mermaid
+---
+config:
+  radar:
+    curveTension: 0
+    marginLeft: 120
+    marginRight: 120
+---
+radar-beta
+  title 関数型ファースト言語
+  axis a1["ジェネレータ合成"], a2["型からの導出"], a3["Shrinking"], a4["スタブの容易さ"], a5["副作用の分離"]
+  curve haskell["Haskell"]{5, 5, 5, 5, 5}
+  curve clojure["Clojure"]{4, 3, 5, 4, 2}
+  curve elixir["Elixir"]{5, 3, 5, 3, 2}
+  curve fsharp["F#"]{5, 5, 5, 3, 4}
+  max 5
+  min 0
+```
+
+Haskell は QuickCheck の `Arbitrary` 型クラスにより全軸で満点です。F# も FsCheck の自動導出で Haskell に迫り、Clojure と Elixir は Shrinking では並ぶものの、動的型付けのため副作用の分離で内側に寄ります。
+
+```mermaid
+---
+config:
+  radar:
+    curveTension: 0
+    marginLeft: 120
+    marginRight: 120
+---
+radar-beta
+  title マルチパラダイム言語
+  axis a1["ジェネレータ合成"], a2["型からの導出"], a3["Shrinking"], a4["スタブの容易さ"], a5["副作用の分離"]
+  curve scala["Scala"]{5, 3, 5, 4, 4}
+  curve kotlin["Kotlin"]{5, 3, 5, 4, 4}
+  curve rust["Rust"]{3, 3, 5, 3, 4}
+  curve typescript["TypeScript"]{3, 3, 5, 5, 3}
+  max 5
+  min 0
+```
+
+Scala と Kotlin は完全に重なります。ScalaCheck の `for` 内包表記と Kotest の `arbitrary { }` はどちらも逐次的な合成 DSL で、スタブも `new DataAccess { ... }` と名前付き引数の `TestDataAccess(...)` でともに容易です。Rust と TypeScript は範囲式や `fc.record` などのコンビネータで合成し、TypeScript はオブジェクトリテラルによるスタブの容易さが際立ちます。
+
+```mermaid
+---
+config:
+  radar:
+    curveTension: 0
+    marginLeft: 120
+    marginRight: 120
+---
+radar-beta
+  title OOP + FP ライブラリ言語
+  axis a1["ジェネレータ合成"], a2["型からの導出"], a3["Shrinking"], a4["スタブの容易さ"], a5["副作用の分離"]
+  curve java["Java"]{1, 1, 1, 3, 2}
+  curve csharp["C#"]{4, 5, 5, 3, 2}
+  curve python["Python"]{3, 3, 5, 2, 3}
+  curve ruby["Ruby"]{1, 1, 1, 2, 2}
+  max 5
+  min 0
+```
+
+C# は FsCheck の LINQ クエリ式と自動導出により、このグループで最も外側に広がります。Java と Ruby は専用 PBT ライブラリを使わない本シリーズの実装のため、ジェネレータと Shrinking の軸が 1 に留まります。
+
+全体として、PBT の充実度は言語グループよりも「専用ライブラリを採用しているか」で決まり、Shrinking の軸はライブラリを使うすべての言語で満点です。差が出るのは型からの導出と副作用の分離であり、型システムの強さがテスト容易性に直結することが分かります。
+
+> スコアは本シリーズの実装と各言語版の記事に基づく相対評価（1〜5）であり、言語の優劣を示すものではありません。
 
 ---
 
@@ -529,6 +679,29 @@ instance Arbitrary Attraction where
         [Attraction n' d l | n' <- shrink n] ++
         [Attraction n d' l | d' <- shrink d]
 ```
+
+### Kotlin — Kotest Property: suspend テストと Arb の合成
+
+Kotest の `FunSpec` ではテスト本体が `suspend` ラムダのため、`suspend` 関数の DataAccess や `travelGuideV3` を `runBlocking` で包まずにそのまま呼び出せます。プロパティは、アサーションを書く `checkAll` と `Boolean` を返す `forAll` の 2 通りで検証し、既定で 1,000 回の入力生成と失敗時の shrink を行います。`TestDataAccess` スタブと組み合わせれば、副作用を含む処理のプロパティも検証できます。
+
+```kotlin
+test("どんなガイドでもスコアは 0 以上 100 以下") {
+    forAll(randomGuide) { guide -> guideScore(guide) in 0..100 }
+}
+
+test("見つかるガイドは上位 3 件のアトラクションのいずれかである") {
+    checkAll(Arb.list(randomAttraction, 0..10), randomMovies) { attractions, movies ->
+        val dataAccess = TestDataAccess.of(attractions = attractions, movies = movies)
+
+        travelGuideV3(dataAccess, "any").fold(
+            ifLeft = { report -> report.badGuides.map { it.attraction } shouldBe attractions.take(3) },
+            ifRight = { guide -> guide.attraction shouldBeIn attractions.take(3) },
+        )
+    }
+}
+```
+
+時間に依存する並行処理（第 10 章）では、kotlinx-coroutines-test の `runTest` の仮想時間を使い、`delay` を実際には待たずに `currentTime` で経過時間を検証します。
 
 ### Rust — proptest: 安全性と人間工学の両立
 
@@ -574,6 +747,7 @@ PBT が必須か？
 ├─ はい → 言語に最適なライブラリを選択
 │   ├─ Haskell → QuickCheck（標準的）
 │   ├─ Scala → ScalaCheck
+│   ├─ Kotlin → Kotest Property
 │   ├─ Rust → proptest
 │   ├─ Python → Hypothesis
 │   ├─ TypeScript → fast-check
@@ -599,7 +773,7 @@ PBT が必須か？
 
 ## 12.11 まとめ
 
-本章では、11 言語のテスト戦略と PBT ライブラリを比較しました。
+本章では、12 言語のテスト戦略と PBT ライブラリを比較しました。
 
 **PBT ライブラリ一覧:**
 
@@ -607,6 +781,7 @@ PBT が必須か？
 |------|-----------|----------------|-----------|
 | Haskell | QuickCheck | `<$>`, `<*>` (Applicative) | 自動 |
 | Scala | ScalaCheck | `for` 内包表記 | 自動 |
+| Kotlin | Kotest Property | `arbitrary { }` / `Arb.bind` | 自動 |
 | Rust | proptest | `proptest!` マクロ + 範囲式 | 自動 |
 | Python | Hypothesis | `@given` + `st.builds` | 自動 |
 | TypeScript | fast-check | `fc.record` / カスタム `Gen` | 自動 |

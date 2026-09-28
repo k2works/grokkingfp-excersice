@@ -4,7 +4,7 @@
 
 関数型プログラミングでは、データは**一度作ったら変更しない**のが原則です。リストに要素を追加するとき、元のリストを変更するのではなく、新しいリストを返します。このアプローチは一見非効率に思えますが、並行処理での安全性、デバッグの容易さ、予測可能なプログラムの構築に大きな利点をもたらします。
 
-本章では、11 言語でイミュータブルなデータ操作がどのように実現されるかを横断的に比較し、以下を明らかにします：
+本章では、12 言語でイミュータブルなデータ操作がどのように実現されるかを横断的に比較し、以下を明らかにします：
 
 - リスト操作（追加・スライス・結合）の言語別イディオム
 - 旅程再計画パターンで見る「コピーオンライト」の実践
@@ -29,7 +29,7 @@ rectangle "イミュータブル" #LightGreen {
 rectangle "実現方法" #LightBlue {
   card "言語レベルで強制\n(Haskell, Clojure, Elixir)" as l1
   card "デフォルト不変 + opt-in 可変\n(Rust, F#, Scala)" as l2
-  card "ライブラリ提供\n(Java/Vavr, C#/LE, TS/fp-ts)" as l3
+  card "ライブラリ / 読み取り専用型\n(Java/Vavr, C#/LE, TS/fp-ts, Kotlin/List)" as l3
   card "慣習的に不変操作\n(Python, Ruby)" as l4
 }
 
@@ -40,7 +40,7 @@ rectangle "実現方法" #LightBlue {
 
 ## 3.2 共通の本質：コピーオンライトの原則
 
-11 言語すべてに共通するイミュータブル操作の原則は、**コピーオンライト**（Copy-on-Write）です：
+12 言語すべてに共通するイミュータブル操作の原則は、**コピーオンライト**（Copy-on-Write）です：
 
 1. **元データは変更しない**: 操作後も元のデータはそのまま残る
 2. **新しいデータを返す**: 追加・削除・更新の結果は常に新しいデータ
@@ -111,7 +111,7 @@ assert appleBook.equals(List.of("Apple", "Book"));  // 元のリストは変わ�
 
 ### 3.3.1 要素追加
 
-最も基本的なイミュータブル操作であるリストへの要素追加を 11 言語で比較します。
+最も基本的なイミュータブル操作であるリストへの要素追加を 12 言語で比較します。
 
 #### 関数型ファースト言語
 
@@ -183,6 +183,23 @@ assert(appleBookMango == List("Apple", "Book", "Mango"))
 ```
 
 Scala の `List` はイミュータブルなコレクションです。`appended` は末尾追加、`prepended` は先頭追加を行います。
+
+</details>
+
+<details>
+<summary>Kotlin 実装</summary>
+
+```kotlin
+val appleBook = listOf("Apple", "Book")
+val appleBookMango = appleBook + "Mango"
+
+appleBook shouldBe listOf("Apple", "Book")                  // 元のリストは変わらない
+appleBookMango shouldBe listOf("Apple", "Book", "Mango")    // 新しいリストが作成される
+
+listOf("a", "b").plus(listOf("c", "d")) shouldBe listOf("a", "b", "c", "d")
+```
+
+Kotlin の `List` には `plus` 演算子（`+`）が定義されており、要素またはリストを連結した新しいリストを返します。ただし `List` は読み取り専用のビューであり、実体が `MutableList` なら別の参照からの変更が見えてしまう点に注意が必要です（3.8 節参照）。
 
 </details>
 
@@ -361,6 +378,27 @@ Scala は `slice` メソッドで直接インデックス範囲を指定でき�
 </details>
 
 <details>
+<summary>Kotlin 実装</summary>
+
+```kotlin
+/** 最初の 2 要素を取得 */
+fun firstTwo(list: List<String>): List<String> = list.take(2)
+
+/** 最後の 2 要素を取得 */
+fun lastTwo(list: List<String>): List<String> = list.takeLast(2)
+
+/** start 以上 end 未満の要素を取得 */
+fun <T> slice(list: List<T>, start: Int, end: Int): List<T> = list.slice(start until end)
+
+val letters = listOf("a", "b", "c", "d")
+slice(letters, 1, 3) shouldBe listOf("b", "c")
+```
+
+Kotlin の `slice` は `IntRange` を受け取り、`start until end` で「`start` 以上 `end` 未満」を表します。Java 由来の `subList` は元のリストのビューを返すため、新しいリストを返す `slice` を使います。
+
+</details>
+
+<details>
 <summary>TypeScript 実装</summary>
 
 ```typescript
@@ -448,19 +486,19 @@ Python のスライス記法 `[start:end]` は全言語中で最も簡潔です�
 
 ### 3.3.3 スライス操作の語彙比較
 
-| 操作 | Haskell | Clojure | Elixir | F# | Scala | Rust | TypeScript | Java (Vavr) | C# (LE) | Python | Ruby |
-|------|---------|---------|--------|----|-------|------|------------|-------------|---------|--------|------|
-| 先頭 N 個 | `take n` | `(take n)` | `Enum.take(n)` | `List.truncate n` | `.take(n)` | `[..n]` | `.slice(0,n)` | `.take(n)` | `.Take(n)` | `[:n]` | `.take(n)` |
-| 先頭 N 個除去 | `drop n` | `(drop n)` | `Enum.drop(n)` | `List.skip n` | `.drop(n)` | `[n..]` | `.slice(n)` | `.drop(n)` | `.Skip(n)` | `[n:]` | `.drop(n)` |
-| 範囲指定 | `take . drop` | `(subvec)` | `Enum.slice` | `skip \|> truncate` | `.slice(s,e)` | `[s..e]` | `.slice(s,e)` | `drop.take` | `Skip.Take` | `[s:e]` | `[s...e]` |
+| 操作 | Haskell | Clojure | Elixir | F# | Scala | Kotlin | Rust | TypeScript | Java (Vavr) | C# (LE) | Python | Ruby |
+|------|---------|---------|--------|----|-------|--------|------|------------|-------------|---------|--------|------|
+| 先頭 N 個 | `take n` | `(take n)` | `Enum.take(n)` | `List.truncate n` | `.take(n)` | `.take(n)` | `[..n]` | `.slice(0,n)` | `.take(n)` | `.Take(n)` | `[:n]` | `.take(n)` |
+| 先頭 N 個除去 | `drop n` | `(drop n)` | `Enum.drop(n)` | `List.skip n` | `.drop(n)` | `.drop(n)` | `[n..]` | `.slice(n)` | `.drop(n)` | `.Skip(n)` | `[n:]` | `.drop(n)` |
+| 範囲指定 | `take . drop` | `(subvec)` | `Enum.slice` | `skip \|> truncate` | `.slice(s,e)` | `.slice(s until e)` | `[s..e]` | `.slice(s,e)` | `drop.take` | `Skip.Take` | `[s:e]` | `[s...e]` |
 
-**発見**: `take` / `drop` という語彙は Haskell から広まり、Clojure, Elixir, Scala, Java (Vavr), Ruby で共有されています。一方、Python のスライス記法 `[:]` と Rust のスライス記法 `[..]` は独自の進化を遂げた簡潔な表現です。
+**発見**: `take` / `drop` という語彙は Haskell から広まり、Clojure, Elixir, Scala, Kotlin, Java (Vavr), Ruby で共有されています。一方、Python のスライス記法 `[:]` と Rust のスライス記法 `[..]` は独自の進化を遂げた簡潔な表現です。
 
 ---
 
 ## 3.4 旅程再計画パターン：コピーオンライトの実践
 
-旅行の旅程（都市リスト）を「変更せずに新しい旅程を作る」パターンは、イミュータブル操作の本質を最もよく表しています。指定した都市の前に新しい都市を挿入する `replan` 関数を 11 言語で比較します。
+旅行の旅程（都市リスト）を「変更せずに新しい旅程を作る」パターンは、イミュータブル操作の本質を最もよく表しています。指定した都市の前に新しい都市を挿入する `replan` 関数を 12 言語で比較します。
 
 ### ビジネスロジック
 
@@ -506,7 +544,7 @@ def replan(plan: list[str], new_city: str, before_city: str) -> list[str]:
         return plan + [new_city]
 ```
 
-### 全 11 言語の実装
+### 全 12 言語の実装
 
 #### 関数型ファースト言語
 
@@ -608,6 +646,30 @@ val planB = replan(planA, "Vienna", "Kraków")
 assert(planB == List("Paris", "Berlin", "Vienna", "Kraków"))
 assert(planA == List("Paris", "Berlin", "Kraków"))  // 元の計画は変わらない！
 ```
+
+</details>
+
+<details>
+<summary>Kotlin 実装</summary>
+
+```kotlin
+fun replan(plan: List<String>, newCity: String, beforeCity: String): List<String> {
+    val beforeCityIndex = plan.indexOf(beforeCity)
+    val citiesBefore = plan.take(beforeCityIndex)
+    val citiesAfter = plan.drop(beforeCityIndex)
+    return citiesBefore + newCity + citiesAfter
+}
+
+/** 拡張関数版の replan - beforeCity の前に newCity を挿入 */
+fun List<String>.insertedBefore(beforeCity: String, newCity: String): List<String> =
+    replan(this, newCity, beforeCity)
+
+val planA = listOf("Paris", "Berlin", "Kraków")
+replan(planA, "Vienna", "Kraków") shouldBe listOf("Paris", "Berlin", "Vienna", "Kraków")
+planA shouldBe listOf("Paris", "Berlin", "Kraków")   // 元の計画は変わらない
+```
+
+Kotlin は `take` / `drop` と `+` 演算子で 3 ステップをそのまま書けます。拡張関数を使うと `planA.insertedBefore("Kraków", "Vienna").insertedBefore("Paris", "London")` のように、クラスに手を入れずに変換を左から右へ連ねられます。
 
 </details>
 
@@ -788,7 +850,7 @@ assert move_first_two_to_end(["a", "b", "c"]) == ["c", "a", "b"]
 **発見**: Python のスライス記法では `lst[2:] + lst[:2]` と 1 行で表現でき、全言語中で最も簡潔です。一方、Haskell と Scala は `take` / `drop` の組み合わせで明示的にデータの流れを示します。
 
 <details>
-<summary>残り 8 言語の実装</summary>
+<summary>残り 9 言語の実装</summary>
 
 **Clojure**:
 ```clojure
@@ -813,6 +875,15 @@ let moveFirstTwoToEnd (list: 'a list) : 'a list =
     let first = firstTwo list
     let rest = list |> List.skip 2
     rest @ first
+```
+
+**Kotlin**:
+```kotlin
+fun movedFirstTwoToTheEnd(list: List<String>): List<String> {
+    val firstTwo = list.take(2)
+    val withoutFirstTwo = list.drop(2)
+    return withoutFirstTwo + firstTwo
+}
 ```
 
 **Java (Vavr)**:
@@ -932,6 +1003,24 @@ const p2 = withX(p1, 10)
 // p2.x === 10
 ```
 
+### Kotlin: data class の copy
+
+Kotlin では `val` プロパティだけを持つ `data class` を定義すると、`copy` で一部のプロパティだけを変えた新しいインスタンスを作れます（Kotlin 版では第 4 章で扱います）。
+
+```kotlin
+data class ProgrammingLanguage(val name: String, val year: Int)
+
+/** 名前だけを変えた新しいインスタンスを返す */
+fun renamed(language: ProgrammingLanguage, newName: String): ProgrammingLanguage =
+    language.copy(name = newName)
+
+val kotlin = ProgrammingLanguage("Kotlin", 2011)
+renamed(kotlin, "Kotlin 2") shouldBe ProgrammingLanguage("Kotlin 2", 2011)
+kotlin.name shouldBe "Kotlin"   // 元のインスタンスは変わらない
+```
+
+`copy` は名前付き引数で変更したいプロパティだけを指定でき、TypeScript のスプレッド `{ ...point, x: newX }` や Scala の case class の `copy` に相当します。
+
 ---
 
 ## 3.7 比較分析：3 つの発見
@@ -959,6 +1048,7 @@ rectangle "Level 3: ライブラリ提供" #LightYellow {
   card "Java + Vavr" as jv
   card "C# + LanguageExt" as cs
   card "TypeScript + readonly" as ts
+  card "Kotlin (読み取り専用 List)" as kt
 }
 
 rectangle "Level 4: 慣習的" #LightCoral {
@@ -973,12 +1063,12 @@ rectangle "Level 4: 慣習的" #LightCoral {
 |--------|------|------|
 | **強制** | Haskell, Clojure, Elixir | ミュータブルな操作自体が存在しない（または特殊な仕組みが必要） |
 | **デフォルト不変** | Rust, F#, Scala | デフォルトは不変だが、`mut` / `mutable` で可変に切り替え可能 |
-| **ライブラリ提供** | Java (Vavr), C# (LE), TypeScript | 標準ライブラリはミュータブル、FP ライブラリでイミュータブルを実現 |
+| **ライブラリ提供** | Java (Vavr), C# (LE), TypeScript, Kotlin | 標準ライブラリはミュータブル（または読み取り専用ビュー）で、FP ライブラリや読み取り専用型（`readonly` / Kotlin の `List`）で不変性を補う |
 | **慣習的** | Python, Ruby | 言語自体に不変保証はなく、開発者の規律に依存 |
 
 ### 発見 2: スライス操作のイディオムは 3 系統に分かれる
 
-1. **take/drop 系**: Haskell, Clojure, Elixir, Scala, Java (Vavr), Ruby
+1. **take/drop 系**: Haskell, Clojure, Elixir, Scala, Kotlin, Java (Vavr), Ruby
    - 関数型言語の伝統的なスタイル。意図が明確
 2. **インデックス記法系**: Python `[:]`, Rust `[..]`
    - 最も簡潔。Python のスライス記法は特に強力
@@ -987,7 +1077,7 @@ rectangle "Level 4: 慣習的" #LightCoral {
 
 ### 発見 3: replan パターンの共通構造
 
-11 言語すべてで `replan` 関数は同じ 3 ステップ構造を共有しています：
+12 言語すべてで `replan` 関数は同じ 3 ステップ構造を共有しています：
 
 ```
 1. インデックスを検索
@@ -996,6 +1086,100 @@ rectangle "Level 4: 慣習的" #LightCoral {
 ```
 
 言語間の違いは「この 3 ステップをどう表現するか」だけです。これは関数型プログラミングの**アルゴリズムの言語独立性**を端的に示しています。
+
+### レーダーチャートで見る 12 言語
+
+イミュータブルなデータ操作について、5 つの評価軸で 12 言語を相対評価します。保証レベルだけでなく、操作の書きやすさとコピーの効率も含めて比較します。
+
+| 評価軸 | 5 点 | 3 点 | 1 点 |
+|--------|------|------|------|
+| 不変性の保証 | ミュータブルな操作自体が言語に存在しない | ライブラリや読み取り専用型で不変性を補う | 言語に不変保証がなく慣習に依存 |
+| 追加・結合構文 | `+` などの演算子 1 つで新しいリストを作れる | 専用メソッド（`append` / `Add` 等）で書ける | `clone` してから可変操作するなど手順が多い |
+| スライス表現 | 専用記法で範囲を最も簡潔に書ける | `take` / `drop` などの組み合わせが必要 | 範囲指定に手間がかかる |
+| 構造共有 | 永続データ構造で追加時もほぼコピー不要 | 連結リストなどで部分的に共有する | 操作のたびに全要素をコピーする |
+| 学習コスト | 既存の知識でほぼ書ける（低コスト） | 新しい概念がいくつか必要 | 独自の概念の習得が前提（高コスト） |
+
+| 言語 | 不変性の保証 | 追加・結合構文 | スライス表現 | 構造共有 | 学習コスト |
+|------|:---:|:---:|:---:|:---:|:---:|
+| Haskell | 5 | 4 | 4 | 4 | 2 |
+| Clojure | 5 | 4 | 4 | 5 | 3 |
+| Elixir | 5 | 4 | 4 | 4 | 4 |
+| F# | 4 | 4 | 3 | 4 | 3 |
+| Scala | 4 | 3 | 4 | 5 | 3 |
+| Kotlin | 3 | 5 | 4 | 1 | 4 |
+| Rust | 4 | 2 | 5 | 1 | 1 |
+| TypeScript | 3 | 4 | 3 | 1 | 4 |
+| Java | 3 | 3 | 3 | 4 | 3 |
+| C# | 3 | 3 | 3 | 4 | 3 |
+| Python | 1 | 5 | 5 | 1 | 5 |
+| Ruby | 1 | 5 | 4 | 1 | 5 |
+
+```mermaid
+---
+config:
+  radar:
+    curveTension: 0
+    marginLeft: 120
+    marginRight: 120
+---
+radar-beta
+  title 関数型ファースト言語
+  axis a1["不変性の保証"], a2["追加・結合構文"], a3["スライス表現"], a4["構造共有"], a5["学習コスト"]
+  curve haskell["Haskell"]{5, 4, 4, 4, 2}
+  curve clojure["Clojure"]{5, 4, 4, 5, 3}
+  curve elixir["Elixir"]{5, 4, 4, 4, 4}
+  curve fsharp["F#"]{4, 4, 3, 4, 3}
+  max 5
+  min 0
+```
+
+関数型ファースト言語は不変性の保証と構造共有がそろって高く、ほぼ同じ形の大きな五角形になります。中でも Clojure は永続データ構造による構造共有で最高点です。
+
+```mermaid
+---
+config:
+  radar:
+    curveTension: 0
+    marginLeft: 120
+    marginRight: 120
+---
+radar-beta
+  title マルチパラダイム言語
+  axis a1["不変性の保証"], a2["追加・結合構文"], a3["スライス表現"], a4["構造共有"], a5["学習コスト"]
+  curve scala["Scala"]{4, 3, 4, 5, 3}
+  curve kotlin["Kotlin"]{3, 5, 4, 1, 4}
+  curve rust["Rust"]{4, 2, 5, 1, 1}
+  curve typescript["TypeScript"]{3, 4, 3, 1, 4}
+  max 5
+  min 0
+```
+
+マルチパラダイム言語は形がばらばらで、Scala は永続コレクションで構造共有が高く、Rust はスライス記法が簡潔な一方で `clone` による明示的コピーが必要です。Kotlin は `+` 演算子で追加・結合が最も書きやすい反面、`plus` は呼び出すたびに要素をコピーし、読み取り専用 `List` は不変を保証しないため、保証と構造共有の軸が低くなります。
+
+```mermaid
+---
+config:
+  radar:
+    curveTension: 0
+    marginLeft: 120
+    marginRight: 120
+---
+radar-beta
+  title OOP + FP ライブラリ言語
+  axis a1["不変性の保証"], a2["追加・結合構文"], a3["スライス表現"], a4["構造共有"], a5["学習コスト"]
+  curve java["Java"]{3, 3, 3, 4, 3}
+  curve csharp["C#"]{3, 3, 3, 4, 3}
+  curve python["Python"]{1, 5, 5, 1, 5}
+  curve ruby["Ruby"]{1, 5, 4, 1, 5}
+  max 5
+  min 0
+```
+
+Java と C# は FP ライブラリの永続コレクションにより、構文は冗長でも構造共有の軸で安定した形になります。Python と Ruby は `+` とスライス記法で書きやすさは最高ですが、不変性の保証と構造共有は最小値です。
+
+全体として、「書きやすさ」（追加・結合構文、スライス表現）と「保証・効率」（不変性の保証、構造共有）はトレードオフになりやすく、両方が高いのは関数型ファースト言語と Scala に限られます。Kotlin は Python / Ruby と同じく書きやすさ寄りの形で、`val` と新しいリストを返す規律によって実質的な不変性を確保する言語です。
+
+> スコアは本シリーズの実装と各言語版の記事に基づく相対評価（1〜5）であり、言語の優劣を示すものではありません。
 
 ---
 
@@ -1021,6 +1205,35 @@ let plan_a = vec!["Paris", "Berlin", "Kraków"];
 let plan_b = plan_a.clone();  // 明示的コピー
 // plan_a は引き続き使用可能（clone したため）
 ```
+
+### Kotlin: 読み取り専用 ≠ イミュータブル
+
+Kotlin のコレクションには読み取り専用の `List` と変更操作を持つ `MutableList` があり、`MutableList` は `List` を継承しています。そのため `List` 型は「この参照からは変更できない」ことを表すだけで、中身が変わらないことは保証しません。
+
+```kotlin
+test("MutableList を List として参照しても、元のリストの変更は見えてしまう") {
+    val mutable = mutableListOf("a", "b")
+    val readOnly: List<String> = mutable
+
+    mutable.add("c")
+
+    readOnly shouldBe listOf("a", "b", "c")
+}
+```
+
+外部から受け取ったリストを保持する場合は `toList()` でコピーを取り、ループで組み立てたい場合は `buildList` で可変操作をブロックの内側に閉じ込めます。
+
+```kotlin
+/** 呼び出し時点の内容を新しいリストとしてコピーする */
+fun <T> snapshotOf(list: List<T>): List<T> = list.toList()
+
+/** 1 から n までの 2 乗のリストを作る（可変操作は buildList の内側に閉じ込める） */
+fun squares(n: Int): List<Int> = buildList {
+    for (i in 1..n) add(i * i)
+}
+```
+
+Kotlin 版では「`MutableList` を関数の外に公開せず、関数は常に新しい `List` を返す」という規律で、実質的なイミュータブル性を確保しています。
 
 ### Elixir: 先頭追加の効率性
 
@@ -1062,6 +1275,7 @@ paris = City("Paris", 2_161_000)
 | 大規模データの効率的な不変操作 | Clojure | 永続データ構造による構造共有 |
 | メモリ安全性と性能の両立 | Rust | 所有権による安全な参照とコピー制御 |
 | 既存の Java/C# 資産を活かしつつ FP | Java + Vavr, C# + LanguageExt | ライブラリ導入で段階的移行可能 |
+| JVM で追加ライブラリなしに不変スタイルを採りたい | Kotlin | `List` + `plus`、`buildList`、`data class` の `copy` が標準で使える（読み取り専用ビューである点に注意） |
 | 学習コストを最小にしたい | Python, Ruby | スライス記法や `+` 演算子で直感的に操作可能 |
 | Web フロントエンドでの状態管理 | TypeScript + readonly | React/Redux との親和性が高い |
 
@@ -1083,12 +1297,12 @@ paris = City("Paris", 2_161_000)
 
 ## 3.10 まとめ
 
-本章では、11 言語でのイミュータブルなデータ操作を比較し、以下を確認しました：
+本章では、12 言語でのイミュータブルなデータ操作を比較し、以下を確認しました：
 
 **共通の原則**:
 
 - コピーオンライト：元データを変更せず、新しいデータを返す
-- replan パターン（検索→分割→結合）は 11 言語すべてで同じ構造
+- replan パターン（検索→分割→結合）は 12 言語すべてで同じ構造
 - `take` / `drop` の語彙は言語を超えて共有されている
 
 **言語間の差異**:
@@ -1096,6 +1310,7 @@ paris = City("Paris", 2_161_000)
 - 不変性の保証は 4 段階（強制→デフォルト不変→ライブラリ→慣習）
 - スライス操作のイディオムは 3 系統（take/drop、インデックス記法、メソッドチェーン）
 - Clojure の永続データ構造と Rust の所有権システムは、異なるアプローチで同じ安全性を実現
+- Kotlin の `List` は読み取り専用のビューであり、イミュータブルであることは保証しないため、新しいリストを返す規律で補う
 
 **学び**:
 
@@ -1110,6 +1325,7 @@ paris = City("Paris", 2_161_000)
 | 言語 | 記事リンク |
 |------|-----------|
 | Scala | [Part II: 関数型スタイルのプログラミング](../scala/part-2.md) |
+| Kotlin | [Part II: 関数型スタイルのプログラミング](../kotlin/part-2.md) |
 | Java | [Part II: 関数型スタイルのプログラミング](../java/part-2.md) |
 | F# | [Part II: 関数型スタイルのプログラミング](../fsharp/part-2.md) |
 | C# | [Part II: 関数型スタイルのプログラミング](../csharp/part-2.md) |

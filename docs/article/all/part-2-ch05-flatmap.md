@@ -4,7 +4,7 @@
 
 前章で学んだ `map` は、各要素を 1 つの値に変換する操作でした。しかし、各要素から**リスト**が生まれる場合、`map` だけではリストがネストしてしまいます。`flatMap`（= `map` + `flatten`）はこの問題を解決し、ネストした変換を平坦に連鎖させる関数型プログラミングの中核パターンです。
 
-本章では、11 言語での `flatMap` の実装を横断的に比較し、以下を明らかにします：
+本章では、12 言語（Haskell, Clojure, Elixir, F#, Scala, Kotlin, Rust, TypeScript, Java, C#, Python, Ruby）での `flatMap` の実装を横断的に比較し、以下を明らかにします：
 
 - `flatMap` の本質（`map` + `flatten`）と 3 つのサイズ変化パターン
 - ネストした `flatMap` を読みやすくする糖衣構文の多様性
@@ -37,7 +37,7 @@ rectangle "本質" #LightBlue {
 
 ## 5.2 共通の本質：flatMap = map + flatten
 
-11 言語すべてに共通する `flatMap` の定義は、以下の 2 ステップです：
+12 言語すべてに共通する `flatMap` の定義は、以下の 2 ステップです：
 
 1. **map**: 各要素に関数を適用し、リストのリストを生成
 2. **flatten**: ネストしたリストを 1 段階平坦化
@@ -151,7 +151,7 @@ List(1, 2, 3).flatMap(i => if (i % 2 == 0) List(i) else List.empty)
 **発見**: `flatMap` は `map` と `filter` の両方を包含する、より一般的な操作です。空リストを返すことでフィルタリングが、単一要素リストを返すことで変換が実現できます。
 
 <details>
-<summary>全 11 言語のサイズ変化パターン</summary>
+<summary>他の 11 言語のサイズ変化パターン</summary>
 
 **Haskell**:
 ```haskell
@@ -179,6 +179,13 @@ Enum.flat_map([1, 2, 3], fn i -> if rem(i, 2) == 0, do: [i], else: [] end)  # [2
 [1; 2; 3] |> List.collect (fun i -> [i; i + 10])              // [1;11;2;12;3;13]
 [1; 2; 3] |> List.collect (fun i -> [i * 2])                  // [2;4;6]
 [1; 2; 3] |> List.collect (fun i -> if i % 2 = 0 then [i] else [])  // [2]
+```
+
+**Kotlin**:
+```kotlin
+listOf(1, 2, 3).flatMap { listOf(it, it + 10) }                      // [1, 11, 2, 12, 3, 13]
+listOf(1, 2, 3).flatMap { listOf(it * 2) }                           // [2, 4, 6]
+listOf(1, 2, 3).flatMap { if (it % 2 == 0) listOf(it) else emptyList() }  // [2]
 ```
 
 **Rust**:
@@ -209,6 +216,13 @@ Seq(1, 2, 3).Bind(i => Seq(i * 2))                      // Seq(2,4,6)
 Seq(1, 2, 3).Bind(i => i % 2 == 0 ? Seq(i) : Empty)    // Seq(2)
 ```
 
+**Python**:
+```python
+[x for i in [1, 2, 3] for x in [i, i + 10]]              # [1, 11, 2, 12, 3, 13]
+[x for i in [1, 2, 3] for x in [i * 2]]                  # [2, 4, 6]
+[x for i in [1, 2, 3] for x in ([i] if i % 2 == 0 else [])]  # [2]
+```
+
 **Ruby**:
 ```ruby
 [1, 2, 3].flat_map { |i| [i, i + 10] }                  # [1, 11, 2, 12, 3, 13]
@@ -222,7 +236,7 @@ Seq(1, 2, 3).Bind(i => i % 2 == 0 ? Seq(i) : Empty)    // Seq(2)
 
 ## 5.4 ネストした flatMap：書籍推薦パターン
 
-`flatMap` の真価は、複数の段階をまたぐ変換の連鎖です。書籍→著者→映画化作品→推薦メッセージという 3 段階の変換を 11 言語で比較します。
+`flatMap` の真価は、複数の段階をまたぐ変換の連鎖です。書籍→著者→映画化作品→推薦メッセージという 3 段階の変換を 12 言語で比較します。
 
 ### ビジネスロジック
 
@@ -296,7 +310,7 @@ recommendations = [
 ]
 ```
 
-### 全 11 言語の実装
+### 全 12 言語の実装
 
 #### 関数型ファースト言語
 
@@ -400,6 +414,33 @@ val recommendations = books.flatMap(book =>
   )
 )
 ```
+
+</details>
+
+<details>
+<summary>Kotlin 実装</summary>
+
+```kotlin
+data class Book(val title: String, val authors: List<String>)
+data class Movie(val title: String)
+
+fun bookAdaptations(author: String): List<Movie> =
+    when (author) {
+        "Tolkien" -> listOf(Movie("An Unexpected Journey"), Movie("The Desolation of Smaug"))
+        else -> emptyList()
+    }
+
+fun recommendations(books: List<Book>): List<String> =
+    books.flatMap { book ->
+        book.authors.flatMap { author ->
+            bookAdaptations(author).map { movie ->
+                "You may like ${movie.title}, because you liked $author's ${book.title}"
+            }
+        }
+    }
+```
+
+ネストしたラムダでは、どの階層の `it` か分かりにくくなるため、`book`、`author`、`movie` と引数に名前を付けるのが Kotlin の一般的なスタイルです。
 
 </details>
 
@@ -647,11 +688,39 @@ for book in books:
  for movie in book_adaptations(author)]
 ```
 
+### Kotlin: sequence { } ビルダー（for 内包表記の代替）
+
+Kotlin には for 内包表記や do 記法に相当する構文がありません。代わりに、ネストした `flatMap` か、`for` ループと `yield` で値を生成する `sequence { }` ビルダーを使います。
+
+```kotlin
+// ネストした flatMap
+fun recommendations(books: List<Book>): List<String> =
+    books.flatMap { book ->
+        book.authors.flatMap { author ->
+            bookAdaptations(author).map { movie ->
+                "You may like ${movie.title}, because you liked $author's ${book.title}"
+            }
+        }
+    }
+
+// sequence ビルダー（等価）
+fun recommendationsWithSequence(books: List<Book>): List<String> =
+    sequence {
+        for (book in books)
+            for (author in book.authors)
+                for (movie in bookAdaptations(author))
+                    yield("You may like ${movie.title}, because you liked $author's ${book.title}")
+    }.toList()
+```
+
+`sequence { }` は遅延シーケンスを返すため、最後に `toList()` で変換します。平坦に書ける一方で `Iterable` / `Sequence` 専用であり、`Either` などには使えません（Part III で学ぶ Arrow の `either { }` DSL がその役割を担います）。
+
 ### 糖衣構文の比較表
 
 | 言語 | 糖衣構文 | flatMap の名前 | ガード式 |
 |------|---------|---------------|---------|
 | **Scala** | `for { x <- xs } yield ...` | `flatMap` | `if condition` |
+| **Kotlin** | `sequence { for (x in xs) yield(...) }` | `flatMap` | `sequence` 内の `if` / `filter` |
 | **Haskell** | `do { x <- xs; ... }` | `concatMap` / `>>=` | ガード関数 / リスト内包表記 |
 | **F#** | `[ for x in xs do ... ]` | `List.collect` | `if condition then` |
 | **C#** | `from x in xs select ...` | `Bind` | `where condition` |
@@ -663,7 +732,7 @@ for book in books:
 | **TypeScript** | `pipe()` + `RA.chain` | `RA.chain` | `RA.filter` との組み合わせ |
 | **Java** | ラムダのネスト | `flatMap` | `.filter()` との組み合わせ |
 
-**発見**: 糖衣構文を持つ言語（Scala, Haskell, F#, C#, Clojure, Elixir, Python）とそうでない言語（Ruby, Rust, TypeScript, Java）で、ネストした `flatMap` の可読性に大きな差が生まれます。
+**発見**: 糖衣構文を持つ言語（Scala, Haskell, F#, C#, Clojure, Elixir, Python）とそうでない言語（Ruby, Rust, TypeScript, Java）で、ネストした `flatMap` の可読性に大きな差が生まれます。Kotlin は専用の内包表記を持ちませんが、コレクションに限っては `sequence { }` ビルダーで近い平坦さを得られる中間的な位置にあります。
 
 ---
 
@@ -735,7 +804,7 @@ inside = [
 ```
 
 <details>
-<summary>残り 8 言語の実装</summary>
+<summary>残り 9 言語の実装</summary>
 
 **Haskell**（リスト内包表記）:
 ```haskell
@@ -766,6 +835,23 @@ for r <- radiuses,
     inside?(point, r) do
   "Point(#{point.x}, #{point.y}) is within a radius of #{r}"
 end
+```
+
+**Kotlin**（sequence ビルダー内の `if` / filter）:
+```kotlin
+fun insidePointsWithSequence(points: List<Point>, radiuses: List<Int>): List<String> =
+    sequence {
+        for (r in radiuses)
+            for (point in points)
+                if (isInside(point, r)) yield("$point is within a radius of $r")
+    }.toList()
+
+fun insidePointsWithFilter(points: List<Point>, radiuses: List<Int>): List<String> =
+    radiuses.flatMap { r ->
+        points.filter { point -> isInside(point, r) }
+            .map { point -> "$point is within a radius of $r" }
+    }
+// どちらも ["Point(x=1, y=1) is within a radius of 2"]
 ```
 
 **Java (Vavr)**:
@@ -820,7 +906,7 @@ end
 
 | 名前 | 言語 | 由来 |
 |------|------|------|
-| `flatMap` | Scala, Java (Vavr), Rust, Ruby | map + flatten の直訳 |
+| `flatMap` | Scala, Kotlin, Java (Vavr), Rust, Ruby | map + flatten の直訳 |
 | `concatMap` | Haskell | map + concat（Haskell のリスト結合は `concat`） |
 | `mapcat` | Clojure | map + concat（Clojure 独自の命名） |
 | `Bind` | C# (LanguageExt) | モナドの `>>=`（bind 演算子）に由来 |
@@ -836,7 +922,7 @@ end
 | 可読性 | 言語 | 理由 |
 |--------|------|------|
 | **高い** | Scala (for), Haskell (do), F# (seq), C# (LINQ), Clojure (for), Elixir (for), Python (内包表記) | 専用の糖衣構文でネストが平坦化される |
-| **中程度** | Ruby | ブロック構文が do...end で視覚的に区切られる |
+| **中程度** | Ruby, Kotlin | Ruby はブロック構文が do...end で視覚的に区切られる。Kotlin は `sequence { }` で平坦化できるが、`Iterable` / `Sequence` 専用 |
 | **低い** | Java, Rust, TypeScript | ラムダのネスト / 所有権の clone / pipe のネストが必要 |
 
 特に Rust は、所有権システムに起因する `clone()` と `move` の記述がネストした `flatMap` の可読性を著しく下げます。
@@ -868,6 +954,100 @@ safe_calculation(100, 0, 5)   # => []  （失敗が伝播）
 ```
 
 空リストが「失敗」を、単一要素リストが「成功」を表し、`flat_map` で連鎖させる — これは Part III で学ぶ `Option` / `Either` のモナド的合成と本質的に同じ構造です。
+
+### レーダーチャートで見る 12 言語
+
+`flatMap` とその糖衣構文に固有の 5 つの評価軸で、12 言語を整理します。「ネストをどれだけ平坦に書けるか」と「その書き方がリスト以外にも通用するか」の違いが、チャートの形に表れます。
+
+| 評価軸 | 5 点 | 3 点 | 1 点 |
+|--------|------|------|------|
+| 平坦化構文 | 専用の内包表記・do 記法でネストを平坦に書ける | 代替手段（ビルダー、ブロック）で部分的に平坦化できる | ラムダのネストをそのまま書くしかない |
+| ガード表現 | 糖衣構文の中に条件を直接書ける | `filter` 系との組み合わせで表現する | 空リストを返す `flatMap` などで手動表現する |
+| 汎用性 | 同じ構文が `Option` / `Either` / `IO` などにも使える | `flatMap` 系の関数は共通だが構文は限定的 | 構文がリスト（イテラブル）専用 |
+| 結果型の制御 | 結果のコレクション型を柔軟に指定できる | 変換関数で後から型を変える | 結果の型がほぼ固定される |
+| 学習コスト | 既存の知識で直感的に使える（高得点ほど低コスト） | 独自の記法や命名をいくつか学ぶ必要がある | 所有権やライブラリの概念など前提知識が多い |
+
+| 言語 | 平坦化構文 | ガード表現 | 汎用性 | 結果型の制御 | 学習コスト |
+|------|:---:|:---:|:---:|:---:|:---:|
+| Haskell | 5 | 5 | 5 | 3 | 2 |
+| Clojure | 5 | 5 | 2 | 4 | 3 |
+| Elixir | 5 | 5 | 2 | 5 | 4 |
+| F# | 5 | 5 | 5 | 4 | 4 |
+| Scala | 5 | 5 | 5 | 4 | 3 |
+| Kotlin | 3 | 4 | 3 | 4 | 4 |
+| Rust | 1 | 3 | 3 | 5 | 2 |
+| TypeScript | 1 | 3 | 4 | 2 | 2 |
+| Java | 1 | 3 | 3 | 3 | 3 |
+| C# | 5 | 5 | 5 | 3 | 3 |
+| Python | 4 | 5 | 1 | 4 | 5 |
+| Ruby | 2 | 3 | 2 | 3 | 4 |
+
+```mermaid
+---
+config:
+  radar:
+    curveTension: 0
+    marginLeft: 120
+    marginRight: 120
+---
+radar-beta
+  title 関数型ファースト言語
+  axis a1["平坦化構文"], a2["ガード表現"], a3["汎用性"], a4["結果型の制御"], a5["学習コスト"]
+  curve haskell["Haskell"]{5, 5, 5, 3, 2}
+  curve clojure["Clojure"]{5, 5, 2, 4, 3}
+  curve elixir["Elixir"]{5, 5, 2, 5, 4}
+  curve fsharp["F#"]{5, 5, 5, 4, 4}
+  max 5
+  min 0
+```
+
+関数型ファースト言語はすべて専用の糖衣構文とガード式を持ち、「平坦化構文」と「ガード表現」が満点でそろいます。差が出るのは「汎用性」で、do 記法やコンピュテーション式がモナド全般に使える Haskell と F# に対し、Clojure と Elixir の `for` はコレクション専用です。
+
+```mermaid
+---
+config:
+  radar:
+    curveTension: 0
+    marginLeft: 120
+    marginRight: 120
+---
+radar-beta
+  title マルチパラダイム言語
+  axis a1["平坦化構文"], a2["ガード表現"], a3["汎用性"], a4["結果型の制御"], a5["学習コスト"]
+  curve scala["Scala"]{5, 5, 5, 4, 3}
+  curve kotlin["Kotlin"]{3, 4, 3, 4, 4}
+  curve rust["Rust"]{1, 3, 3, 5, 2}
+  curve typescript["TypeScript"]{1, 3, 4, 2, 2}
+  max 5
+  min 0
+```
+
+マルチパラダイム言語は形が大きく分かれます。for 内包表記を持つ Scala が全方位に広いのに対し、Kotlin は内包表記を持たない代わりに `sequence { }` ビルダーで中程度の平坦化を実現し、`flatMapTo` で結果の型も指定できます。Rust は `collect` による結果型の制御に優れる一方、ネストの平坦化は苦手です。
+
+```mermaid
+---
+config:
+  radar:
+    curveTension: 0
+    marginLeft: 120
+    marginRight: 120
+---
+radar-beta
+  title OOP + FP ライブラリ言語
+  axis a1["平坦化構文"], a2["ガード表現"], a3["汎用性"], a4["結果型の制御"], a5["学習コスト"]
+  curve java["Java"]{1, 3, 3, 3, 3}
+  curve csharp["C#"]{5, 5, 5, 3, 3}
+  curve python["Python"]{4, 5, 1, 4, 5}
+  curve ruby["Ruby"]{2, 3, 2, 3, 4}
+  max 5
+  min 0
+```
+
+OOP + FP ライブラリ言語では、LINQ クエリ式を持つ C# が関数型ファースト言語に匹敵する形になります。Python はリスト内包表記で平坦化とガードに強い反面、構文がイテラブル専用なため「汎用性」が最も低くなります。
+
+全体として、「平坦化構文」の有無がチャートの形を最も大きく左右し、専用構文を持つ 7 言語とそれ以外で明確に分かれます。さらに「汎用性」が高い言語ほど、Part III 以降の `Option` / `Either` / `IO` のモナド的合成を同じ書き方で続けられます。
+
+> スコアは本シリーズの実装と各言語版の記事に基づく相対評価（1〜5）であり、言語の優劣を示すものではありません。
 
 ---
 
@@ -904,6 +1084,25 @@ for { a <- List(1, 2); b <- Set(2, 1) } yield a * b
 for { a <- Set(1, 2); b <- List(2, 1) } yield a * b
 // Set(2, 1, 4) — 重複なし
 ```
+
+### Kotlin: Iterable.flatMap は常に List を返す
+
+Scala の for 内包表記は最初のジェネレータの型に結果が従いますが、Kotlin の `Iterable.flatMap` はレシーバーが `Set` でも常に `List` を返します。結果を `Set` にしたい場合は、`flatMapTo` で出力先を明示します。
+
+```kotlin
+/** Set から始めても Iterable.flatMap は List を返す */
+fun productsFromSet(first: Set<Int>, second: List<Int>): List<Int> =
+    first.flatMap { a -> second.map { b -> a * b } }
+
+/** flatMapTo で結果のコレクションを Set に指定する */
+fun distinctProducts(first: Set<Int>, second: List<Int>): Set<Int> =
+    first.flatMapTo(mutableSetOf()) { a -> second.map { b -> a * b } }
+
+productsFromSet(setOf(1, 2), listOf(2, 1))    // [2, 1, 4, 2] — 重複あり
+distinctProducts(setOf(1, 2), listOf(2, 1))   // [2, 1, 4] — 重複なし（Set）
+```
+
+また、Kotlin の `flatMap` はラムダが `List` 以外の `Iterable`（`IntRange` や `split` の結果など）を返しても受け付けます（`ends.flatMap { n -> 1..n }`）。
 
 ### Haskell: リスト内包表記と do 記法の二重表現
 
@@ -966,6 +1165,7 @@ pipe([1, 0, 5], RA.traverse(O.Applicative)(safeDivide))
 | Lisp の伝統とマクロ | for 内包表記 | Clojure |
 | パターンマッチとの統合 | for 内包表記 | Elixir |
 | 学習コストの低さ | リスト内包表記 | Python |
+| for ループの感覚で平坦に書く | `sequence { }` ビルダー | Kotlin |
 
 ### flatMap の導入戦略
 
@@ -987,7 +1187,7 @@ pipe([1, 0, 5], RA.traverse(O.Applicative)(safeDivide))
 
 ## 5.10 まとめ
 
-本章では、11 言語での `flatMap` の実装を比較し、以下を確認しました：
+本章では、12 言語での `flatMap` の実装を比較し、以下を確認しました：
 
 **共通の原則**:
 
@@ -1000,6 +1200,7 @@ pipe([1, 0, 5], RA.traverse(O.Applicative)(safeDivide))
 - 命名は 6 種類に分裂（flatMap, concatMap, mapcat, Bind, List.collect, chain）
 - 糖衣構文の有無が可読性を決定的に分ける（7 言語が専用構文を持つ）
 - Rust の所有権システムはネストした `flatMap` の可読性に影響する
+- Kotlin は内包表記を持たず、ネストした `flatMap` と `sequence { }` ビルダーで代替する
 
 **学び**:
 
@@ -1014,6 +1215,7 @@ pipe([1, 0, 5], RA.traverse(O.Applicative)(safeDivide))
 | 言語 | 記事リンク |
 |------|-----------|
 | Scala | [Part II: 関数型スタイルのプログラミング](../scala/part-2.md) |
+| Kotlin | [Part II: 関数型スタイルのプログラミング](../kotlin/part-2.md) |
 | Java | [Part II: 関数型スタイルのプログラミング](../java/part-2.md) |
 | F# | [Part II: 関数型スタイルのプログラミング](../fsharp/part-2.md) |
 | C# | [Part II: 関数型スタイルのプログラミング](../csharp/part-2.md) |
