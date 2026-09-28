@@ -24,7 +24,7 @@
 | 0: 環境構築 | 完了 | Kotlin 2.4.20 / Arrow 2.2.3 / kotlinx.coroutines 1.11.0 / Kotest 6.2.5 |
 | 1: Part I・II | 完了 | |
 | 2: Part III・IV | 完了 | |
-| 3: Part V・VI + 統合 | 完了 | 任意節の STM（10.10）は見送り |
+| 3: Part V・VI + 統合 | 完了 | STM は 10.12 として追加（`arrow-fx-stm` を導入） |
 | 4: 統合比較記事 | 未着手（任意） | |
 
 ### スコープ外
@@ -43,6 +43,7 @@
 | 並行処理 | kotlinx.coroutines | `suspend`、`async`、構造化並行性 | Part IV〜VI |
 | ストリーム | kotlinx.coroutines `Flow` | ストリーム処理 | Part IV |
 | 並行 FP | Arrow Fx Coroutines（`arrow-fx-coroutines`） | `parMap`、`parZip`、`raceN`、`Resource` | Part V〜VI |
+| STM | Arrow Fx STM（`arrow-fx-stm`） | `TVar`、`atomically` | Part V |
 | リトライ | Arrow Resilience（`arrow-resilience`） | `Schedule` によるリトライ | Part IV |
 | テスト | Kotest（`kotest-runner-junit5`、`kotest-assertions-core`） | 単体テスト | 全章 |
 | PBT | Kotest Property（`kotest-property`） | プロパティベーステスト | Part VI |
@@ -339,7 +340,7 @@ app/kotlin/
   10.7 raceN と withTimeout
   10.8 Job によるバックグラウンド実行とキャンセル（Fiber 相当）
   10.9 呼び出し元に制御を返す
-  10.10 STM（arrow-fx-stm）による複合的な状態更新（任意）
+  10.10 STM（arrow-fx-stm）による複合的な状態更新（10.12 として実施）
 ```
 
 **Kotlin 固有の論点**: 構造化並行性とキャンセルの伝播、Dispatcher の選択

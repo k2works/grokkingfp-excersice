@@ -23,6 +23,7 @@ dependencies {
     implementation("io.arrow-kt:arrow-core:$arrowVersion")
     implementation("io.arrow-kt:arrow-fx-coroutines:$arrowVersion")
     implementation("io.arrow-kt:arrow-resilience:$arrowVersion")
+    implementation("io.arrow-kt:arrow-fx-stm:$arrowVersion")
 
     // Coroutines
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion")

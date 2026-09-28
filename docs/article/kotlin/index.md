@@ -73,9 +73,9 @@
 
 | 章 | トピック |
 |----|----------|
-| 第10章 | 構造化並行性、`parMap` / `parZip`、共有状態、キャンセル |
+| 第10章 | 構造化並行性、`parMap` / `parZip`、共有状態、キャンセル、STM |
 
-**キーワード**: コルーチン、構造化並行性、`parMap`、`raceN`、`MutableStateFlow`
+**キーワード**: コルーチン、構造化並行性、`parMap`、`raceN`、`MutableStateFlow`、`TVar`
 
 ---
 
@@ -129,6 +129,7 @@ Part I〜II は Kotlin 標準ライブラリのみ、Part III から Arrow Core�
 | Arrow Core | 2.2 | `Either`、`Option`、`Raise` DSL、`NonEmptyList` | Part III〜VI |
 | Arrow Fx Coroutines | 2.2 | `parMap`、`parZip`、`raceN`、`Resource` | Part V〜VI |
 | Arrow Resilience | 2.2 | `Schedule` によるリトライ | Part IV |
+| Arrow Fx STM | 2.2 | `TVar`、`atomically` によるトランザクション | Part V |
 | kotlinx.coroutines | 1.11 | `suspend`、`Flow`、構造化並行性 | Part IV〜VI |
 | Kotest | 6.2 | 単体テスト、プロパティベーステスト | 全章 |
 
@@ -145,6 +146,7 @@ Part I〜II は Kotlin 標準ライブラリのみ、Part III から Arrow Core�
 - **並行処理**: `parMap`、`parZip`、`raceN`（kotlinx.coroutines の上に構築）
 - **リソース管理**: `Resource`、`resourceScope`
 - **レジリエンス**: `Schedule`、`CircuitBreaker`
+- **STM**: `TVar`、`atomically`、`retry` / `orElse`
 
 ### Arrow 2.x の設計方針
 

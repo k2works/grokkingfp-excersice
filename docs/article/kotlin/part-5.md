@@ -1,6 +1,6 @@
 # Part V: 並行処理
 
-本章では、Kotlin における関数型スタイルの並行処理を学びます。Scala 版の cats-effect が `Ref`、`Fiber`、`parSequence` を使うのに対し、Kotlin ではコルーチンの **構造化並行性（Structured Concurrency）** を土台に、Arrow Fx Coroutines の `parMap` / `parZip` / `raceN` と、`Atomic` / `MutableStateFlow` による共有状態を組み合わせます。
+本章では、Kotlin における関数型スタイルの並行処理を学びます。Scala 版の cats-effect が `Ref`、`Fiber`、`parSequence` を使うのに対し、Kotlin ではコルーチンの **構造化並行性（Structured Concurrency）** を土台に、Arrow Fx Coroutines の `parMap` / `parZip` / `raceN` と、`Atomic` / `MutableStateFlow` による共有状態を組み合わせます。複数の共有状態をまとめて更新する場面では、Arrow の STM（`TVar`、`atomically`）も使います。
 
 ---
 
@@ -659,6 +659,185 @@ Kotlin のキャンセルは **協調的** です。`cancel()` はコルーチ�
 
 Scala の cats-effect もキャンセル可能な地点（`flatMap` の境界など）でキャンセルを検査しますが、IO ランタイムが自動的に検査するため、ユーザーが意識する場面は Kotlin より少なくなります。
 
+### 10.12 STM - 複数の共有状態をまとめて更新する
+
+10.4 の `Atomic` は **1 つの値** をアトミックに更新する道具でした。では、「チェックイン数」と「ランキング」のように **2 つの共有状態を常に整合させたい** 場合はどうすればよいでしょうか。`Atomic` を 2 つ用意して順に更新すると、その間に別のコルーチンが割り込み、「チェックイン数は更新済みなのにランキングは古い」という中間状態を観測できてしまいます。
+
+この問題を解決するのが **STM（Software Transactional Memory）** です。Arrow は `arrow-fx-stm` モジュールで STM を提供しています（Haskell の `STM` / `TVar` と同じ考え方で、[Haskell 版 Part V](../haskell/part-5.md) でも解説しています）。
+
+**ソースファイル**: `app/kotlin/src/main/kotlin/ch10/Stm.kt`
+
+```kotlin
+// build.gradle.kts
+implementation("io.arrow-kt:arrow-fx-stm:$arrowVersion")
+```
+
+| 要素 | 役割 |
+|------|------|
+| `TVar<A>` | トランザクションの中で読み書きする共有変数。`TVar.new(a)` で作成する |
+| `STM` | トランザクションの文脈。`read()`、`write()`、`modify { }` は `STM` をレシーバーとする操作 |
+| `atomically { }` | `STM` のブロックを 1 つのトランザクションとして実行する `suspend` 関数 |
+| `check(cond)` / `retry()` | 条件が満たされるまで待機し、読んだ `TVar` が変わったら再実行する |
+| `orElse` | 左のトランザクションが `retry` したら、右のトランザクションを試す |
+
+```plantuml
+@startuml
+!theme plain
+
+rectangle "atomically { }" {
+  card "TVar を読む（read）" as r
+  card "新しい値を計算（純粋関数）" as c
+  card "TVar に書く（write）" as w
+}
+
+card "コミット" as commit
+card "やり直し" as rerun
+
+r --> c
+c --> w
+w --> commit : 読んだ TVar が\n途中で変わっていない
+w --> rerun : 他のトランザクションが\n先に書き換えた
+rerun --> r
+
+note bottom of commit
+  すべての書き込みが
+  まとめて反映される
+end note
+
+@enduml
+```
+
+#### チェックイン数とランキングの同時更新
+
+チェックイン数とランキングを別々の `TVar` に保持し、1 つのトランザクションで両方を書き換えます。
+
+```kotlin
+/** チェックイン数とランキングを別々の TVar で保持するストア */
+class CheckInStore private constructor(
+    val checkIns: TVar<Map<City, Int>>,
+    val ranking: TVar<List<CityStats>>,
+    val topN: Int,
+) {
+    /** 2 つの TVar を同じトランザクションで読み、一貫したスナップショットを返す */
+    suspend fun snapshot(): CheckInSnapshot = atomically {
+        CheckInSnapshot(checkIns.read(), ranking.read())
+    }
+
+    companion object {
+        suspend fun create(topN: Int): CheckInStore =
+            CheckInStore(TVar.new(emptyMap()), TVar.new(emptyList()), topN)
+    }
+}
+
+/** チェックインを 1 件反映し、ランキングも同じトランザクションで更新する */
+fun STM.recordCheckIn(store: CheckInStore, city: City) {
+    val updated = updateCheckIns(store.checkIns.read(), city)
+    store.checkIns.write(updated)
+    store.ranking.write(topCities(updated, store.topN))
+}
+
+suspend fun storeCheckInStm(store: CheckInStore, city: City) =
+    atomically { recordCheckIn(store, city) }
+```
+
+ポイントは次の 3 つです。
+
+- `recordCheckIn` は **`STM` の拡張関数** で、`suspend` ではありません。トランザクションの中でしか呼べないことが型で表現され、複数の STM 操作を組み合わせて 1 つのトランザクションにできます
+- 計算には 10.2 の純粋関数 `updateCheckIns` と `topCities` をそのまま再利用しています。トランザクションは衝突すると **再実行される** ため、`Atomic.update` と同じく中の処理は純粋でなければなりません（ログ出力や I/O を書いてはいけません）
+- 読み取り側の `snapshot` も `atomically` で包むことで、2 つの `TVar` を同じ時点の値として読めます
+
+並列に保存しても、ランキングは常にチェックイン数から計算した値と一致します。
+
+```kotlin
+/** すべてのチェックインを並列に保存し、最終スナップショットを返す */
+suspend fun processCheckInsStm(
+    checkIns: List<City>,
+    topN: Int,
+    context: CoroutineContext = Dispatchers.Default,
+): CheckInSnapshot {
+    val store = CheckInStore.create(topN)
+    checkIns.parMap(context) { city -> storeCheckInStm(store, city) }
+    return store.snapshot()
+}
+```
+
+```kotlin
+test("並列に保存しても件数が失われず、ランキングは常にチェックイン数と一致する") {
+    val checkIns = sampleCheckIns(200)
+    val snapshot = processCheckInsStm(checkIns, topN = 3, context = Dispatchers.Default)
+
+    snapshot.checkIns.values.sum() shouldBe 1000
+    snapshot.ranking shouldBe topCities(snapshot.checkIns, 3)
+}
+```
+
+#### retry による条件待ち - 口座間の送金
+
+STM のもう 1 つの強みは、**条件が満たされるまで待つ** 処理を安全に書けることです。口座間の送金を例にします。
+
+```kotlin
+/** 残高が足りるまで待ってから送金する STM 操作 */
+fun STM.transferStm(from: TVar<Int>, to: TVar<Int>, amount: Int) {
+    val balance = from.read()
+    check(balance >= amount) // false なら retry: from が変わるまで待機して再実行
+    from.write(balance - amount)
+    to.modify { it + amount }
+}
+
+/** 残高不足なら入金されるまで待機する送金 */
+suspend fun transfer(from: TVar<Int>, to: TVar<Int>, amount: Int) =
+    atomically { transferStm(from, to, amount) }
+
+suspend fun deposit(account: TVar<Int>, amount: Int) =
+    atomically { account.modify { it + amount } }
+```
+
+`check(balance >= amount)` が `false` になると、トランザクションは `retry` します。`retry` はビジーループではありません。トランザクションはサスペンドし、**読んだ `TVar`（ここでは `from`）が他のトランザクションによって書き換えられたときにだけ** 再実行されます。ロックや条件変数を使わずに「入金を待ってから送金する」処理が書けます。
+
+```kotlin
+test("残高不足の transfer は入金されるまで待機する（retry）") {
+    runTest {
+        val from = TVar.new(10)
+        val to = TVar.new(0)
+
+        val pending = async { transfer(from, to, 50) }
+        runCurrent()
+        pending.isCompleted shouldBe false
+
+        deposit(from, 40)
+        pending.await()
+
+        atomically { from.read() to to.read() } shouldBe (0 to 50)
+    }
+}
+```
+
+#### orElse による代替トランザクション
+
+待たずに失敗を返したい場合は `orElse` を使います。左のトランザクションが `retry` すると、その変更を破棄して右のトランザクションを実行します。
+
+```kotlin
+/** 残高不足なら待たずに false を返す送金 */
+suspend fun tryTransfer(from: TVar<Int>, to: TVar<Int>, amount: Int): Boolean =
+    atomically {
+        stm { transferStm(from, to, amount); true } orElse { false }
+    }
+```
+
+`stm { }` は `STM.() -> A` 型のトランザクションを値として作る関数で、`orElse` はそれを中置で組み合わせます。同じ `transferStm` から「待つ送金」と「待たない送金」を作り分けられるのは、STM 操作が **合成可能な値** だからです。
+
+#### Atomic と STM の使い分け
+
+| 観点 | `Atomic` / `MutableStateFlow` | STM（`TVar`） |
+|------|------------------------------|---------------|
+| 対象 | 1 つの値 | 複数の値をまとめて |
+| 条件待ち | できない（自分でループやロックを書く） | `check` / `retry` で宣言的に書ける |
+| 代替処理 | できない | `orElse` で合成できる |
+| 実行の単位 | `update { }` | `atomically { }`（`suspend`） |
+| コスト | 小さい | トランザクションログの分だけ大きい |
+
+1 つの値で済むなら `Atomic` で十分です。**複数の共有状態の整合性** や **条件待ち** が必要になったときに STM を選びます。なお、Scala の cats-effect 本体には STM がなく、必要な場合は外部ライブラリ（cats-stm など）を使います。この点では、言語ランタイムに STM を持つ Haskell や、ライブラリとして提供する Arrow のほうが手軽に使えます。
+
 ---
 
 ## まとめ
@@ -677,6 +856,7 @@ rectangle "Part V: 並行処理" {
     card "raceN / withTimeoutOrNull"
     card "Job（バックグラウンド実行とキャンセル）"
     card "runTest（仮想時間によるテスト）"
+    card "STM / TVar（複数の状態のトランザクション）"
   }
 }
 
@@ -697,6 +877,8 @@ rectangle "Part V: 並行処理" {
 | `withTimeoutOrNull` | タイムアウト付き実行（時間切れで `null`） |
 | `launch` / `Job` | バックグラウンド実行とキャンセル |
 | `runTest` / `advanceTimeBy` / `currentTime` | 仮想時間による決定論的なテスト |
+| `TVar` / `atomically` | 複数の共有状態をトランザクションで更新 |
+| `check` / `retry` / `orElse` | STM での条件待ちと代替トランザクション |
 
 ### キーポイント
 
@@ -707,6 +889,7 @@ rectangle "Part V: 並行処理" {
 5. **Job**: Scala の Fiber に相当するが、起動には必ず `CoroutineScope` が必要
 6. **CoroutineScope の拡張関数**: 「起動して戻る」関数はシグネチャでそれを表明する
 7. **Dispatcher の差し替え**: `context` を引数にするとテストで仮想時間を使える
+8. **STM**: 複数の `TVar` を 1 つのトランザクションで更新し、`check` で条件待ちを宣言的に書ける
 
 ### 設計パターン
 
@@ -760,6 +943,7 @@ rectangle "並行処理の設計パターン" {
 | 無限ループ | `io.foreverM` | `while (true) { ...; delay(d) }`（戻り値 `Nothing`） |
 | スリープ | `IO.sleep(d)` | `delay(d)` |
 | テスト用の時間制御 | `TestControl` | `runTest` / `advanceTimeBy` |
+| トランザクショナルな共有状態 | cats-stm（外部ライブラリ）の `TVar` | Arrow `arrow-fx-stm` の `TVar` / `atomically` |
 
 #### 性質が異なるもの
 
@@ -956,6 +1140,7 @@ cd app/kotlin
 # クラス単位で実行
 ./gradlew test --tests 'ch10.CheckInsTest'
 ./gradlew test --tests 'ch10.ParallelExamplesTest'
+./gradlew test --tests 'ch10.StmTest'
 ```
 
-テストはすべて `runTest` の仮想時間で実行されるため、`delay` を含むテストも一瞬で終わります（実スレッドを使うのは `processCheckInsConcurrent` のテストのみです）。
+テストはすべて `runTest` の仮想時間で実行されるため、`delay` を含むテストも一瞬で終わります（実スレッドを使うのは `processCheckInsConcurrent`、`processCheckInsStm`、`runTransfersConcurrently` のテストのみです）。
